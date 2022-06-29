@@ -26,22 +26,10 @@ public class CommandExecutorService {
     public static final List<String> BUILD_GRAPHQL_JMH_JAR = asList("sh", "-c", "RELEASE_VERSION=test-runner-jmh ./gradlew jmhJar");
 
 
-    /**
-     * Executes the command in the default running directory of the application.
-     *
-     * @param command
-     * @throws TestRunnerException
-     */
     public void executeCommand(List<String> command) throws TestRunnerException {
         execute(command, null);
     }
 
-    /**
-     * Executes the command in the given directory of the application.
-     *
-     * @param command
-     * @throws TestRunnerException
-     */
     public void executeCommandInDir(List<String> command, String dir) throws TestRunnerException {
         execute(command, dir);
     }
@@ -50,25 +38,43 @@ public class CommandExecutorService {
         LOGGER.log(Level.INFO, "Executing command :{0},", command);
         LOGGER.log(Level.INFO, "In path :{0},", dir);
 
-        ProcessBuilder processBuilder = getBuilder(dir);
-        processBuilder.command(command);
         try {
+            ProcessBuilder processBuilder = getBuilder(dir).command(command);
             Process process = processBuilder.start();
-            StringBuilder output = new StringBuilder();
-            BufferedReader reader = new BufferedReader(
-              new InputStreamReader(process.getInputStream()));
+            writeOutput(process, readOutput(process), command);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Error in starting the process on command :{0}", command);
+            LOGGER.log(Level.SEVERE, "Error message :{0}", e.getMessage());
+            throw new TestRunnerException();
+        }
+    }
 
+    private String readOutput(Process process) throws TestRunnerException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        StringBuilder output = new StringBuilder();
+        try {
             String line;
             while ((line = reader.readLine()) != null) {
                 output.append(line + "\n");
             }
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, "Error in reading process output :{0}", ex.getMessage());
+            throw new TestRunnerException();
+        }
+        return output.toString();
+    }
+
+    private void writeOutput(Process process, String output, List<String> command) throws IOException {
+        try {
             int exitVal = process.waitFor();
             if (exitVal == 0) {
-                LOGGER.log(Level.INFO, "#### Command logs ####:{0}", output);
+                LOGGER.log(Level.INFO, "Command logs : {0}", output);
+            } else {
+                LOGGER.log(Level.SEVERE, "Error exit code on command :{0}", command);
+                throw new TestRunnerException();
             }
-        } catch (IOException | InterruptedException e) {
-            LOGGER.log(Level.SEVERE, "Error in executing command :{0}", command);
-            LOGGER.log(Level.SEVERE, "Error message :{0}", e.getMessage());
+        } catch (InterruptedException e) {
+            LOGGER.log(Level.SEVERE, "Error while exiting the process on command :{0}", command);
             throw new TestRunnerException();
         }
     }

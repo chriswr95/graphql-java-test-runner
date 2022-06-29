@@ -14,13 +14,8 @@ public class GitService {
 
     private static final Logger LOGGER = Logger.getLogger(GitService.class.getName());
     private static final String REPO_URL = "https://github.com/graphql-java/graphql-java.git";
+    private static final String BRANCH = "new-branch";
 
-    /**
-     * Pulls the code from graphql-java library and checkouts the given commit hash.
-     *
-     * @param commitHash
-     * @throws TestRunnerException
-     */
     public void pullCode(String commitHash) throws TestRunnerException {
         checkout(cloneRepo(), commitHash);
     }
@@ -40,7 +35,7 @@ public class GitService {
         try {
             git.checkout()
               .setCreateBranch(true)
-              .setName("new-branch")
+              .setName(BRANCH)
               .setStartPoint(commitHash).call();
         } catch (GitAPIException e) {
             LOGGER.log(Level.SEVERE, "Error in checkout repo:{0}", e.getMessage());
