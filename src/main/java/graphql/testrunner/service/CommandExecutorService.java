@@ -13,15 +13,35 @@ import graphql.testrunner.util.TestRunnerException;
 
 import org.springframework.stereotype.Service;
 
+import static java.util.Arrays.asList;
+
 @Service
 public class CommandExecutorService {
 
-    private static final Logger LOGGER = Logger.getLogger(CommandExecutorService.class.getName());
+    public static final Logger LOGGER = Logger.getLogger(CommandExecutorService.class.getName());
 
+    public static final String GRAPHQL_DIR = "/app/graphql-java/";
+    public static final List<String> INSTALL_GIT = asList("sh", "-c", "apk add --no-cache git");
+    public static final List<String> BUILD_GRAPHQL_JAR = asList("sh", "-c", "RELEASE_VERSION=test-runner ./gradlew build");
+    public static final List<String> BUILD_GRAPHQL_JMH_JAR = asList("sh", "-c", "RELEASE_VERSION=test-runner-jmh ./gradlew jmhJar");
+
+
+    /**
+     * Executes the command in the default running directory of the application.
+     *
+     * @param command
+     * @throws TestRunnerException
+     */
     public void executeCommand(List<String> command) throws TestRunnerException {
         execute(command, null);
     }
 
+    /**
+     * Executes the command in the given directory of the application.
+     *
+     * @param command
+     * @throws TestRunnerException
+     */
     public void executeCommandInDir(List<String> command, String dir) throws TestRunnerException {
         execute(command, dir);
     }
@@ -29,8 +49,8 @@ public class CommandExecutorService {
     private void execute(List<String> command, String dir) throws TestRunnerException {
         LOGGER.log(Level.INFO, "Executing command :{0},", command);
         LOGGER.log(Level.INFO, "In path :{0},", dir);
-        ProcessBuilder processBuilder = getBuilder(dir);
 
+        ProcessBuilder processBuilder = getBuilder(dir);
         processBuilder.command(command);
         try {
             Process process = processBuilder.start();
@@ -53,6 +73,11 @@ public class CommandExecutorService {
         }
     }
 
+    /**
+     * Prepares the process builder either in default directory or the path passed in the arguments.
+     *
+     * @param dir the path of the directory
+     */
     private ProcessBuilder getBuilder(String dir) {
         if (Objects.isNull(dir)) {
             return new ProcessBuilder();

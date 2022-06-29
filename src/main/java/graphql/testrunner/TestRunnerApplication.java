@@ -1,13 +1,13 @@
 package graphql.testrunner;
 
-import graphql.testrunner.service.CommandExecutorService;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import static java.util.Arrays.asList;
+import graphql.testrunner.service.CommandExecutorService;
+
+import static graphql.testrunner.service.CommandExecutorService.INSTALL_GIT;
 
 @SpringBootApplication
 public class TestRunnerApplication {
@@ -19,7 +19,7 @@ public class TestRunnerApplication {
 	@Bean
 	public CommandLineRunner initGit(CommandExecutorService commandExecutorService) {
 		return args -> {
-			commandExecutorService.executeCommand(asList("sh", "-c", "apk add --no-cache git"));
+			commandExecutorService.executeCommand(INSTALL_GIT);
 		};
 	}
 

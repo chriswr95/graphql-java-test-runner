@@ -16,8 +16,6 @@ public class TestRunnerResource {
 
   @PostMapping("/test-runner/{commitHash}")
   public void runTest(@PathVariable String commitHash) {
-      System.out.println("######################    in run test commit hash   ######### : "+ commitHash);
-
       testRunnerService.runTest(commitHash);
   }
 

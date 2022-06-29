@@ -15,6 +15,12 @@ public class GitService {
     private static final Logger LOGGER = Logger.getLogger(GitService.class.getName());
     private static final String REPO_URL = "https://github.com/graphql-java/graphql-java.git";
 
+    /**
+     * Pulls the code from graphql-java library and checkouts the given commit hash.
+     *
+     * @param commitHash
+     * @throws TestRunnerException
+     */
     public void pullCode(String commitHash) throws TestRunnerException {
         checkout(cloneRepo(), commitHash);
     }

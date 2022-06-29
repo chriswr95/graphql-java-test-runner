@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service;
 
 import static java.util.Arrays.asList;
 
+import static graphql.testrunner.service.CommandExecutorService.BUILD_GRAPHQL_JAR;
+import static graphql.testrunner.service.CommandExecutorService.BUILD_GRAPHQL_JMH_JAR;
+import static graphql.testrunner.service.CommandExecutorService.GRAPHQL_DIR;
+
 @Service
 public class PrepareEnvironmentService {
-
-    private static final String GRAPHQL_DIR = "/app/graphql-java/";
-    private static final List<String> BUILD_GRAPHQL_JAR = asList("sh", "-c", "RELEASE_VERSION=test-runner ./gradlew build");
-    private static final List<String> BUILD_GRAPHQL_JMH_JAR = asList("RELEASE_VERSION=test-runner-jmh", "./gradlew jmhJar");
 
     @Autowired
     private GitService gitService;

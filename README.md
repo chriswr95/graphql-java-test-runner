@@ -1,4 +1,4 @@
-# GraphQL Java
+# GraphQL Java Test Runner
 
 Discuss and ask questions in our Discussions: https://github.com/graphql-java/graphql-java/discussions
 
