@@ -20,7 +20,7 @@ public class PrepareEnvironmentService {
 
 
     public void prepareJars(String commitHash) throws TestRunnerException {
-        gitService.pullCode(commitHash);
+        gitService.checkout(commitHash);
         buildGraphqlJar();
         buildGraphqlJMHJar();
     }

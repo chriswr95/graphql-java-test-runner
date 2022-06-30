@@ -3,43 +3,32 @@ package graphql.testrunner.service;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import graphql.testrunner.util.TestRunnerException;
-
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import graphql.testrunner.util.TestRunnerException;
 
 @Service
 public class GitService {
 
     private static final Logger LOGGER = Logger.getLogger(GitService.class.getName());
-    private static final String REPO_URL = "https://github.com/graphql-java/graphql-java.git";
     private static final String BRANCH = "new-branch";
 
-    public void pullCode(String commitHash) throws TestRunnerException {
-        checkout(cloneRepo(), commitHash);
-    }
+    @Autowired
+    private Git git;
 
-    private Git cloneRepo() throws TestRunnerException {
-        try {
-            return Git.cloneRepository()
-              .setURI(REPO_URL)
-              .call();
-        } catch (GitAPIException e) {
-            LOGGER.log(Level.SEVERE, "Error in cloning repo:{0}", e.getMessage());
-            throw new TestRunnerException();
-        }
-    }
-
-    private void checkout(Git git, String commitHash) throws TestRunnerException {
+    public void checkout(String commitHash) throws TestRunnerException {
         try {
             git.checkout()
               .setCreateBranch(true)
               .setName(BRANCH)
               .setStartPoint(commitHash).call();
         } catch (GitAPIException e) {
-            LOGGER.log(Level.SEVERE, "Error in checkout repo:{0}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error in checkout repo: {0}", e.getMessage());
             throw new TestRunnerException();
         }
     }
+
 }

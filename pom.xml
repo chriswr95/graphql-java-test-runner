@@ -34,6 +34,14 @@
 			<artifactId>org.eclipse.jgit</artifactId>
 			<version>5.13.1.202206130422-r</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.mockito/mockito-inline -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-inline</artifactId>
+			<version>4.5.1</version>
+			<scope>test</scope>
+		</dependency>
+
 
 
 	</dependencies>
