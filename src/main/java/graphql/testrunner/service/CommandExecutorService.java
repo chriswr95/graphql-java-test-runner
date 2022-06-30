@@ -35,22 +35,21 @@ public class CommandExecutorService {
     }
 
     private void execute(List<String> command, String dir) throws TestRunnerException {
-        LOGGER.log(Level.INFO, "Executing command :{0},", command);
-        LOGGER.log(Level.INFO, "In path :{0},", dir);
-
+        LOGGER.log(Level.INFO, "Executing command : {0}", command);
+        LOGGER.log(Level.INFO, "In path : {0}", dir);
         try {
             ProcessBuilder processBuilder = getBuilder(dir).command(command);
             Process process = processBuilder.start();
             writeOutput(process, readOutput(process), command);
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error in starting the process on command :{0}", command);
-            LOGGER.log(Level.SEVERE, "Error message :{0}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error in starting the process on command : {0}", command);
+            LOGGER.log(Level.SEVERE, "Error message : {0}", e.getMessage());
             throw new TestRunnerException();
         }
     }
 
     private String readOutput(Process process) throws TestRunnerException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        BufferedReader reader = getReader(process);
         StringBuilder output = new StringBuilder();
         try {
             String line;
@@ -84,12 +83,16 @@ public class CommandExecutorService {
      *
      * @param dir the path of the directory
      */
-    private ProcessBuilder getBuilder(String dir) {
+     ProcessBuilder getBuilder(String dir) {
         if (Objects.isNull(dir)) {
             return new ProcessBuilder();
         } else {
             return new ProcessBuilder().directory(new File(dir));
         }
+    }
+
+    BufferedReader getReader(Process p) {
+         return new BufferedReader(new InputStreamReader(p.getInputStream()));
     }
 
 }
