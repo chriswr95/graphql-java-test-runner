@@ -26,7 +26,6 @@ class PrepareEnvironmentServiceTest {
     private PrepareEnvironmentService prepareEnvironmentService;
 
     private static final String GRAPHQL_DIR = "/app/graphql-java/";
-    private static final List<String> BUILD_GRAPHQL_JAR = asList("sh", "-c", "RELEASE_VERSION=test-runner ./gradlew build");
     private static final List<String> BUILD_GRAPHQL_JMH_JAR = asList("sh", "-c", "RELEASE_VERSION=test-runner-jmh ./gradlew jmhJar");
 
     @Test
@@ -34,7 +33,6 @@ class PrepareEnvironmentServiceTest {
         prepareEnvironmentService.prepareJars("8abc12345fdfd");
 
         verify(gitService).checkout(eq("8abc12345fdfd"));
-        verify(commandExecutorService).executeCommandInDir(eq(BUILD_GRAPHQL_JAR), eq(GRAPHQL_DIR));
         verify(commandExecutorService).executeCommandInDir(eq(BUILD_GRAPHQL_JMH_JAR), eq(GRAPHQL_DIR));
     }
 }

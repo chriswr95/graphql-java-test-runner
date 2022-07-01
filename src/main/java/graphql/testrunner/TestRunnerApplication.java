@@ -27,9 +27,7 @@ public class TestRunnerApplication {
 
 	@Bean
 	public CommandLineRunner initGit(CommandExecutorService commandExecutorService) {
-		return args -> {
-			commandExecutorService.executeCommand(INSTALL_GIT);
-		};
+		return args -> commandExecutorService.executeCommand(INSTALL_GIT);
 	}
 
 	@Bean
