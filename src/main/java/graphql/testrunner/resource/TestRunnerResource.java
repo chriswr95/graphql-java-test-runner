@@ -20,7 +20,7 @@ public class TestRunnerResource {
 
     @PostMapping("/test-runner")
     public void runTest(@RequestBody Map<String, String> commitHash) {
-        if (nonNull(commitHash) || !commitHash.containsKey("commit_hash"))
+        if (nonNull(commitHash) && commitHash.containsKey("commit_hash"))
             testRunnerService.runTest(commitHash.get("commit_hash"));
     }
 
