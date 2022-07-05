@@ -53,7 +53,7 @@ class GitServiceTest {
     }
 
     @Test
-    void checkout_when_GitAPIException_is_thrown() throws Exception {
+    void checkoutWhenGitAPIExceptionIsThrown() throws Exception {
         when(git.checkout()).thenReturn(checkoutCommand);
         when(checkoutCommand.setCreateBranch(eq(true))).thenReturn(checkoutCommand);
         when(checkoutCommand.setName(eq("new-branch"))).thenReturn(checkoutCommand);

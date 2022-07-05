@@ -60,7 +60,7 @@ class CommandExecutorServiceTest {
     };
 
     @Test
-    void executeCommand_when_exit_code_is_zero() throws Exception {
+    void executeCommandWhenExitCodeIsZero() throws Exception {
         List<String> command = asList("SH");
         setupProcessBuilderMock(command, 0);
 
@@ -74,7 +74,7 @@ class CommandExecutorServiceTest {
     }
 
     @Test
-    void executeCommand_when_exit_code_is_non_zero() throws Exception {
+    void executeCommandWhenExitCodeIsNonZero() throws Exception {
         List<String> command = asList("SH");
         setupProcessBuilderMock(command, 1);
         try {
@@ -93,7 +93,7 @@ class CommandExecutorServiceTest {
     }
 
     @Test
-    void executeCommandInDir_when_exit_code_is_zero() throws Exception {
+    void executeCommandInDirWhenExitCodeIsZero() throws Exception {
         List<String> command = asList("SH");
         setupProcessBuilderMock(command, 0);
         String dir = "/app/test";
@@ -107,7 +107,7 @@ class CommandExecutorServiceTest {
     }
 
     @Test
-    void executeCommand_when_IOException_occurs_during_start_of_processbuilder() throws Exception {
+    void executeCommandWhenIOExceptionOccursDuringStartOfProcessBuilder() throws Exception {
         List<String> command = asList("SH");
         setFinalStatic(CommandExecutorService.class.getDeclaredField("LOGGER"), LOGGER);
         when(processBuilder.command(eq(command))).thenReturn(processBuilder);
@@ -133,7 +133,7 @@ class CommandExecutorServiceTest {
     }
 
     @Test
-    void executeCommand_when_IOException_occurs_during_read_output() throws Exception {
+    void executeCommandWhenIOExceptionOccursDuringReadOutput() throws Exception {
         List<String> command = asList("SH");
         setFinalStatic(CommandExecutorService.class.getDeclaredField("LOGGER"), LOGGER);
         when(processBuilder.command(eq(command))).thenReturn(processBuilder);
@@ -157,7 +157,7 @@ class CommandExecutorServiceTest {
     }
 
     @Test
-    void executeCommand_when_InterruptedException_occurs_during_write_output() throws Exception {
+    void executeCommandWhenInterruptedExceptionOccursDuringWriteOutput() throws Exception {
         List<String> command = asList("SH");
         setFinalStatic(CommandExecutorService.class.getDeclaredField("LOGGER"), LOGGER);
         when(processBuilder.command(eq(command))).thenReturn(processBuilder);
