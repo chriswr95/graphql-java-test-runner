@@ -21,7 +21,6 @@ public class CommandExecutorService {
     public static final Logger LOGGER = Logger.getLogger(CommandExecutorService.class.getName());
 
     public static final String GRAPHQL_DIR = "/app/graphql-java/";
-    public static final List<String> INSTALL_GIT = asList("sh", "-c", "apk add --no-cache git");
     public static final List<String> BUILD_GRAPHQL_JMH_JAR = asList("sh", "-c", "RELEASE_VERSION=test-runner-jmh ./gradlew jmhJar");
 
 
