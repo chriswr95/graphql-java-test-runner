@@ -1,4 +1,4 @@
-package graphql.testrunner.util;
+package graphql.testrunner.exception;
 
 public class TestRunnerException extends RuntimeException {
 

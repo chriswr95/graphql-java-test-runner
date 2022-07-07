@@ -30,7 +30,7 @@ class PrepareEnvironmentServiceTest {
 
     @Test
     void prepareJars() {
-        prepareEnvironmentService.prepareJars("8abc12345fdfd");
+        prepareEnvironmentService.prepareJar("8abc12345fdfd");
 
         verify(gitService).checkout(eq("8abc12345fdfd"));
         verify(commandExecutorService).executeCommandInDir(eq(BUILD_GRAPHQL_JMH_JAR), eq(GRAPHQL_DIR));

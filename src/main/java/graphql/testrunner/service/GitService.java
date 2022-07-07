@@ -10,7 +10,7 @@ import org.eclipse.jgit.api.errors.TransportException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import graphql.testrunner.util.TestRunnerException;
+import graphql.testrunner.exception.TestRunnerException;
 
 @Service
 public class GitService {

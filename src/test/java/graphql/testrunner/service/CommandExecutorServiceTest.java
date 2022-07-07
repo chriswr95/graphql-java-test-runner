@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import graphql.testrunner.util.TestRunnerException;
+import graphql.testrunner.exception.TestRunnerException;
 
 import static java.util.Arrays.asList;
 
@@ -53,7 +54,7 @@ class CommandExecutorServiceTest {
             return processBuilder;
         }
         @Override
-        BufferedReader getReader(Process p) {
+        BufferedReader getReader(Process p, Function<Process, InputStream> func) {
             return bufferedReader;
         }
 
@@ -88,8 +89,11 @@ class CommandExecutorServiceTest {
           eq(command));
         String dir = null;
         inOrder.verify(LOGGER).log(eq(Level.INFO), eq("In path : {0}"), eq(dir));
-        inOrder.verify(LOGGER).log(eq(Level.SEVERE), eq("Error exit code on command :{0}"),
+        inOrder.verify(LOGGER).log(eq(Level.SEVERE), eq("Error exit code on command : {0}"),
           eq(command));
+        inOrder.verify(LOGGER).log(eq(Level.SEVERE), eq("Error message: {0}"),
+            eq("mocked output\n"));
+
     }
 
     @Test
@@ -200,7 +204,7 @@ class CommandExecutorServiceTest {
         InputStream inputStream = new ByteArrayInputStream(expectedOutput);
         when(process.getInputStream()).thenReturn(inputStream);
 
-        BufferedReader br = commandExecutorService.getReader(process);
+        BufferedReader br = commandExecutorService.getReader(process, Process::getInputStream);
         assertThat(br.readLine(), is("mocked output"));
     }
 
