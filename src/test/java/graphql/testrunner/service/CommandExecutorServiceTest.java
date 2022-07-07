@@ -25,6 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
@@ -83,6 +84,7 @@ class CommandExecutorServiceTest {
             fail("Expected exception.");
         } catch (Exception ex) {
             assertThat(ex, isA(TestRunnerException.class));
+            assertEquals("Command failed to execute.", ex.getMessage());
         }
         InOrder inOrder = inOrder(LOGGER);
         inOrder.verify(LOGGER).log(eq(Level.INFO), eq("Executing command : {0}"),

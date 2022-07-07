@@ -25,7 +25,7 @@ class PrepareEnvironmentServiceTest {
     @InjectMocks
     private PrepareEnvironmentService prepareEnvironmentService;
 
-    private static final String GRAPHQL_DIR = "/app/graphql-java/";
+    private static final String GRAPHQL_DIR = "graphql-java/";
     private static final List<String> BUILD_GRAPHQL_JMH_JAR = asList("sh", "-c", "RELEASE_VERSION=test-runner-jmh ./gradlew jmhJar");
 
     @Test

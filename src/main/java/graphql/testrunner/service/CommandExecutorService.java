@@ -22,7 +22,7 @@ public class CommandExecutorService {
 
     public static final Logger LOGGER = Logger.getLogger(CommandExecutorService.class.getName());
 
-    public static final String GRAPHQL_DIR = "/app/graphql-java/";
+    public static final String GRAPHQL_DIR = "graphql-java/";
     public static final List<String> BUILD_GRAPHQL_JMH_JAR = asList("sh", "-c", "RELEASE_VERSION=test-runner-jmh ./gradlew jmhJar");
 
 
@@ -73,7 +73,7 @@ public class CommandExecutorService {
                 String errorLog = readOutput(process, Process::getErrorStream);
                 LOGGER.log(Level.SEVERE, "Error exit code on command : {0}", command);
                 LOGGER.log(Level.SEVERE, "Error message: {0}", errorLog);
-                throw new TestRunnerException();
+                throw new TestRunnerException("Command failed to execute.");
             }
         } catch (InterruptedException e) {
             LOGGER.log(Level.SEVERE, "Error while exiting the process on command :{0}", command);
@@ -94,6 +94,13 @@ public class CommandExecutorService {
         }
     }
 
+    /**
+     * Prepares bufferedReader based on the input stream passed to the lambda function.
+     *
+     * @param p the process on which to read the stream
+     * @param func lambda to invoke either errorStream or inputStream on the given process object.
+     * @return bufferedReader object
+     */
     BufferedReader getReader(Process p, Function<Process, InputStream> func) {
          return new BufferedReader(new InputStreamReader(func.apply(p)));
     }
