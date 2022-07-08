@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import graphql.testrunner.dto.Job;
 import graphql.testrunner.exception.TestRunnerException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,8 +47,11 @@ class GitServiceTest {
     @InjectMocks
     private GitService gitService;
 
+    private Job job = new Job();
+
     @BeforeEach
     public void before() {
+        job.setCommitHash("8abc12345fdfd");
         when(git.fetch()).thenReturn(fetchCommand);
         when(fetchCommand.setRemote(eq("origin"))).thenReturn(fetchCommand);
     }
@@ -57,10 +61,10 @@ class GitServiceTest {
 
         when(git.checkout()).thenReturn(checkoutCommand);
         when(checkoutCommand.setCreateBranch(eq(true))).thenReturn(checkoutCommand);
-        when(checkoutCommand.setName(eq("new-branch-abc123abc"))).thenReturn(checkoutCommand);
-        when(checkoutCommand.setStartPoint(eq("abc123abc"))).thenReturn(checkoutCommand);
+        when(checkoutCommand.setName(eq("new-branch-" + job.getJobId()))).thenReturn(checkoutCommand);
+        when(checkoutCommand.setStartPoint(eq("8abc12345fdfd"))).thenReturn(checkoutCommand);
 
-        gitService.checkout("abc123abc");
+        gitService.checkout(job);
         verify(checkoutCommand).call();
         verify(fetchCommand).call();
     }
@@ -69,13 +73,13 @@ class GitServiceTest {
     void checkoutWhenGitAPIExceptionIsThrown() throws Exception {
         when(git.checkout()).thenReturn(checkoutCommand);
         when(checkoutCommand.setCreateBranch(eq(true))).thenReturn(checkoutCommand);
-        when(checkoutCommand.setName(eq("new-branch-abc123abc"))).thenReturn(checkoutCommand);
-        when(checkoutCommand.setStartPoint(eq("abc123abc"))).thenReturn(checkoutCommand);
+        when(checkoutCommand.setName(eq("new-branch-" + job.getJobId()))).thenReturn(checkoutCommand);
+        when(checkoutCommand.setStartPoint(eq("8abc12345fdfd"))).thenReturn(checkoutCommand);
         when(checkoutCommand.call()).thenThrow(new EmptyCommitException("Commit empty"));
         setFinalStatic(GitService.class.getDeclaredField("LOGGER"), LOGGER);
 
         try {
-            gitService.checkout("abc123abc");
+            gitService.checkout(job);
             fail("Expected exception.");
         } catch (Exception ex) {
             assertThat(ex, isA(TestRunnerException.class));

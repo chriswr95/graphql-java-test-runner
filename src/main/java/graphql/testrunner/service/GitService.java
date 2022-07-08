@@ -10,6 +10,7 @@ import org.eclipse.jgit.api.errors.TransportException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import graphql.testrunner.dto.Job;
 import graphql.testrunner.exception.TestRunnerException;
 
 @Service
@@ -22,13 +23,13 @@ public class GitService {
     @Autowired
     private Git git;
 
-    public void checkout(String commitHash) throws TestRunnerException {
+    public void checkout(Job job) throws TestRunnerException {
         try {
             fetch();
             git.checkout()
               .setCreateBranch(true)
-              .setName(BRANCH + commitHash)//append unique job id later
-              .setStartPoint(commitHash).call();
+              .setName(BRANCH + job.getJobId())
+              .setStartPoint(job.getCommitHash()).call();
         } catch (GitAPIException e) {
             LOGGER.log(Level.SEVERE, "Error in checkout repo: {0}", e.getMessage());
             throw new TestRunnerException();

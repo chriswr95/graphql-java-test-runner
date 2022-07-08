@@ -1,16 +1,17 @@
 package graphql.testrunner.resource;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import graphql.testrunner.dto.Job;
 import graphql.testrunner.service.TestRunnerService;
 
 import static java.util.Objects.nonNull;
+
+import static org.apache.logging.log4j.util.Strings.isEmpty;
 
 @RestController
 public class TestRunnerResource {
@@ -19,9 +20,10 @@ public class TestRunnerResource {
     private TestRunnerService testRunnerService;
 
     @PostMapping("/test-runner")
-    public void runTest(@RequestBody Map<String, String> commitHash) {
-        if (nonNull(commitHash) && commitHash.containsKey("commit_hash"))
-            testRunnerService.runTest(commitHash.get("commit_hash"));
+    public void runTest(@RequestBody Job job) {
+        String commitHash = job.getCommitHash();
+        if (nonNull(commitHash) && !isEmpty(commitHash))
+            testRunnerService.runTest(job);
     }
 
     @GetMapping("/")

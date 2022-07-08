@@ -8,6 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import graphql.testrunner.dto.Job;
+
 import static java.util.Arrays.asList;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -30,9 +32,11 @@ class PrepareEnvironmentServiceTest {
 
     @Test
     void prepareJars() {
-        prepareEnvironmentService.prepareJar("8abc12345fdfd");
+        Job job = new Job();
+        
+        prepareEnvironmentService.prepareJar(job);
 
-        verify(gitService).checkout(eq("8abc12345fdfd"));
+        verify(gitService).checkout(eq(job));
         verify(commandExecutorService).executeCommandInDir(eq(BUILD_GRAPHQL_JMH_JAR), eq(GRAPHQL_DIR));
     }
 }

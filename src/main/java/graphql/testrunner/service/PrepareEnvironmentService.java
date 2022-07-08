@@ -3,6 +3,7 @@ package graphql.testrunner.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import graphql.testrunner.dto.Job;
 import graphql.testrunner.exception.TestRunnerException;
 
 import static graphql.testrunner.service.CommandExecutorService.BUILD_GRAPHQL_JMH_JAR;
@@ -18,8 +19,8 @@ public class PrepareEnvironmentService {
     private CommandExecutorService commandExecutorService;
 
 
-    public void prepareJar(String commitHash) throws TestRunnerException {
-        gitService.checkout(commitHash);
+    public void prepareJar(Job job) throws TestRunnerException {
+        gitService.checkout(job);
         buildGraphqlJMHJar();
     }
 
