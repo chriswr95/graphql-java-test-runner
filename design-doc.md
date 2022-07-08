@@ -31,35 +31,87 @@ The testing architecture will live as a microservice hosted in Google Cloud. As 
 
 Since we will be executing arbitrary (potentially malicious) code, we need to be careful about sandboxing the test executor.
 ## Component 1 - Test Runner
-<img width="1267" alt="Screen Shot 2022-06-17 at 11 54 50 AM" src="https://user-images.githubusercontent.com/37849366/174386048-e28a155f-ddd3-47c9-9765-0ebe4747fa60.png">
+![Capture](https://user-images.githubusercontent.com/37849366/177887195-4c2e1aff-885d-4fba-8be0-7f79acd2167c.png)
 
 ### Tech Stack
-| Technology                       | Usage                                 | Free Tier Usage Limit                                           |
-|----------------------------------|---------------------------------------|-----------------------------------------------------------------|
-| Pub/Sub Queue                    | Hold onto tasks until worker is ready | 10 GB of messages per month                                     |
-| Compute Engine                   | Run test workflow                     | 1 e2-micro VM per month in us-west-1                            |
-| Firestore                        | Store test results                    | 1 GB of data storage                                            |
-| Cloud Functions                  | Read test results from Firestore      | 2 million invocations per month                                 |
-| Google Cloud Development Manager | Infrastructure as code                | (I believe this is free, but couldn’t find anything definitive) |
-| Google Cloud Build               | Continuous deployment                 | 120 build minutes per day                                       |
+| Technology                       | Usage                                           | Free Tier Usage Limit                                           |
+|----------------------------------|-------------------------------------------------|-----------------------------------------------------------------|
+| Cloud Tasks Queue                | Hold onto tasks until the workers are ready     | 1 million tasks per month                                       |
+| Workflows                        | Orchestrate the test runner execution           | 2,000 invocations per month                                     |
+| Firestore                        | Store test results                              | 1 GB of data storage                                            |
+| Cloud Run                        | Host the container responsible for the read API | 2 million requests per month                                    |
+| Google Cloud Development Manager | Infrastructure as code                          | (I believe this is free, but couldn’t find anything definitive) |
+| Google Cloud Build               | Continuous deployment                           | 120 build minutes per day                                       |
 
 ## API’s
-**Run Test API**
+### Run Test API
+The Run Test API isn’t a public HTTP API. Instead the triggering event, a Github Action, will publish a message to a Google Cloud Pub/Sub Queue. See this example. The message will be a json object with the following format:
 
-The Run Test API isn’t a public HTTP API. Instead the triggering event, a Github Action, will publish a message to a Google Cloud Pub/Sub Queue. See this  [example](https://cloud.google.com/pubsub/docs/publisher#python) . The message will be a json object with the following format:
 ```
 {
-  “gitCommit”: “518d25c3df21f1d2cbc49abd613c7a55cd4c7339”
+  “gitCommit”: “518d25c3df21f1d2cbc49abd613c7a55cd4c7339”,
+  “branch”: ”abc/test”
 }
 ```
-**Read API**
 
-The read API will be an HTTP api which only exposes a GET operation. It can be queried as follows:
+### Read API
+The read API will be able to handle 2 million requests per month in the free tier. It will expose a few different paths:
+
+------
+GET
+example: /test_result?commit=518d25c3df21f1d2cbc49abd613c7a55cd4c7339 
+
+path: /test_result 
+
+query parameter: commit - the commit hash that should be tested. 
+
+returns: see Example 1 - Data Store Schema
+
+------
+GET
+example: /overview
+
+path: /overview
+
+query parameter: none
+
+returns:
+
 ```
-curl -X GET “ [https://SOME_REGION.cloudfunctions.net/](https://your_region-your_project_id.cloudfunctions.net/FUNCTION_NAME) jmh_test_result?commit=518d25c3df21f1d2cbc49abd613c7a55cd4c7339”
+{
+	"runs": [{
+		"runDate": "06-14-2022", // string, display when the test ran
+		"commit": "", // string, used to navigate to individual run
+		"totalBenchmarks": 10, // number, used to display the amount of benchmarks ran
+		// the increase and decrease values can either represent the change from the last test 		// or from the first-ever run 
+		"benchmarksIncrease": 1,
+		"benchmarksDecrease": 0,
+	}, {
+		"runDate": "05-14-2022",
+		"commit": "",
+		"totalBenchmarks": 9,
+		"benchmarksIncrease": 0,
+		"benchmarksDecrease": 2,
+	}, …],
+	"trending": {
+		"worst": [{
+			"functionName": "fun1", // string, can be used for page anchoring on individual 						// run
+			"score": 123, // number, benchmark score
+			"scoreUnit": "ops/s", // string
+			"scoreError": 123, // number
+			"scoreMin": 100, // number
+			"scoreMax": 200, // number
+			"run": {
+				"runDate": "06-14-2022", // string, might not be needed
+				"commit": "" // string, used to navigate to test run
+			}
+		}, …]
+	}
+}
 ```
 
-The response will be a json object with the format provided in *Example 1*.
+------
+
 ## Data Stores
 We will have one data store named TestRuns, which lives as a Firestore Database with the following format. At 1 GB of storage, and 1,000 Bytes per record (the size of the example record below) we can safely store roughly one million records.
 
@@ -111,8 +163,8 @@ We will have one data store named TestRuns, which lives as a Firestore Database 
 
 
 ## Component 2 - Github Actions
+![Capture2](https://user-images.githubusercontent.com/37849366/177887270-67c8614b-77fa-4e80-9678-7b8d35ac635e.png)
 
-<img width="969" alt="Screen Shot 2022-06-17 at 12 01 01 PM" src="https://user-images.githubusercontent.com/37849366/174386640-c993df2c-7280-405e-bea9-66d9ab56cf6a.png">
 
 We want to run our test suite based on configured github actions/webhooks. There were two options that we experimented with:
 ### 1. Run daily against master -
