@@ -24,6 +24,7 @@ public class TestRunnerResource {
         String commitHash = job.getCommitHash();
         if (nonNull(commitHash) && !isEmpty(commitHash))
             testRunnerService.runTest(job);
+        //TODO fail the job and save to the database
     }
 
     @GetMapping("/")
