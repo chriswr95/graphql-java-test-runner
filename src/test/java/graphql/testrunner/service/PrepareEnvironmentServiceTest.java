@@ -25,12 +25,12 @@ class PrepareEnvironmentServiceTest {
     @InjectMocks
     private PrepareEnvironmentService prepareEnvironmentService;
 
-    private static final String GRAPHQL_DIR = "/app/graphql-java/";
+    private static final String GRAPHQL_DIR = "graphql-java/";
     private static final List<String> BUILD_GRAPHQL_JMH_JAR = asList("sh", "-c", "RELEASE_VERSION=test-runner-jmh ./gradlew jmhJar");
 
     @Test
     void prepareJars() {
-        prepareEnvironmentService.prepareJars("8abc12345fdfd");
+        prepareEnvironmentService.prepareJar("8abc12345fdfd");
 
         verify(gitService).checkout(eq("8abc12345fdfd"));
         verify(commandExecutorService).executeCommandInDir(eq(BUILD_GRAPHQL_JMH_JAR), eq(GRAPHQL_DIR));

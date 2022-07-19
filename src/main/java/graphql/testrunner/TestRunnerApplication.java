@@ -9,7 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import graphql.testrunner.util.TestRunnerException;
+import graphql.testrunner.exception.TestRunnerException;
 
 @SpringBootApplication
 public class TestRunnerApplication {

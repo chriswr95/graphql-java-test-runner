@@ -1,6 +1,6 @@
 package graphql.testrunner.service;
 
-import graphql.testrunner.util.TestRunnerException;
+import graphql.testrunner.exception.TestRunnerException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ public class TestRunnerService {
     private PrepareEnvironmentService prepareEnvironmentService;
 
     public void runTest(String commitHash) throws TestRunnerException {
-        prepareEnvironmentService.prepareJars(commitHash);
+        prepareEnvironmentService.prepareJar(commitHash);
 
         //run jmh tests
     }
