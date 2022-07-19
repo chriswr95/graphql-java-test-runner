@@ -1,0 +1,157 @@
+main:
+  params: [job]
+  steps:
+    - vars:
+        assign:
+          - project_id: ${sys.get_env("GOOGLE_CLOUD_PROJECT_ID")}
+          - collection: "test-runs"
+          - job_id: ${job.jobId}
+          - zone: "us-west1-b"
+          - region: "us-west1"
+          - instance_name: "test-runner"
+          - machine_type: "e2-small"
+          - project_number: ${sys.get_env("GOOGLE_CLOUD_PROJECT_NUMBER")}
+          - service_account_email: ${project_number + "-compute@developer.gserviceaccount.com"}
+
+    - create_job_in_firestore:
+        call: googleapis.firestore.v1.projects.databases.documents.createDocument
+        args:
+          collectionId: ${collection}
+          parent: ${"projects/" + project_id + "/databases/(default)/documents"}
+          query:
+            documentId: ${job_id}
+          body:
+            fields:
+              jobId:
+                stringValue: ${job_id}
+    - get_document:
+        call: googleapis.firestore.v1.projects.databases.documents.get
+        args:
+          name: ${"projects/" + project_id + "/databases/(default)/documents/" + collection + "/" + job_id}
+        result: got
+    - validate_saved_document:
+        switch:
+          - condition: ${got.fields.jobId.stringValue == job_id}
+            next: get_latest_image
+    - failed:
+        raise: ${"got unexpected document"}
+
+
+    #Get latest boot image.
+    - get_latest_image:
+        call: googleapis.compute.v1.images.getFromFamily
+        args:
+          family: "cos-stable"
+          project: "cos-cloud"
+        result: getFromFamilyResult
+
+    #Create and start compute engine vm.
+    - insert_machine:
+        call: googleapis.compute.v1.instances.insert
+        args:
+          project: ${project_id}
+          zone: ${zone}
+          body:
+            tags:
+              items:
+                - http-server
+            name: ${instance_name}
+            machineType: ${"zones/" + zone + "/machineTypes/" + machine_type}
+            disks:
+              - initializeParams:
+                  sourceImage: ${"projects/cos-cloud/global/images/" + getFromFamilyResult.name}
+                boot: true
+                autoDelete: true
+            networkInterfaces:
+              - accessConfigs:
+                  - name: "External NAT"
+                    networkTier: "STANDARD"
+                subnetwork: ${"projects/" + project_id + "/regions/" + region +"/subnetworks/default"}
+            metadata:
+              items:
+                - key: "startup-script"
+                  value: "#! /bin/bash \ncd tmp\nmkdir test-runner\ncd test-runner\npwd\nls\ngit clone https://github.com/adarsh-jaiswal/graphql-java-test-runner.git\ncd graphql-java-test-runner/ \ngit checkout bcf3a7a \ndocker build --no-cache -t test-runner .\ndocker run --publish 80:8080 test-runner"
+
+            serviceAccounts:
+              - email: ${service_account_email}
+                scopes:
+                  - https://www.googleapis.com/auth/cloud-platform
+    - assert_machine_is_running:
+        call: assert_machine_status
+        args:
+          expected_status: "RUNNING"
+          zone: ${zone}
+          project: ${project_id}
+          instance: ${instance_name}
+
+    - get_instance:
+        call: googleapis.compute.v1.instances.get
+        args:
+          instance: ${instance_name}
+          project: ${project_id}
+          zone: ${zone}
+        result: created_instance
+
+    #Extract compute engine's url.
+    - extract_external_ip_and_construct_urls:
+        assign:
+          - external_ip: ${created_instance.networkInterfaces[0].accessConfigs[0].natIP}
+          - base_url: ${"http://" + external_ip + "/"}
+
+    #Perform call to test-runner.
+    - check_test_runner_is_running:
+        try:
+          call: http.get
+          args:
+            url: ${base_url}
+        retry: ${http.default_retry}
+
+    - call_test_runner:
+        call: http.post
+        args:
+          url: ${base_url + "test-runner"}
+          body: ${job}
+        result: output_result
+
+
+    #Destroy compute engine.
+    - stop_machine:
+        call: googleapis.compute.v1.instances.stop
+        args:
+          instance: ${instance_name}
+          project: ${project_id}
+          zone: ${zone}
+    - assert_terminated:
+        call: assert_machine_status
+        args:
+          expected_status: "TERMINATED"
+          zone: ${zone}
+          project: ${project_id}
+          instance: ${instance_name}
+    - delete_machine:
+        call: googleapis.compute.v1.instances.delete
+        args:
+          instance: ${instance_name}
+          project: ${project_id}
+          zone: ${zone}
+
+    - returnOutput:
+        return: "SUCCESS"
+
+
+assert_machine_status:
+  params: [expected_status, project, zone, instance]
+  steps:
+    - get_instance:
+        call: googleapis.compute.v1.instances.get
+        args:
+          instance: ${instance}
+          project: ${project}
+          zone: ${zone}
+        result: instance
+    - compare:
+        switch:
+          - condition: ${instance.status == expected_status}
+            next: end
+    - fail:
+        raise: ${"Expected VM status is " + expected_status + ". Got " + instance.status + " instead."}
