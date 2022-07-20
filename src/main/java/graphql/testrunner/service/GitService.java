@@ -1,5 +1,6 @@
 package graphql.testrunner.service;
 
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,12 +23,12 @@ public class GitService {
     @Autowired
     private Git git;
 
-    public void checkout(String commitHash) throws TestRunnerException {
+    public void checkout(UUID jobId, String commitHash) throws TestRunnerException {
         try {
             fetch();
             git.checkout()
               .setCreateBranch(true)
-              .setName(BRANCH + commitHash)//append unique job id later
+              .setName(BRANCH + jobId)
               .setStartPoint(commitHash).call();
         } catch (GitAPIException e) {
             LOGGER.log(Level.SEVERE, "Error in checkout repo: {0}", e.getMessage());

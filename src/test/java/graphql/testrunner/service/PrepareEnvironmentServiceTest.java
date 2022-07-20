@@ -1,12 +1,15 @@
 package graphql.testrunner.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import graphql.testrunner.dto.Job;
 
 import static java.util.Arrays.asList;
 
@@ -30,9 +33,14 @@ class PrepareEnvironmentServiceTest {
 
     @Test
     void prepareJars() {
-        prepareEnvironmentService.prepareJar("8abc12345fdfd");
+        UUID jobId = UUID.randomUUID();
+        Job job = new Job();
+        job.setJobId(jobId);
+        job.setCommitHash("abc123");
+        
+        prepareEnvironmentService.prepareJar(job);
 
-        verify(gitService).checkout(eq("8abc12345fdfd"));
+        verify(gitService).checkout(eq(jobId), eq("abc123"));
         verify(commandExecutorService).executeCommandInDir(eq(BUILD_GRAPHQL_JMH_JAR), eq(GRAPHQL_DIR));
     }
 }
