@@ -1,6 +1,7 @@
 package graphql.testrunner.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,11 +33,14 @@ class PrepareEnvironmentServiceTest {
 
     @Test
     void prepareJars() {
+        UUID jobId = UUID.randomUUID();
         Job job = new Job();
+        job.setJobId(jobId);
+        job.setCommitHash("abc123");
         
         prepareEnvironmentService.prepareJar(job);
 
-        verify(gitService).checkout(eq(job));
+        verify(gitService).checkout(eq(jobId), eq("abc123"));
         verify(commandExecutorService).executeCommandInDir(eq(BUILD_GRAPHQL_JMH_JAR), eq(GRAPHQL_DIR));
     }
 }

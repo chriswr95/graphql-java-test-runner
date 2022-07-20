@@ -76,7 +76,7 @@ public class CommandExecutorService {
                 String errorLog = readOutput(process, Process::getErrorStream);
                 LOGGER.log(Level.SEVERE, "Error exit code on command : {0}", command);
                 LOGGER.log(Level.SEVERE, "Error message: {0}", errorLog);
-                throw new TestRunnerException("Command failed to execute.");
+                throw new TestRunnerException("Command failed to execute. Error message : " + errorLog);
             }
         } catch (InterruptedException e) {
             LOGGER.log(Level.SEVERE, "Error while exiting the process on command :{0}", command);

@@ -84,7 +84,7 @@ class CommandExecutorServiceTest {
             fail("Expected exception.");
         } catch (Exception ex) {
             assertThat(ex, isA(TestRunnerException.class));
-            assertEquals("Command failed to execute.", ex.getMessage());
+            assertEquals("Command failed to execute. Error message : mocked output\n", ex.getMessage());
         }
         InOrder inOrder = inOrder(LOGGER);
         inOrder.verify(LOGGER).log(eq(Level.INFO), eq("Executing command : {0}"),
