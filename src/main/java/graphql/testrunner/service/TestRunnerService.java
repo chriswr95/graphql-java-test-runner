@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import graphql.testrunner.dto.Job;
@@ -22,9 +23,11 @@ public class TestRunnerService {
     @Autowired
     private CommandExecutorService commandExecutorService;
 
+    @Async
     public void runTest(Job job) throws TestRunnerException {
         prepareEnvironmentService.prepareJar(job);
         verifyAndExecuteTestToRun(job);
+        //TODO: If exception occurs fail the job and save the message to the database.
     }
 
     private void verifyAndExecuteTestToRun(Job job) {
