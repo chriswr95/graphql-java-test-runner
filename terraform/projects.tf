@@ -15,3 +15,9 @@ resource "google_project_service" "compute_engine_api" {
   service = "compute.googleapis.com"
   disable_dependent_services = true
 }
+
+# Enable Cloud Tasks Queue API - required to create a queue
+resource "google_project_service" "cloud_tasks_api" {
+  service = "cloudtasks.googleapis.com"
+  disable_dependent_services = true
+}

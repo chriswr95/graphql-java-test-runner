@@ -30,7 +30,25 @@ resource "google_workflows_workflow" "test_runner_workflow" {
   depends_on = [google_project_service.workflows]
 }
 
+# Define and deploy a tasks queue
+resource "google_cloud_tasks_queue" "test_runner_tasks_queue" {
+  name = "test-runner-tasks-queue"
+  location = var.region
 
+  rate_limits {
+    max_concurrent_dispatches = 1000
+    max_dispatches_per_second = 500
+  }
+
+  retry_config {
+    max_attempts = 100
+    max_retry_duration = "4s"
+    max_backoff = "3600s"
+    min_backoff = "0.1s"
+    max_doublings = 1
+  }
+
+}
 
 # Firestore
 # resource "google_app_engine_application" "firestore" {
