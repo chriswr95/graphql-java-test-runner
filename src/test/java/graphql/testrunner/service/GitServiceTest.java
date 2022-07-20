@@ -1,5 +1,6 @@
 package graphql.testrunner.service;
 
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,10 +49,12 @@ class GitServiceTest {
     private GitService gitService;
 
     private Job job = new Job();
+    private UUID jobId = UUID.randomUUID();
 
     @BeforeEach
     public void before() {
         job.setCommitHash("8abc12345fdfd");
+        job.setJobId(jobId);
         when(git.fetch()).thenReturn(fetchCommand);
         when(fetchCommand.setRemote(eq("origin"))).thenReturn(fetchCommand);
     }
@@ -64,7 +67,7 @@ class GitServiceTest {
         when(checkoutCommand.setName(eq("new-branch-" + job.getJobId()))).thenReturn(checkoutCommand);
         when(checkoutCommand.setStartPoint(eq("8abc12345fdfd"))).thenReturn(checkoutCommand);
 
-        gitService.checkout(job);
+        gitService.checkout(job.getJobId(), job.getCommitHash());
         verify(checkoutCommand).call();
         verify(fetchCommand).call();
     }
@@ -79,7 +82,7 @@ class GitServiceTest {
         setFinalStatic(GitService.class.getDeclaredField("LOGGER"), LOGGER);
 
         try {
-            gitService.checkout(job);
+            gitService.checkout(job.getJobId(), job.getCommitHash());
             fail("Expected exception.");
         } catch (Exception ex) {
             assertThat(ex, isA(TestRunnerException.class));
