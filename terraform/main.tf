@@ -6,16 +6,16 @@ terraform {
   }
 }
 
+locals {
+  cred = file("cred.json")
+  email = lookup(jsondecode(local.cred), "client_email")
+}
+
 provider "google" {
   credentials = local.cred
   project = var.project_id
   region  = var.region
   zone    = "us-central1-c"
-}
-
-locals {
-  cred = file("cred.json")
-  email = lookup(jsondecode(local.cred), "client_email")
 }
 
 # Define and deploy a workflow
@@ -48,13 +48,17 @@ resource "google_cloud_tasks_queue" "test_runner_tasks_queue" {
     max_doublings = 1
   }
 
+  depends_on = [ google_project_service.cloud_tasks_api]
 }
 
-# Firestore
-# resource "google_app_engine_application" "firestore" {
-#   project = var.project_id
-#   location_id = "us-central"
-#   database_type = "CLOUD_FIRESTORE"
+# Enable Firestore, this operation will be successful when initializing
+# the project for the first time. Firestore once enabled can never be disabled on the same project.
+# If terraform appy is called multiple times for the same project it's ok to get the below error for firestore.
+# Error 409: This application already exists and cannot be re-created.
+resource "google_app_engine_application" "firestore" {
+  project = var.project_id
+  location_id = "us-central"
+  database_type = "CLOUD_FIRESTORE"
 
-#   depends_on = [google_project_service.app_engine_api]
-# }
+  depends_on = [google_project_service.app_engine_api]
+}

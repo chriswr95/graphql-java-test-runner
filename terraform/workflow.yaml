@@ -36,15 +36,13 @@ main:
     - failed:
         raise: ${"got unexpected document"}
 
-
-    #Get latest boot image.
+    #Get the latest boot image.
     - get_latest_image:
         call: googleapis.compute.v1.images.getFromFamily
         args:
           family: "cos-stable"
           project: "cos-cloud"
         result: getFromFamilyResult
-
     #Create and start compute engine vm.
     - insert_machine:
         call: googleapis.compute.v1.instances.insert
@@ -71,7 +69,6 @@ main:
               items:
                 - key: "startup-script"
                   value: "#! /bin/bash \ncd tmp\nmkdir test-runner\ncd test-runner\npwd\nls\ngit clone https://github.com/adarsh-jaiswal/graphql-java-test-runner.git\ncd graphql-java-test-runner/ \ngit checkout bcf3a7a \ndocker build --no-cache -t test-runner .\ndocker run --publish 80:8080 test-runner"
-
             serviceAccounts:
               - email: ${service_account_email}
                 scopes:
@@ -84,6 +81,7 @@ main:
           project: ${project_id}
           instance: ${instance_name}
 
+    #Extract compute engine's url.
     - get_instance:
         call: googleapis.compute.v1.instances.get
         args:
@@ -91,8 +89,6 @@ main:
           project: ${project_id}
           zone: ${zone}
         result: created_instance
-
-    #Extract compute engine's url.
     - extract_external_ip_and_construct_urls:
         assign:
           - external_ip: ${created_instance.networkInterfaces[0].accessConfigs[0].natIP}
@@ -105,14 +101,12 @@ main:
           args:
             url: ${base_url}
         retry: ${http.default_retry}
-
-    - call_test_runner:
+    - execute_test_run:
         call: http.post
         args:
           url: ${base_url + "test-runner"}
           body: ${job}
         result: output_result
-
 
     #Destroy compute engine.
     - stop_machine:
