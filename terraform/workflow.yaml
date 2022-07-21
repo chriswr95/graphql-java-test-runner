@@ -36,14 +36,14 @@ main:
     - failed:
         raise: ${"got unexpected document"}
 
-    #Get the latest boot image.
+    # Get the latest boot image.
     - get_latest_image:
         call: googleapis.compute.v1.images.getFromFamily
         args:
           family: "cos-stable"
           project: "cos-cloud"
         result: getFromFamilyResult
-    #Create and start compute engine vm.
+    # Create and start compute engine vm.
     - insert_machine:
         call: googleapis.compute.v1.instances.insert
         args:
@@ -81,7 +81,7 @@ main:
           project: ${project_id}
           instance: ${instance_name}
 
-    #Extract compute engine's url.
+    # Extract compute engine's url.
     - get_instance:
         call: googleapis.compute.v1.instances.get
         args:
@@ -94,7 +94,7 @@ main:
           - external_ip: ${created_instance.networkInterfaces[0].accessConfigs[0].natIP}
           - base_url: ${"http://" + external_ip + "/"}
 
-    #Perform call to test-runner.
+    # Perform call to test-runner.
     - check_test_runner_is_running:
         try:
           call: http.get
@@ -108,7 +108,7 @@ main:
           body: ${job}
         result: output_result
 
-    #Destroy compute engine.
+    # Destroy compute engine.
     - stop_machine:
         call: googleapis.compute.v1.instances.stop
         args:
