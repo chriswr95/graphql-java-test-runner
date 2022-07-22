@@ -30,21 +30,17 @@ resource "google_workflows_workflow" "test_runner_workflow" {
 }
 
 # Define and deploy a tasks queue
+# Queue should not be named the same as any other queue created 7 days before within the same GCP account. It will throw an error.
 resource "google_cloud_tasks_queue" "test_runner_tasks_queue" {
-  name     = "test-runner-tasks-queue"
+  name     = "test-runner-tasks-queue-v1"
   location = var.region
 
   rate_limits {
-    max_concurrent_dispatches = 1000
-    max_dispatches_per_second = 500
+    max_concurrent_dispatches = 1
   }
 
   retry_config {
-    max_attempts       = 100
-    max_retry_duration = "4s"
-    max_backoff        = "3600s"
-    min_backoff        = "0.1s"
-    max_doublings      = 1
+    max_attempts = 1
   }
 
   depends_on = [google_project_service.cloud_tasks_api]
