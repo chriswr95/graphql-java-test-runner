@@ -12,6 +12,8 @@ import graphql.testrunner.exception.TestRunnerException;
 
 import static java.util.Objects.nonNull;
 
+import static graphql.testrunner.document.Status.FINISHED;
+import static graphql.testrunner.document.Status.RUNNING;
 import static graphql.testrunner.service.CommandExecutorService.TEST_RUN;
 
 @Service
@@ -23,11 +25,17 @@ public class TestRunnerService {
     @Autowired
     private CommandExecutorService commandExecutorService;
 
+    @Autowired
+    private TestResultService testResultService;
+
     @Async
     public void runTest(Job job) throws TestRunnerException {
+        testResultService.saveTestResult(job, RUNNING);
         prepareEnvironmentService.prepareJar(job);
         verifyAndExecuteTestToRun(job);
         //TODO: If exception occurs fail the job and save the message to the database.
+
+        testResultService.saveTestResult(job, FINISHED);
     }
 
     private void verifyAndExecuteTestToRun(Job job) {
