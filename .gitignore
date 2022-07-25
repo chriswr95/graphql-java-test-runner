@@ -35,3 +35,11 @@ build/
 
 .gradle/
 build/
+
+### Terraform  ###
+terraform/cred.json
+terraform/.terraform
+terraform/.terraform.lock.hcl
+terraform/.terraform.tfstate.lock.info
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
