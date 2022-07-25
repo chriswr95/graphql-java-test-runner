@@ -4,6 +4,23 @@ Discuss and ask questions in our Discussions: https://github.com/graphql-java/gr
 
 This is a test runner application to measure the performance of [GraphQL](https://github.com/graphql/graphql-spec) Java implementation.
 
+### Terraform and GCP project Setup
+
+1. Install terraform from [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+2. Verify terraform is working locally.
+3. Create a new gcp project.
+4. Create service account on IAM & Admin->Service Account-> Create Service Account.
+5. Give the role as Basic->Owner.
+6. Select the service account created above, then go to Actions->Manage keys->Add key->Create new key->JSON.
+7. Download the key from above step and paste it in the terraform directory. Rename it as **cred.json** .
+8. Open terminal in **terraform** directory.
+9. Run **terraform init** 
+10. Run **terraform apply -var project_id**=your project id present in **cred.json**.
+
+Terraform will take care of all the infrastructure required by the test runner.
+
+FYI: Firestore can be enabled only once per project and it can never be destroyed.
+
 ### Code of Conduct
 
 Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md).
