@@ -6,6 +6,14 @@ This is a test runner application to measure the performance of [GraphQL](https:
 
 ### Terraform and GCP project Setup
 
+In order to orchestrate all gcp infrastructure we have used terraform, an open source infrastructure as code software tool that enables you to safely and predictably create, change, and improve infrastructure.
+Infrastructure used by our test-runner on GCP are:
+1. Cloud Tasks Queue.
+2. Workflow.
+3. Compute Engine.
+4. Firestore.
+
+Installation: 
 1. Install terraform from [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 2. Verify terraform is working locally.
 3. Create a new gcp project.
