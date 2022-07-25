@@ -8,10 +8,12 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import graphql.testrunner.exception.TestRunnerException;
 
 @SpringBootApplication
+@EnableAsync
 public class TestRunnerApplication {
 
 	private static final Logger LOGGER = Logger.getLogger(TestRunnerApplication.class.getName());
