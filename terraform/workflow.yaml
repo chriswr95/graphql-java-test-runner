@@ -70,7 +70,7 @@ main:
             metadata:
               items:
                 - key: "startup-script"
-                  value: "#! /bin/bash \ncd tmp\nmkdir test-runner\ncd test-runner\npwd\nls\ngit clone https://github.com/adarsh-jaiswal/graphql-java-test-runner.git\ncd graphql-java-test-runner/ \ngit checkout tags/build \ndocker build --no-cache -t test-runner .\ndocker run --publish 80:8080 test-runner"
+                  value: "#! /bin/bash \ncd tmp\nmkdir test-runner\ncd test-runner\npwd\nls\ngit clone https://github.com/adarsh-jaiswal/graphql-java-test-runner.git\ncd graphql-java-test-runner/ \ngit checkout gcp-build \ndocker build --no-cache -t test-runner .\ndocker run --publish 80:8080 test-runner"
             serviceAccounts:
               - email: ${service_account_email}
                 scopes:

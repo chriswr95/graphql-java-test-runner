@@ -25,6 +25,9 @@ class TestRunnerServiceTest {
     @Mock
     private CommandExecutorService commandExecutorService;
 
+    @Mock
+    private TestResultService testResultService;
+
     @InjectMocks
     private TestRunnerService testRunnerService;
 
