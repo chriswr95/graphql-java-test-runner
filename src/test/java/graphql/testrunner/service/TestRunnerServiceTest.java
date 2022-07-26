@@ -1,7 +1,13 @@
 package graphql.testrunner.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import graphql.testrunner.document.TestStatistics;
 import graphql.testrunner.dto.Job;
 
 import static java.util.Arrays.asList;
@@ -54,5 +61,17 @@ class TestRunnerServiceTest {
 
         verify(prepareEnvironmentService).prepareJar(eq(job));
         verify(commandExecutorService).executeCommand(eq(command));
+    }
+
+    @Test
+     void readResultJson() {
+        List<TestStatistics> testStatistics = new ArrayList<>();
+        try {
+            testStatistics = new ObjectMapper().readValue(new File("result.json"),
+                new TypeReference<List<TestStatistics>>() {});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println( testStatistics);
     }
 }

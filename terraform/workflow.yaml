@@ -102,7 +102,12 @@ main:
           call: http.get
           args:
             url: ${base_url}
-        retry: ${http.default_retry}
+        retry:
+          max_retries: 5
+          backoff:
+            initial_delay: 10
+            max_delay: 60
+            multiplier: 3
     - execute_test_run:
         call: http.post
         args:
@@ -124,7 +129,7 @@ main:
         retry:
           max_retries: 5
           backoff:
-            initial_delay: 1
+            initial_delay: 10
             max_delay: 90
             multiplier: 3
 

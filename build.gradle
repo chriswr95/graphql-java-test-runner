@@ -29,7 +29,7 @@ dependencies {
     implementation 'org.eclipse.jgit:org.eclipse.jgit:5.13.1.202206130422-r'
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.7.0'
     testImplementation 'org.mockito:mockito-inline:4.5.1'
-    implementation 'com.google.cloud:spring-cloud-gcp-dependencies:3.3.0'
+   // implementation 'com.google.cloud:spring-cloud-gcp-dependencies:3.3.0'
     implementation 'com.google.cloud:spring-cloud-gcp-starter-data-firestore:3.3.0'
 
 }
