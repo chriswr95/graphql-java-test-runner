@@ -24,7 +24,7 @@ import static graphql.testrunner.document.Status.RUNNING;
 @Service
 public class TestResultService {
 
-    private static final String CORE = "core-" + ((Runtime.getRuntime().availableProcessors() > 2) ? 32 : 2);
+    private static final String CORE = "core_" + ((Runtime.getRuntime().availableProcessors() > 2) ? 32 : 2);
     private static final String COMMIT_HASH_KEY = "commitHash";
     private static final String STATUS_KEY = "status."+ CORE;
     private static final String TEST_RUNNER_RESULT_KEY = "testRunnerResults." + CORE;

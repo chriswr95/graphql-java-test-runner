@@ -25,8 +25,10 @@ main:
               jobId:
                 stringValue: ${job_id}
               status:
-                core-2:
-                  stringValue :"CREATED"
+                mapValue:
+                  fields:
+                    core_2:
+                      stringValue: "CREATED"
     - get_document:
         call: googleapis.firestore.v1.projects.databases.documents.get
         args:
@@ -34,7 +36,7 @@ main:
         result: got
     - validate_saved_document:
         switch:
-          - condition: ${got.fields.jobId.stringValue == job_id}
+          - condition: ${got.fields.jobId.stringValue == job_id AND got.fields.status.mapValue.fields.core_2.stringValue == "CREATED"}
             next: get_latest_image
     - failed:
         raise: ${"got unexpected document"}
@@ -125,7 +127,7 @@ main:
                 result: test_result
             - call_retry:
                 switch:
-                  - condition: ${test_result.fields.status.core-2.stringValue == "RUNNING" OR test_result.fields.status.core-2.stringValue == "CREATED"}
+                  - condition: ${test_result.fields.status.mapValue.fields.core_2.stringValue == "RUNNING" OR test_result.fields.status.mapValue.fields.core_2.stringValue == "CREATED"}
                     raise: ${test_result}
         retry:
           max_retries: 5
