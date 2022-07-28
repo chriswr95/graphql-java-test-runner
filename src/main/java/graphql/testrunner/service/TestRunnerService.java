@@ -30,12 +30,12 @@ public class TestRunnerService {
 
     @Async
     public void runTest(Job job) throws TestRunnerException {
-        testResultService.saveTestResult(job, RUNNING);
+        testResultService.saveInitialTestResult(job);
         prepareEnvironmentService.prepareJar(job);
         verifyAndExecuteTestToRun(job);
         //TODO: If exception occurs fail the job and save the message to the database.
 
-        testResultService.saveTestResult(job, FINISHED);
+        testResultService.saveFinalTestResult(job);
     }
 
     private void verifyAndExecuteTestToRun(Job job) {

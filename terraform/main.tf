@@ -57,3 +57,17 @@ resource "google_app_engine_application" "firestore" {
 
   depends_on = [google_project_service.app_engine_api]
 }
+
+resource "google_compute_firewall" "rules" {
+  project     = var.project_id
+  name        = "allow-http-firewall-rule"
+  network     = "default"
+  description = "Creates firewall rule targeting tagged instances"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80", "8080", "1000-2000"]
+  }
+  source_ranges=["0.0.0.0/0"]
+  target_tags = ["web"]
+}

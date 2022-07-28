@@ -1,5 +1,7 @@
 package graphql.testrunner.repository;
 
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,8 +13,6 @@ import com.google.cloud.firestore.WriteResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import graphql.testrunner.document.TestResult;
-
 @Service
 public class TestResultRepo {
 
@@ -22,13 +22,22 @@ public class TestResultRepo {
     @Autowired
     private Firestore firestore;
 
-    public void saveTestResult(TestResult testResult) {
-        DocumentReference docRef = this.firestore.collection(COLLECTION_NAME).document(testResult.getJobId());
+    public void updateInitialTestResult(UUID jobId, Map<String, Object> updates) {
+        updateDocument(jobId, updates);
+    }
+
+    public void updateFinalTestResult(UUID jobId, Map<String, Object> updates) {
+        updateDocument(jobId, updates);
+    }
+
+    private void updateDocument(UUID jobId, Map<String, Object> updates) {
+        DocumentReference docRef = this.firestore.collection(COLLECTION_NAME).document(jobId.toString());
         try {
-            WriteResult writeResult = docRef.set(testResult).get();
+            WriteResult writeResult = docRef.update(updates).get();
             LOGGER.log(Level.INFO, "Test result saved : {0}", writeResult.getUpdateTime());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
+
 }
