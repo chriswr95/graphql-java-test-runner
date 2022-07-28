@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import graphql.testrunner.document.TestStatistics;
 import graphql.testrunner.dto.Job;
 import graphql.testrunner.exception.TestRunnerException;
-import graphql.testrunner.repository.TestResultRepo;
+import graphql.testrunner.repository.FirestoreWriter;
 
 import static com.google.cloud.firestore.FieldValue.serverTimestamp;
 
@@ -32,18 +32,17 @@ public class TestResultService {
     private static final String TEST_START_TIME_KEY =  TEST_RUNNER_RESULT_KEY + ".startTime";
     private static final String TEST_FINISH_TIME_KEY =  TEST_RUNNER_RESULT_KEY + ".finishTime";
     private static final String TEST_STATISTICS_KEY =  TEST_RUNNER_RESULT_KEY + ".testStatistics";
-
     private static final String FILE_NAME = "result.json";
 
     @Autowired
-    private TestResultRepo testResultRepo;
+    private FirestoreWriter firestoreWriter;
 
     public void saveInitialTestResult(Job job) {
         Map<String, Object> updates = new HashMap<>();
         updates.put(COMMIT_HASH_KEY, job.getCommitHash());
         updates.put(STATUS_KEY, RUNNING);
         updates.put(TEST_START_TIME_KEY, serverTimestamp());
-        testResultRepo.updateInitialTestResult(job.getJobId(), updates);
+        firestoreWriter.updateDocument(job.getJobId(), updates);
     }
 
     public void saveFinalTestResult(Job job) {
@@ -51,9 +50,8 @@ public class TestResultService {
         updates.put(STATUS_KEY, FINISHED);
         updates.put(TEST_FINISH_TIME_KEY, serverTimestamp());
         updates.put(TEST_STATISTICS_KEY, readResultJson());
-        testResultRepo.updateFinalTestResult(job.getJobId(), updates);
+        firestoreWriter.updateDocument(job.getJobId(), updates);
     }
-
 
     private List<TestStatistics> readResultJson() {
         try {
@@ -63,5 +61,4 @@ public class TestResultService {
             throw new TestRunnerException("Error in reading result.json" + ex.getMessage());
         }
     }
-
 }

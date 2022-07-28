@@ -14,23 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TestResultRepo {
+public class FirestoreWriter {
 
-    public static final Logger LOGGER = Logger.getLogger(TestResultRepo.class.getName());
+    public static final Logger LOGGER = Logger.getLogger(FirestoreWriter.class.getName());
     private static final String COLLECTION_NAME = "test-runs";
 
     @Autowired
     private Firestore firestore;
 
-    public void updateInitialTestResult(UUID jobId, Map<String, Object> updates) {
-        updateDocument(jobId, updates);
-    }
-
-    public void updateFinalTestResult(UUID jobId, Map<String, Object> updates) {
-        updateDocument(jobId, updates);
-    }
-
-    private void updateDocument(UUID jobId, Map<String, Object> updates) {
+    public void updateDocument(UUID jobId, Map<String, Object> updates) {
         DocumentReference docRef = this.firestore.collection(COLLECTION_NAME).document(jobId.toString());
         try {
             WriteResult writeResult = docRef.update(updates).get();

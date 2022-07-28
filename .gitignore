@@ -33,12 +33,7 @@ target/
 .vscode/
 
 .gradle/
-build/test-results
-build/generated
-build/classes
-build/reports
-build/resources
-build/tmp
+build/
 
 ### Terraform  ###
 terraform/cred.json

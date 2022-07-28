@@ -15,5 +15,4 @@ public class PrimaryMetric {
 
     @JsonIgnore
     public List<List<Double>> rawData;
-
 }

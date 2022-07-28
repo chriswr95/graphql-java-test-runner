@@ -23,6 +23,4 @@ public class TestStatistics {
     public int measurementBatchSize;
     public PrimaryMetric primaryMetric;
     public Map<Object, Object> secondaryMetrics;
-
-
 }
