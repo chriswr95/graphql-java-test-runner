@@ -25,7 +25,8 @@ main:
               jobId:
                 stringValue: ${job_id}
               status:
-                stringValue: "CREATED"
+                core-2:
+                  stringValue :"CREATED"
     - get_document:
         call: googleapis.firestore.v1.projects.databases.documents.get
         args:
@@ -54,7 +55,7 @@ main:
           body:
             tags:
               items:
-                - http-server
+                - web
             name: ${instance_name}
             machineType: ${"zones/" + zone + "/machineTypes/" + machine_type}
             disks:
@@ -124,7 +125,7 @@ main:
                 result: test_result
             - call_retry:
                 switch:
-                  - condition: ${test_result.fields.status.stringValue == "RUNNING" OR test_result.fields.status.stringValue == "CREATED"}
+                  - condition: ${test_result.fields.status.core-2.stringValue == "RUNNING" OR test_result.fields.status.core-2.stringValue == "CREATED"}
                     raise: ${test_result}
         retry:
           max_retries: 5
