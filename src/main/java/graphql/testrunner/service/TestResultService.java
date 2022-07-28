@@ -2,21 +2,22 @@ package graphql.testrunner.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.cloud.firestore.FieldValue;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import graphql.testrunner.document.TestStatistics;
 import graphql.testrunner.dto.Job;
+import graphql.testrunner.exception.TestRunnerException;
 import graphql.testrunner.repository.TestResultRepo;
+
+import static com.google.cloud.firestore.FieldValue.serverTimestamp;
 
 import static graphql.testrunner.document.Status.FINISHED;
 import static graphql.testrunner.document.Status.RUNNING;
@@ -41,29 +42,26 @@ public class TestResultService {
         Map<String, Object> updates = new HashMap<>();
         updates.put(COMMIT_HASH_KEY, job.getCommitHash());
         updates.put(STATUS_KEY, RUNNING);
-        updates.put(TEST_START_TIME_KEY, FieldValue.serverTimestamp());
+        updates.put(TEST_START_TIME_KEY, serverTimestamp());
         testResultRepo.updateInitialTestResult(job.getJobId(), updates);
     }
 
     public void saveFinalTestResult(Job job) {
         Map<String, Object> updates = new HashMap<>();
         updates.put(STATUS_KEY, FINISHED);
-        updates.put(TEST_FINISH_TIME_KEY, FieldValue.serverTimestamp());
-        List<TestStatistics> testStatistics = readResultJson();
-        updates.put(TEST_STATISTICS_KEY, testStatistics);
+        updates.put(TEST_FINISH_TIME_KEY, serverTimestamp());
+        updates.put(TEST_STATISTICS_KEY, readResultJson());
         testResultRepo.updateFinalTestResult(job.getJobId(), updates);
     }
 
 
     private List<TestStatistics> readResultJson() {
-        List<TestStatistics> testStatistics = new ArrayList<>();
         try {
-            testStatistics = new ObjectMapper().readValue(new File(FILE_NAME),
+            return new ObjectMapper().readValue(new File(FILE_NAME),
                 new TypeReference<List<TestStatistics>>() {});
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            throw new TestRunnerException("Error in reading result.json" + ex.getMessage());
         }
-        return testStatistics;
     }
 
 }

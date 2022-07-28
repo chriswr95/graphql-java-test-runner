@@ -64,7 +64,7 @@ class TestRunnerServiceTest {
     }
 
     @Test
-     void readResultJson() {
+    void readResultJson() {
         List<TestStatistics> testStatistics = new ArrayList<>();
         try {
             testStatistics = new ObjectMapper().readValue(new File("result.json"),

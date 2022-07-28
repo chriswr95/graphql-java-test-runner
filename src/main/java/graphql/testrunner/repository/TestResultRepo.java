@@ -34,7 +34,7 @@ public class TestResultRepo {
         DocumentReference docRef = this.firestore.collection(COLLECTION_NAME).document(jobId.toString());
         try {
             WriteResult writeResult = docRef.update(updates).get();
-            LOGGER.log(Level.INFO, "Test result saved : {0}", writeResult.getUpdateTime());
+            LOGGER.log(Level.INFO, "Test result updated : {0}", writeResult.getUpdateTime());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
