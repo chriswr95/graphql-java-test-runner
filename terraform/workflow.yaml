@@ -9,7 +9,7 @@ main:
           - zone: "us-west1-b"
           - region: "us-west1"
           - instance_name: "test-runner"
-          - machine_type: "e2-small"
+          - machine_type: "e2-medium"
           - project_number: ${sys.get_env("GOOGLE_CLOUD_PROJECT_NUMBER")}
           - service_account_email: ${project_number + "-compute@developer.gserviceaccount.com"}
 
@@ -24,6 +24,11 @@ main:
             fields:
               jobId:
                 stringValue: ${job_id}
+              status:
+                mapValue:
+                  fields:
+                    core_2:
+                      stringValue: "CREATED"
     - get_document:
         call: googleapis.firestore.v1.projects.databases.documents.get
         args:
@@ -31,7 +36,7 @@ main:
         result: got
     - validate_saved_document:
         switch:
-          - condition: ${got.fields.jobId.stringValue == job_id}
+          - condition: ${got.fields.jobId.stringValue == job_id AND got.fields.status.mapValue.fields.core_2.stringValue == "CREATED"}
             next: get_latest_image
     - failed:
         raise: ${"got unexpected document"}
@@ -52,7 +57,7 @@ main:
           body:
             tags:
               items:
-                - http-server
+                - web
             name: ${instance_name}
             machineType: ${"zones/" + zone + "/machineTypes/" + machine_type}
             disks:
@@ -68,7 +73,7 @@ main:
             metadata:
               items:
                 - key: "startup-script"
-                  value: "#! /bin/bash \ncd tmp\nmkdir test-runner\ncd test-runner\npwd\nls\ngit clone https://github.com/adarsh-jaiswal/graphql-java-test-runner.git\ncd graphql-java-test-runner/ \ngit checkout bcf3a7a \ndocker build --no-cache -t test-runner .\ndocker run --publish 80:8080 test-runner"
+                  value: "#! /bin/bash \ncd tmp\nmkdir test-runner\ncd test-runner\npwd\nls\ngit clone https://github.com/adarsh-jaiswal/graphql-java-test-runner.git\ncd graphql-java-test-runner/ \ngit checkout gcp-build \ndocker build --no-cache -t test-runner .\ndocker run --publish 80:8080 test-runner"
             serviceAccounts:
               - email: ${service_account_email}
                 scopes:
@@ -100,13 +105,36 @@ main:
           call: http.get
           args:
             url: ${base_url}
-        retry: ${http.default_retry}
+        retry:
+          max_retries: 5
+          backoff:
+            initial_delay: 10
+            max_delay: 60
+            multiplier: 3
     - execute_test_run:
         call: http.post
         args:
           url: ${base_url + "test-runner"}
           body: ${job}
         result: output_result
+    - check_test_runner_is_finished:
+        try:
+          steps:
+            - get_job_status:
+                call: googleapis.firestore.v1.projects.databases.documents.get
+                args:
+                  name: ${"projects/" + project_id + "/databases/(default)/documents/" + collection + "/" + job_id}
+                result: test_result
+            - call_retry:
+                switch:
+                  - condition: ${test_result.fields.status.mapValue.fields.core_2.stringValue == "RUNNING" OR test_result.fields.status.mapValue.fields.core_2.stringValue == "CREATED"}
+                    raise: ${test_result}
+        retry:
+          max_retries: 5
+          backoff:
+            initial_delay: 10
+            max_delay: 90
+            multiplier: 3
 
     # Destroy compute engine.
     - stop_machine:

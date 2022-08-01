@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -14,6 +15,7 @@ import graphql.testrunner.dto.Job;
 import static java.util.Arrays.asList;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,6 +26,9 @@ class TestRunnerServiceTest {
 
     @Mock
     private CommandExecutorService commandExecutorService;
+
+    @Mock
+    private TestResultService testResultService;
 
     @InjectMocks
     private TestRunnerService testRunnerService;
@@ -38,6 +43,10 @@ class TestRunnerServiceTest {
 
         verify(prepareEnvironmentService).prepareJar(eq(job));
         verify(commandExecutorService).executeCommand(eq(TEST_RUN));
+
+        InOrder inOrder = inOrder(testResultService);
+        inOrder.verify(testResultService).saveInitialTestResult(eq(job));
+        inOrder.verify(testResultService).saveFinalTestResult(eq(job));
     }
 
     @Test
@@ -52,4 +61,6 @@ class TestRunnerServiceTest {
         verify(prepareEnvironmentService).prepareJar(eq(job));
         verify(commandExecutorService).executeCommand(eq(command));
     }
+
+
 }
