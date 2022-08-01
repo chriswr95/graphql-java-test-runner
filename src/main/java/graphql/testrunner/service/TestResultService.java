@@ -55,10 +55,18 @@ public class TestResultService {
 
     private List<TestStatistics> readResultJson() {
         try {
-            return new ObjectMapper().readValue(new File(FILE_NAME),
+            return getObjectMapper().readValue(getResultJsonFile(),
                 new TypeReference<List<TestStatistics>>() {});
         } catch (IOException ex) {
-            throw new TestRunnerException("Error in reading result.json" + ex.getMessage());
+            throw new TestRunnerException("Error in reading result.json: " + ex.getMessage());
         }
+    }
+
+    File getResultJsonFile() {
+        return new File(FILE_NAME);
+    }
+
+    ObjectMapper getObjectMapper() {
+        return new ObjectMapper();
     }
 }

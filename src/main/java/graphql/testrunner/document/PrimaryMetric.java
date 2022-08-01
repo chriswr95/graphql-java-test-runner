@@ -3,7 +3,9 @@ package graphql.testrunner.document;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import graphql.testrunner.converter.RawDataToString;
 
 public class PrimaryMetric {
 
@@ -13,6 +15,6 @@ public class PrimaryMetric {
     public Map<String, Double> scorePercentiles;
     public String scoreUnit;
 
-    @JsonIgnore
-    public List<List<Double>> rawData;
+    @JsonDeserialize(using = RawDataToString.class)
+    public String rawData;
 }
