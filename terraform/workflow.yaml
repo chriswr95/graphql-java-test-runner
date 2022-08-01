@@ -145,12 +145,14 @@ main:
                           switch:
                             - condition: ${test_status[core_name].stringValue == "RUNNING" OR test_status[core_name].stringValue == "CREATED"}
                               raise: ${test_result}
+                  # intervals in minutes 2, 4, 8, 16, 32, 32 ...
+                  # retry for approx 12 hours
                   retry:
-                    max_retries: 5
+                    max_retries: 25
                     backoff:
-                      initial_delay: 10
-                      max_delay: 90
-                      multiplier: 3
+                      initial_delay: 120
+                      max_delay: 1920
+                      multiplier: 2
 
               # Destroy compute engine.
               - stop_machine:
