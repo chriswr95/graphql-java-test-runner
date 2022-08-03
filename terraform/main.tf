@@ -46,8 +46,8 @@ resource "google_cloud_tasks_queue" "test_runner_tasks_queue" {
   depends_on = [google_project_service.cloud_tasks_api]
 }
 
-# Enable Firestore, this operation will be successful when initializing
-# the project for the first time. Firestore once enabled can never be disabled on the same project.
+# Create Firestore, this operation will be successful when initializing
+# the project for the first time. Firestore once created can never be destroyed on the same project.
 # If terraform apply is called multiple times for the same project it's ok to get the below error for firestore.
 # Error 409: This application already exists and cannot be re-created.
 resource "google_app_engine_application" "firestore" {
@@ -58,6 +58,7 @@ resource "google_app_engine_application" "firestore" {
   depends_on = [google_project_service.app_engine_api]
 }
 
+# Create a firewall rule to allow http communication to compute instance.
 resource "google_compute_firewall" "rules" {
   project     = var.project_id
   name        = "allow-http-firewall-rule"
@@ -68,6 +69,8 @@ resource "google_compute_firewall" "rules" {
     protocol = "tcp"
     ports    = ["80", "8080", "1000-2000"]
   }
-  source_ranges=["0.0.0.0/0"]
-  target_tags = ["web"]
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["web"]
+
+  depends_on    = [google_project_service.compute_engine_api]
 }
