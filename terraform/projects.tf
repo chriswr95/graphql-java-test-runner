@@ -1,6 +1,7 @@
 # Enable cloud resource manager API, required to enable dependent API's.
 resource "google_project_service" "cloud_manager_api" {
-  service = "cloudresourcemanager.googleapis.com"
+  service                    = "cloudresourcemanager.googleapis.com"
+  disable_dependent_services = true
 }
 
 # Enable Workflows API
@@ -29,4 +30,10 @@ resource "google_project_service" "cloud_tasks_api" {
   service                    = "cloudtasks.googleapis.com"
   disable_dependent_services = true
   depends_on                 = [google_project_service.cloud_manager_api]
+}
+
+# Enable Cloud Firestore API - required to communicate to firestore via workflow and test-runner
+resource "google_project_service" "firestore" {
+  service                    = "firestore.googleapis.com"
+  disable_dependent_services = true
 }

@@ -8,8 +8,8 @@ main:
           - job_id: ${job.jobId}
           - zone: "us-west1-b"
           - region: "us-west1"
-          - instance_name: "test-runner"
-          - machine_type: "e2-medium"
+          - machine_type: ["e2-medium", "e2-standard-4"]
+          - core_name_map : {"${machine_type[0]}": "core_2", "${machine_type[1]}": "core_32"}
           - project_number: ${sys.get_env("GOOGLE_CLOUD_PROJECT_NUMBER")}
           - service_account_email: ${project_number + "-compute@developer.gserviceaccount.com"}
 
@@ -28,6 +28,8 @@ main:
                 mapValue:
                   fields:
                     core_2:
+                      stringValue: "CREATED"
+                    core_32:
                       stringValue: "CREATED"
     - get_document:
         call: googleapis.firestore.v1.projects.databases.documents.get
@@ -48,114 +50,130 @@ main:
           family: "cos-stable"
           project: "cos-cloud"
         result: getFromFamilyResult
-    # Create and start compute engine vm.
-    - insert_machine:
-        call: googleapis.compute.v1.instances.insert
-        args:
-          project: ${project_id}
-          zone: ${zone}
-          body:
-            tags:
-              items:
-                - web
-            name: ${instance_name}
-            machineType: ${"zones/" + zone + "/machineTypes/" + machine_type}
-            disks:
-              - initializeParams:
-                  sourceImage: ${"projects/cos-cloud/global/images/" + getFromFamilyResult.name}
-                boot: true
-                autoDelete: true
-            networkInterfaces:
-              - accessConfigs:
-                  - name: "External NAT"
-                    networkTier: "STANDARD"
-                subnetwork: ${"projects/" + project_id + "/regions/" + region +"/subnetworks/default"}
-            metadata:
-              items:
-                - key: "startup-script"
-                  value: "#! /bin/bash \ncd tmp\nmkdir test-runner\ncd test-runner\npwd\nls\ngit clone https://github.com/adarsh-jaiswal/graphql-java-test-runner.git\ncd graphql-java-test-runner/ \ngit checkout gcp-build \ndocker build --no-cache -t test-runner .\ndocker run --publish 80:8080 test-runner"
-            serviceAccounts:
-              - email: ${service_account_email}
-                scopes:
-                  - https://www.googleapis.com/auth/cloud-platform
-    - assert_machine_is_running:
-        call: assert_machine_status
-        args:
-          expected_status: "RUNNING"
-          zone: ${zone}
-          project: ${project_id}
-          instance: ${instance_name}
 
-    # Extract compute engine's url.
-    - get_instance:
-        call: googleapis.compute.v1.instances.get
-        args:
-          instance: ${instance_name}
-          project: ${project_id}
-          zone: ${zone}
-        result: created_instance
-    - extract_external_ip_and_construct_urls:
-        assign:
-          - external_ip: ${created_instance.networkInterfaces[0].accessConfigs[0].natIP}
-          - base_url: ${"http://" + external_ip + "/"}
+    # Create, start, execute tests and delete compute engine vm in parallel.
+    - parallel_step:
+        parallel:
+          for:
+            value: machine
+            in: ${machine_type}
+            steps:
+              - init:
+                  assign:
+                    - instance_name: ${"test-runner-" + machine}
+              - insert_machine:
+                  call: googleapis.compute.v1.instances.insert
+                  args:
+                    project: ${project_id}
+                    zone: ${zone}
+                    body:
+                      tags:
+                        items:
+                          - web
+                      name: ${instance_name}
+                      machineType: ${"zones/" + zone + "/machineTypes/" + machine}
+                      disks:
+                        - initializeParams:
+                            sourceImage: ${"projects/cos-cloud/global/images/" + getFromFamilyResult.name}
+                          boot: true
+                          autoDelete: true
+                      networkInterfaces:
+                        - accessConfigs:
+                            - name: "External NAT"
+                              networkTier: "STANDARD"
+                          subnetwork: ${"projects/" + project_id + "/regions/" + region +"/subnetworks/default"}
+                      metadata:
+                        items:
+                          - key: "startup-script"
+                            value: "#! /bin/bash \ncd tmp\nmkdir test-runner\ncd test-runner\npwd\nls\ngit clone https://github.com/adarsh-jaiswal/graphql-java-test-runner.git\ncd graphql-java-test-runner/ \ndocker build --no-cache -t test-runner .\ndocker run --publish 80:8080 test-runner"
+                      serviceAccounts:
+                        - email: ${service_account_email}
+                          scopes:
+                            - https://www.googleapis.com/auth/cloud-platform
+              - assert_machine_is_running:
+                  call: assert_machine_status
+                  args:
+                    expected_status: "RUNNING"
+                    zone: ${zone}
+                    project: ${project_id}
+                    instance: ${instance_name}
 
-    # Perform call to test-runner.
-    - check_test_runner_is_running:
-        try:
-          call: http.get
-          args:
-            url: ${base_url}
-        retry:
-          max_retries: 5
-          backoff:
-            initial_delay: 10
-            max_delay: 60
-            multiplier: 3
-    - execute_test_run:
-        call: http.post
-        args:
-          url: ${base_url + "test-runner"}
-          body: ${job}
-        result: output_result
-    - check_test_runner_is_finished:
-        try:
-          steps:
-            - get_job_status:
-                call: googleapis.firestore.v1.projects.databases.documents.get
-                args:
-                  name: ${"projects/" + project_id + "/databases/(default)/documents/" + collection + "/" + job_id}
-                result: test_result
-            - call_retry:
-                switch:
-                  - condition: ${test_result.fields.status.mapValue.fields.core_2.stringValue == "RUNNING" OR test_result.fields.status.mapValue.fields.core_2.stringValue == "CREATED"}
-                    raise: ${test_result}
-        retry:
-          max_retries: 5
-          backoff:
-            initial_delay: 10
-            max_delay: 90
-            multiplier: 3
+              # Extract compute engine's url.
+              - get_instance:
+                  call: googleapis.compute.v1.instances.get
+                  args:
+                    instance: ${instance_name}
+                    project: ${project_id}
+                    zone: ${zone}
+                  result: created_instance
+              - extract_external_ip_and_construct_urls:
+                  assign:
+                    - external_ip: ${created_instance.networkInterfaces[0].accessConfigs[0].natIP}
+                    - base_url: ${"http://" + external_ip + "/"}
 
-    # Destroy compute engine.
-    - stop_machine:
-        call: googleapis.compute.v1.instances.stop
-        args:
-          instance: ${instance_name}
-          project: ${project_id}
-          zone: ${zone}
-    - assert_terminated:
-        call: assert_machine_status
-        args:
-          expected_status: "TERMINATED"
-          zone: ${zone}
-          project: ${project_id}
-          instance: ${instance_name}
-    - delete_machine:
-        call: googleapis.compute.v1.instances.delete
-        args:
-          instance: ${instance_name}
-          project: ${project_id}
-          zone: ${zone}
+              # Perform call to test-runner.
+              - check_test_runner_is_running:
+                  try:
+                    call: http.get
+                    args:
+                      url: ${base_url}
+                  retry:
+                    max_retries: 5
+                    backoff:
+                      initial_delay: 10
+                      max_delay: 60
+                      multiplier: 3
+              - execute_test_run:
+                  call: http.post
+                  args:
+                    url: ${base_url + "test-runner"}
+                    body: ${job}
+                  result: output_result
+              - check_test_runner_is_finished:
+                  try:
+                    steps:
+                      - get_job_status:
+                          call: googleapis.firestore.v1.projects.databases.documents.get
+                          args:
+                            name: ${"projects/" + project_id + "/databases/(default)/documents/" + collection + "/" + job_id}
+                          result: test_result
+                      - init_status:
+                          assign:
+                            - test_status: ${test_result.fields.status.mapValue.fields}
+                            - core_name: ${map.get(core_name_map, machine)}
+                      - call_retry:
+                          switch:
+                            - condition: ${test_status[core_name].stringValue == "RUNNING" OR test_status[core_name].stringValue == "CREATED"}
+                              raise: ${test_result}
+                  # intervals in minutes 2, 4, 8, 16, 32, 32 ...
+                  # retry for approx 12 hours
+                  retry:
+                    max_retries: 25
+                    backoff:
+                      initial_delay: 120
+                      max_delay: 1920
+                      multiplier: 2
+
+              # Destroy compute engine.
+              - stop_machine:
+                  call: googleapis.compute.v1.instances.stop
+                  args:
+                    instance: ${instance_name}
+                    project: ${project_id}
+                    zone: ${zone}
+              - assert_terminated:
+                  call: assert_machine_status
+                  args:
+                    expected_status: "TERMINATED"
+                    zone: ${zone}
+                    project: ${project_id}
+                    instance: ${instance_name}
+              - delete_machine:
+                  call: googleapis.compute.v1.instances.delete
+                  args:
+                    instance: ${instance_name}
+                    project: ${project_id}
+                    zone: ${zone}
 
     - returnOutput:
         return: "SUCCESS"
