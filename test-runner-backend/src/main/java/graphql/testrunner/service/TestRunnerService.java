@@ -12,8 +12,6 @@ import graphql.testrunner.exception.TestRunnerException;
 
 import static java.util.Objects.nonNull;
 
-import static graphql.testrunner.document.Status.FINISHED;
-import static graphql.testrunner.document.Status.RUNNING;
 import static graphql.testrunner.service.CommandExecutorService.TEST_RUN;
 
 @Service
