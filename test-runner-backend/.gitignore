@@ -35,7 +35,7 @@ target/
 ### VS Code ###
 .vscode/
 
-.gradle/
+../.gradle/
 build/
 
 ### Terraform  ###
@@ -45,27 +45,3 @@ terraform/.terraform.lock.hcl
 terraform/.terraform.tfstate.lock.info
 terraform/terraform.tfstate
 terraform/terraform.tfstate.backup
-
-### Front End ###
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-
-# testing
-/coverage
-
-# production
-/build
-
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
