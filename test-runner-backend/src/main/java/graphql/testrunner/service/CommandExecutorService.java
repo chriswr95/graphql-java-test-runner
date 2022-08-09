@@ -25,8 +25,9 @@ public class CommandExecutorService {
     public static final String GRAPHQL_DIR = "graphql-java/";
     public static final List<String> BUILD_GRAPHQL_JMH_JAR = asList("sh", "-c", "RELEASE_VERSION=test-runner-jmh ./gradlew jmhJar");
 
+    // TODO: > output.log keeps the process busy, required when we run all the benchmark in one go.
     public static final List<String> TEST_RUN = asList("sh", "-c",
-        "java -jar graphql-java/build/libs/graphql-java-test-runner-jmh.jar -rf json -rff result.json");
+        "java -jar graphql-java/build/libs/graphql-java-test-runner-jmh.jar -rf json -rff result.json > output.log");
 
 
     public void executeCommand(List<String> command) throws TestRunnerException {

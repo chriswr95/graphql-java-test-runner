@@ -34,7 +34,7 @@ class TestRunnerServiceTest {
     private TestRunnerService testRunnerService;
 
     private static final List<String> TEST_RUN = asList("sh", "-c",
-      "java -jar graphql-java/build/libs/graphql-java-test-runner-jmh.jar -rf json -rff result.json");
+      "java -jar graphql-java/build/libs/graphql-java-test-runner-jmh.jar -rf json -rff result.json > output.log");
 
     @Test
     void runTestForAllClasses() {
