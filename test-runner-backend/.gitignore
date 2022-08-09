@@ -35,7 +35,7 @@ target/
 ### VS Code ###
 .vscode/
 
-../.gradle/
+.gradle/
 build/
 
 ### Terraform  ###
