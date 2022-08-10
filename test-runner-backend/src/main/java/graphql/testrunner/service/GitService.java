@@ -29,7 +29,7 @@ public class GitService {
             git.checkout()
               .setCreateBranch(true)
               .setName(BRANCH + jobId)
-              .setStartPoint(commitHash).call();
+              .setStartPoint(commitHash.trim()).call();
         } catch (GitAPIException e) {
             LOGGER.log(Level.SEVERE, "Error in checkout repo: {0}", e.getMessage());
             throw new TestRunnerException();
