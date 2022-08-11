@@ -1,0 +1,339 @@
+[
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "benchmark.AstPrinterBenchmark.benchMarkAstPrinterCompactThroughput",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/opt/twitter_mde/package/TwitterJDK8/3f586d7e75fdd179bb40a70b522bdd37620e2a384354ec8abf539fd74e7d4680/Contents/Home/jre/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "1.8.0_275",
+        "vmName" : "TwitterJDK 64-Bit Server VM",
+        "vmVersion" : "25.275-b01-jvmci-0.30-Tw8r24b1",
+        "warmupIterations" : 2,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 3,
+        "measurementIterations" : 3,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 4,
+        "primaryMetric" : {
+            "score" : 10382.83424146261,
+            "scoreError" : 366.3734245822046,
+            "scoreConfidence" : [
+                10016.460816880404,
+                10749.207666044815
+            ],
+            "scorePercentiles" : {
+                "0.0" : 9653.584222894338,
+                "50.0" : 10364.266573252926,
+                "90.0" : 11003.426574962808,
+                "95.0" : 11033.94728206021,
+                "99.0" : 11033.94728206021,
+                "99.9" : 11033.94728206021,
+                "99.99" : 11033.94728206021,
+                "99.999" : 11033.94728206021,
+                "99.9999" : 11033.94728206021,
+                "100.0" : 11033.94728206021
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    11033.94728206021,
+                    10530.130987864808,
+                    10983.079436897873
+                ],
+                [
+                    10262.039009985869,
+                    10047.666029288795,
+                    10087.86507813811
+                ],
+                [
+                    10458.821711233433,
+                    9653.584222894338,
+                    10364.266573252926
+                ],
+                [
+                    10473.443689950022,
+                    10330.681732776444,
+                    10235.184013535707
+                ],
+                [
+                    10365.106299355983,
+                    10313.410951647722,
+                    10603.286603056871
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "benchmark.AstPrinterBenchmark.benchMarkAstPrinterThroughput",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/opt/twitter_mde/package/TwitterJDK8/3f586d7e75fdd179bb40a70b522bdd37620e2a384354ec8abf539fd74e7d4680/Contents/Home/jre/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "1.8.0_275",
+        "vmName" : "TwitterJDK 64-Bit Server VM",
+        "vmVersion" : "25.275-b01-jvmci-0.30-Tw8r24b1",
+        "warmupIterations" : 2,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 3,
+        "measurementIterations" : 3,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 4,
+        "primaryMetric" : {
+            "score" : 5612.336176319693,
+            "scoreError" : 250.38517239889197,
+            "scoreConfidence" : [
+                5361.951003920801,
+                5862.7213487185845
+            ],
+            "scorePercentiles" : {
+                "0.0" : 5258.687256469443,
+                "50.0" : 5535.936634451709,
+                "90.0" : 5967.994398427422,
+                "95.0" : 6041.646524282686,
+                "99.0" : 6041.646524282686,
+                "99.9" : 6041.646524282686,
+                "99.99" : 6041.646524282686,
+                "99.999" : 6041.646524282686,
+                "99.9999" : 6041.646524282686,
+                "100.0" : 6041.646524282686
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    5918.892981190579,
+                    5849.146127557975,
+                    5649.572393557674
+                ],
+                [
+                    5434.896845506912,
+                    5514.8735820921365,
+                    5325.0120375028955
+                ],
+                [
+                    5847.584985710994,
+                    6041.646524282686,
+                    5841.677486162392
+                ],
+                [
+                    5546.793775108353,
+                    5535.936634451709,
+                    5481.840880208261
+                ],
+                [
+                    5407.786255696722,
+                    5530.6948792966605,
+                    5258.687256469443
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "benchmark.AstPrinterBenchmark.benchMarkAstPrinterAvgTime",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/opt/twitter_mde/package/TwitterJDK8/3f586d7e75fdd179bb40a70b522bdd37620e2a384354ec8abf539fd74e7d4680/Contents/Home/jre/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "1.8.0_275",
+        "vmName" : "TwitterJDK 64-Bit Server VM",
+        "vmVersion" : "25.275-b01-jvmci-0.30-Tw8r24b1",
+        "warmupIterations" : 2,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 3,
+        "measurementIterations" : 3,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 4,
+        "primaryMetric" : {
+            "score" : 0.19043603292207725,
+            "scoreError" : 0.015143851487464123,
+            "scoreConfidence" : [
+                0.17529218143461314,
+                0.20557988440954136
+            ],
+            "scorePercentiles" : {
+                "0.0" : 0.16934797601425264,
+                "50.0" : 0.19468548681843378,
+                "90.0" : 0.21106389178122267,
+                "95.0" : 0.21125175287144557,
+                "99.0" : 0.21125175287144557,
+                "99.9" : 0.21125175287144557,
+                "99.99" : 0.21125175287144557,
+                "99.999" : 0.21125175287144557,
+                "99.9999" : 0.21125175287144557,
+                "100.0" : 0.21125175287144557
+            },
+            "scoreUnit" : "ms/op",
+            "rawData" : [
+                [
+                    0.20183650515723778,
+                    0.21093865105440743,
+                    0.20115236661859223
+                ],
+                [
+                    0.1983947950768499,
+                    0.1991209093024875,
+                    0.19853234820843674
+                ],
+                [
+                    0.16934797601425264,
+                    0.1712018487744542,
+                    0.17106595412667536
+                ],
+                [
+                    0.18474832679442846,
+                    0.18194380881671376,
+                    0.17784134062332055
+                ],
+                [
+                    0.18447842357342278,
+                    0.19468548681843378,
+                    0.21125175287144557
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "benchmark.AstPrinterBenchmark.benchMarkAstPrinterCompactAvgTime",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/opt/twitter_mde/package/TwitterJDK8/3f586d7e75fdd179bb40a70b522bdd37620e2a384354ec8abf539fd74e7d4680/Contents/Home/jre/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "1.8.0_275",
+        "vmName" : "TwitterJDK 64-Bit Server VM",
+        "vmVersion" : "25.275-b01-jvmci-0.30-Tw8r24b1",
+        "warmupIterations" : 2,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 3,
+        "measurementIterations" : 3,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 4,
+        "primaryMetric" : {
+            "score" : 0.09708820502094156,
+            "scoreError" : 0.005761620029237872,
+            "scoreConfidence" : [
+                0.0913265849917037,
+                0.10284982505017944
+            ],
+            "scorePercentiles" : {
+                "0.0" : 0.0903951690311278,
+                "50.0" : 0.09523003304023447,
+                "90.0" : 0.10564378666810549,
+                "95.0" : 0.10939138121595261,
+                "99.0" : 0.10939138121595261,
+                "99.9" : 0.10939138121595261,
+                "99.99" : 0.10939138121595261,
+                "99.999" : 0.10939138121595261,
+                "99.9999" : 0.10939138121595261,
+                "100.0" : 0.10939138121595261
+            },
+            "scoreUnit" : "ms/op",
+            "rawData" : [
+                [
+                    0.0903951690311278,
+                    0.09228851554825886,
+                    0.09133875200160722
+                ],
+                [
+                    0.0936736936195897,
+                    0.0967359732634009,
+                    0.0949684035765956
+                ],
+                [
+                    0.09298342402216586,
+                    0.09437588686453269,
+                    0.09523003304023447
+                ],
+                [
+                    0.10314539030287408,
+                    0.1029697329637722,
+                    0.10939138121595261
+                ],
+                [
+                    0.10278007284319463,
+                    0.09960776058198097,
+                    0.09643888643883583
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "benchmark.AddError.benchMarkAddError",
+        "mode" : "ss",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/opt/twitter_mde/package/TwitterJDK8/3f586d7e75fdd179bb40a70b522bdd37620e2a384354ec8abf539fd74e7d4680/Contents/Home/jre/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "1.8.0_275",
+        "vmName" : "TwitterJDK 64-Bit Server VM",
+        "vmVersion" : "25.275-b01-jvmci-0.30-Tw8r24b1",
+        "warmupIterations" : 1,
+        "warmupTime" : "single-shot",
+        "warmupBatchSize" : 50000,
+        "measurementIterations" : 1,
+        "measurementTime" : "single-shot",
+        "measurementBatchSize" : 5000,
+        "primaryMetric" : {
+            "score" : 0.18982790859999998,
+            "scoreError" : 0.06548491890678727,
+            "scoreConfidence" : [
+                0.12434298969321271,
+                0.25531282750678724
+            ],
+            "scorePercentiles" : {
+                "0.0" : 0.165984834,
+                "50.0" : 0.189280959,
+                "90.0" : 0.213944417,
+                "95.0" : 0.213944417,
+                "99.0" : 0.213944417,
+                "99.9" : 0.213944417,
+                "99.99" : 0.213944417,
+                "99.999" : 0.213944417,
+                "99.9999" : 0.213944417,
+                "100.0" : 0.213944417
+            },
+            "scoreUnit" : "s/op",
+            "rawData" : [
+                [
+                    0.191755208
+                ],
+                [
+                    0.165984834
+                ],
+                [
+                    0.188174125
+                ],
+                [
+                    0.189280959
+                ],
+                [
+                    0.213944417
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    }
+]
+
+
