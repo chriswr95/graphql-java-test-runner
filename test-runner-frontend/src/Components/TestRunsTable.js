@@ -20,7 +20,6 @@ const columns = [
     id: 'id',
     label: 'JobId',
     minWidth: 350,
-
   },
   {
     id: 'improvedVsRegressed',
@@ -69,109 +68,119 @@ export default function TestRunsTable({ updateSelectedTestRunsToCompare, isCheck
   };
 
   return (
-
-    <Paper sx={{ width: "100%", marginTop: isCheckBoxActive === false ? "1.6%" : "0.7%" }} elevation={12}>
-      <TableContainer sx={{ maxHeight: isCheckBoxActive === false ? "55vh" : "49vh" }} >
+    <Paper sx={{ width: '100%', marginTop: isCheckBoxActive === false ? '1.7%' : '0.7%' }} elevation={12}>
+      <TableContainer sx={{ maxHeight: isCheckBoxActive === false ? '55vh' : '49vh' }}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
               {columns.map((column) => {
                 let cell = null;
 
-                if (column.label === "Date") {
-                  cell = <Stack direction="row" spacing={4}>
-                    <div><b>{column.label}</b></div>
-                    <IconButton sx={{ top: "13%", position: "absolute" }} onClick={() => { sortDate() }}>
-                      <ArrowDownwardIcon />
-                    </IconButton>
-                  </Stack>
+                if (column.label === 'Date') {
+                  cell = (
+                    <Stack direction="row" spacing={4}>
+                      <div>
+                        <b>{column.label}</b>
+                      </div>
+                      <IconButton
+                        sx={{ top: '13%', position: 'absolute' }}
+                        onClick={() => {
+                          sortDate();
+                        }}
+                      >
+                        <ArrowDownwardIcon />
+                      </IconButton>
+                    </Stack>
+                  );
                 } else {
-                  cell = <b>{column.label}</b>
+                  cell = <b>{column.label}</b>;
                 }
                 return (
-                  <TableCell
-                    key={column.id}
-                    align={column.align}
-                    style={{ top: 3, minWidth: column.minWidth }}
-                  >
+                  <TableCell key={column.id} align={column.align} style={{ top: 3, minWidth: column.minWidth }}>
                     {cell}
                   </TableCell>
-                )
+                );
               })}
             </TableRow>
           </TableHead>
           <TableBody>
+            {testRunResults.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+              return (
+                <TableRow hover role="checkbox" tabIndex={-1} key={row.id} sx={{ maxHeight: '70px', height: '70px' }}>
+                  {columns.map((column) => {
+                    const value = row[column.id];
+                    let cell = null;
 
-
-            {testRunResults
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.id} sx={{ maxHeight: "70px", height: "70px" }}>
-
-
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      let cell = null;
-
-                      if (column.id === "improvedVsRegressed") {
-                        cell = <Stack direction="row" spacing={2}>
-                          <Typography sx={{ color: "green" }}>{value.improved}</Typography>
-                          <ProgressBar style={{ width: "57%", height: "0.9vh", marginTop: "4%" }}>
+                    if (column.id === 'improvedVsRegressed') {
+                      cell = (
+                        <Stack direction="row" spacing={2}>
+                          <Typography sx={{ color: 'green' }}>{value.improved}</Typography>
+                          <ProgressBar style={{ width: '57%', height: '0.9vh', marginTop: '4%' }}>
                             <ProgressBar variant="success" now={value.improved * 100} key={1} />
                             <ProgressBar variant="danger" now={value.regressed * 100} key={2} />
                           </ProgressBar>
-                          <Typography variant="h8" sx={{ color: "red" }}>{value.regressed}</Typography>
+                          <Typography variant="h8" sx={{ color: 'red' }}>
+                            {value.regressed}
+                          </Typography>
                         </Stack>
-                      } else if (column.id !== "id") {
-                        cell = value
-                      } else {
-                        if (isCheckBoxActive === true) {
-                          if (row.status === "FINISHED") {
-                            cell = <Stack direction="row" spacing={2}>
+                      );
+                    } else if (column.id !== 'id') {
+                      cell = value;
+                    } else {
+                      if (isCheckBoxActive === true) {
+                        if (row.status === 'FINISHED') {
+                          cell = (
+                            <Stack direction="row" spacing={2}>
                               <Checkbox onChange={() => handleChange(value)} />
-                              <Stack direction="row" spacing={2} style={{ marginTop: "1.8%" }}>
-                                <CheckCircleOutlinedIcon sx={{ color: "green" }} />
+                              <Stack direction="row" spacing={2} style={{ marginTop: '1.8%' }}>
+                                <CheckCircleOutlinedIcon sx={{ color: 'green' }} />
                                 <div>{value}</div>
                               </Stack>
                             </Stack>
-                          } else {
-                            cell = <Stack direction="row" spacing={2}>
-                              <Checkbox onChange={() => handleChange(value)} />
-                              <Stack direction="row" spacing={2} style={{ marginTop: "1.8%" }}>
-                                <HighlightOffOutlinedIcon sx={{ color: "red" }} />
-                                <div>{value}</div>
-                              </Stack>
-                            </Stack>
-                          }
+                          );
                         } else {
-                          if (row.status === "FINISHED") {
-                            cell = <Stack direction="row" spacing={2}>
-                              <CheckCircleOutlinedIcon sx={{ color: "green" }} />
+                          cell = (
+                            <Stack direction="row" spacing={2}>
+                              <Checkbox onChange={() => handleChange(value)} />
+                              <Stack direction="row" spacing={2} style={{ marginTop: '1.8%' }}>
+                                <HighlightOffOutlinedIcon sx={{ color: 'red' }} />
+                                <div>{value}</div>
+                              </Stack>
+                            </Stack>
+                          );
+                        }
+                      } else {
+                        if (row.status === 'FINISHED') {
+                          cell = (
+                            <Stack direction="row" spacing={2}>
+                              <CheckCircleOutlinedIcon sx={{ color: 'green' }} />
                               <div>{value}</div>
                             </Stack>
-                          } else {
-                            cell = <Stack direction="row" spacing={2}>
-                              <HighlightOffOutlinedIcon sx={{ color: "red" }} />
+                          );
+                        } else {
+                          cell = (
+                            <Stack direction="row" spacing={2}>
+                              <HighlightOffOutlinedIcon sx={{ color: 'red' }} />
                               <div>{value}</div>
                             </Stack>
-                          }
+                          );
                         }
                       }
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {cell}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
+                    }
+                    return (
+                      <TableCell key={column.id} align={column.align}>
+                        {cell}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>
       <TablePagination
-        sx={{ borderTop: "1px solid lightgray" }}
+        sx={{ borderTop: '1px solid lightgray' }}
         rowsPerPageOptions={[3, 5, 10]}
         component="div"
         count={testRunResults.length}

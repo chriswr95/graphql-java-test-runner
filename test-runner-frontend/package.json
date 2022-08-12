@@ -32,7 +32,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "format": "npx prettier --write ."
   },
   "eslintConfig": {
     "extends": [
@@ -53,11 +54,12 @@
     ]
   },
   "devDependencies": {
-    "babel-plugin-recharts": "^2.0.0",
-    "gh-pages": "^4.0.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
-    "@testing-library/user-event": "^13.5.0"
+    "@testing-library/user-event": "^13.5.0",
+    "babel-plugin-recharts": "^2.0.0",
+    "gh-pages": "^4.0.0",
+    "prettier": "^2.7.1"
   },
   "browser": {
     "crypto": false
