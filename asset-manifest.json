@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/graphql-java-test-runner/static/css/main.4de0fa12.css",
-    "main.js": "/graphql-java-test-runner/static/js/main.e66e0cd8.js",
+    "main.js": "/graphql-java-test-runner/static/js/main.24025661.js",
     "static/js/787.cf2a641c.chunk.js": "/graphql-java-test-runner/static/js/787.cf2a641c.chunk.js",
     "static/media/GraphQL_Java_Logo_v2.png": "/graphql-java-test-runner/static/media/GraphQL_Java_Logo_v2.5e039db54fd0ea724343.png",
     "index.html": "/graphql-java-test-runner/index.html",
     "main.4de0fa12.css.map": "/graphql-java-test-runner/static/css/main.4de0fa12.css.map",
-    "main.e66e0cd8.js.map": "/graphql-java-test-runner/static/js/main.e66e0cd8.js.map",
+    "main.24025661.js.map": "/graphql-java-test-runner/static/js/main.24025661.js.map",
     "787.cf2a641c.chunk.js.map": "/graphql-java-test-runner/static/js/787.cf2a641c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.4de0fa12.css",
-    "static/js/main.e66e0cd8.js"
+    "static/js/main.24025661.js"
   ]
 }
