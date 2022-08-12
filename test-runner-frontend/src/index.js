@@ -14,14 +14,10 @@ import { Dashboard } from './Views/Dashboard';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
- /* <React.StrictMode>
-    <App />
- </React.StrictMode>
- */
 <React.StrictMode>
-  <BrowserRouter>
+  <BrowserRouter basename="/graphql-java-test-runner">
     <Routes>
-      <Route path="/graphql-java-test-runner" element={<Dashboard/>}/>
+      <Route path="/" element={<Dashboard/>}/>
     </Routes>
   </BrowserRouter>
 </React.StrictMode>
