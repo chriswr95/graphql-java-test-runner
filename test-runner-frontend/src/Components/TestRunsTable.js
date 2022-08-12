@@ -15,6 +15,7 @@ import ProgressBar from 'react-bootstrap/ProgressBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ProgressBarCell from './ProgressBarCell';
+import IdCell from './IdCell';
 
 const columns = [
   {
@@ -113,64 +114,18 @@ export default function TestRunsTable({ updateSelectedTestRunsToCompare, isCheck
                     let cell = null;
 
                     if (column.id === 'improvedVsRegressed') {
-                      cell = (
-                        /*
-                        <Stack direction="row" spacing={2}>
-                          <Typography sx={{ color: 'green' }}>{value.improved}</Typography>
-                          <ProgressBar style={{ width: '57%', height: '0.9vh', marginTop: '4%' }}>
-                            <ProgressBar variant="success" now={value.improved * 100} key={1} />
-                            <ProgressBar variant="danger" now={value.regressed * 100} key={2} />
-                          </ProgressBar>
-                          <Typography variant="h8" sx={{ color: 'red' }}>
-                            {value.regressed}
-                          </Typography>
-                        </Stack>
-                        */
-
-                        <ProgressBarCell improvedValue={value.improved} regressedValue={value.regressed} />
-                      );
+                      cell = <ProgressBarCell improvedValue={value.improved} regressedValue={value.regressed} />;
                     } else if (column.id !== 'id') {
                       cell = value;
                     } else {
-                      if (isCheckBoxActive === true) {
-                        if (row.status === 'FINISHED') {
-                          cell = (
-                            <Stack direction="row" spacing={2}>
-                              <Checkbox onChange={() => handleChange(value)} />
-                              <Stack direction="row" spacing={2} style={{ marginTop: '1.8%' }}>
-                                <CheckCircleOutlinedIcon sx={{ color: 'green' }} />
-                                <div>{value}</div>
-                              </Stack>
-                            </Stack>
-                          );
-                        } else {
-                          cell = (
-                            <Stack direction="row" spacing={2}>
-                              <Checkbox onChange={() => handleChange(value)} />
-                              <Stack direction="row" spacing={2} style={{ marginTop: '1.8%' }}>
-                                <HighlightOffOutlinedIcon sx={{ color: 'red' }} />
-                                <div>{value}</div>
-                              </Stack>
-                            </Stack>
-                          );
-                        }
-                      } else {
-                        if (row.status === 'FINISHED') {
-                          cell = (
-                            <Stack direction="row" spacing={2}>
-                              <CheckCircleOutlinedIcon sx={{ color: 'green' }} />
-                              <div>{value}</div>
-                            </Stack>
-                          );
-                        } else {
-                          cell = (
-                            <Stack direction="row" spacing={2}>
-                              <HighlightOffOutlinedIcon sx={{ color: 'red' }} />
-                              <div>{value}</div>
-                            </Stack>
-                          );
-                        }
-                      }
+                      cell = (
+                        <IdCell
+                          value={value}
+                          hasCheckbox={isCheckBoxActive}
+                          onChange={handleChange}
+                          status={row.status}
+                        />
+                      );
                     }
                     return (
                       <TableCell key={column.id} align={column.align}>
