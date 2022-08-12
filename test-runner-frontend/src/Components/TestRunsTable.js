@@ -113,8 +113,8 @@ export default function TestRunsTable({ updateSelectedTestRunsToCompare, isCheck
                     let cell = null;
 
                     if (column.id === 'improvedVsRegressed') {
-                      cell = 
-/*
+                      cell = (
+                        /*
                         <Stack direction="row" spacing={2}>
                           <Typography sx={{ color: 'green' }}>{value.improved}</Typography>
                           <ProgressBar style={{ width: '57%', height: '0.9vh', marginTop: '4%' }}>
@@ -127,8 +127,8 @@ export default function TestRunsTable({ updateSelectedTestRunsToCompare, isCheck
                         </Stack>
                         */
 
-                        <ProgressBarCell improvedValue = {value.improved} regressedValue = {value.regressed}/>
-                      
+                        <ProgressBarCell improvedValue={value.improved} regressedValue={value.regressed} />
+                      );
                     } else if (column.id !== 'id') {
                       cell = value;
                     } else {
