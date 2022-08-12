@@ -14,6 +14,7 @@ import { IconButton, Stack, Typography } from '@mui/material';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ProgressBarCell from './ProgressBarCell';
 
 const columns = [
   {
@@ -112,7 +113,8 @@ export default function TestRunsTable({ updateSelectedTestRunsToCompare, isCheck
                     let cell = null;
 
                     if (column.id === 'improvedVsRegressed') {
-                      cell = (
+                      cell = 
+/*
                         <Stack direction="row" spacing={2}>
                           <Typography sx={{ color: 'green' }}>{value.improved}</Typography>
                           <ProgressBar style={{ width: '57%', height: '0.9vh', marginTop: '4%' }}>
@@ -123,7 +125,10 @@ export default function TestRunsTable({ updateSelectedTestRunsToCompare, isCheck
                             {value.regressed}
                           </Typography>
                         </Stack>
-                      );
+                        */
+
+                        <ProgressBarCell improvedValue = {value.improved} regressedValue = {value.regressed}/>
+                      
                     } else if (column.id !== 'id') {
                       cell = value;
                     } else {
