@@ -9,7 +9,7 @@ describe('IdCell', () => {
   });
 
   test('Renders status icon FINISHED', () => {
-    const { debug, getByTestId } = render(<IdCell value={'1234566'} status={'FINISHED'} />);
+    const { getByTestId } = render(<IdCell value={'1234566'} status={'FINISHED'} />);
     expect(getByTestId('CheckCircleOutlinedIcon')).toBeDefined();
   });
 

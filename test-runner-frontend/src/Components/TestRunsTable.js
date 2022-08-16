@@ -65,7 +65,7 @@ export default function TestRunsTable({ updateSelectedTestRunsToCompare, isCheck
     setPage(0);
   };
 
-  const handleChange = (value) => {
+  const onChange = (value) => {
     updateSelectedTestRunsToCompare(value);
   };
 
@@ -85,10 +85,11 @@ export default function TestRunsTable({ updateSelectedTestRunsToCompare, isCheck
                         <b>{column.label}</b>
                       </div>
                       <IconButton
+                        data-testid="iconButton"
                         sx={{ top: '13%', position: 'absolute' }}
-                        onClick={() => {
-                          sortDate();
-                        }}
+                        onClick={() => 
+                          sortDate()
+                        }
                       >
                         <ArrowDownwardIcon />
                       </IconButton>
@@ -120,9 +121,10 @@ export default function TestRunsTable({ updateSelectedTestRunsToCompare, isCheck
                     } else {
                       cell = (
                         <IdCell
+                          data-testid="checkboxTest"
                           value={value}
                           hasCheckbox={isCheckBoxActive}
-                          onChange={handleChange}
+                          onChange={() => onChange(value)}
                           status={row.status}
                         />
                       );

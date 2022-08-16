@@ -2,9 +2,9 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-//import Button from '@mui/material/Button';
+import Button from '@mui/material/Button';
 import GraphQL_Logo from '../Assets/GraphQL_Java_Logo_v2.png';
-//import Alert from '@mui/material/Alert';
+import Alert from '@mui/material/Alert';
 import { useEffect, useState } from 'react';
 //import { onSnapshot, collection } from '@firebase/firestore';
 //import db from './firebase';
@@ -15,10 +15,10 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-export function Dashboard() {
+export default function Dashboard() {
   const [isCheckBoxActive, setCheckboxActiveState] = React.useState(false);
 
-  //const [cancelButtonState, setCancelButtonState] = React.useState(false);
+  const [cancelButtonState, setCancelButtonState] = React.useState(false);
 
   var branchArray = ['master', 'add_error_logs', 'save_data'];
 
@@ -30,25 +30,25 @@ export function Dashboard() {
 
   //const navigate = useNavigate();
 
-  /*
+  
     function manageCompareAction() {
-      if (checkBoxSelection.length >= 0) {
+      if (checkBoxSelection.length >= 2) {
         setCheckBoxSelection([]);
-        navigate("/report")
+        //navigate("/report")
       }
       setCheckBoxSelection([]);
       setCheckboxActiveState(!isCheckBoxActive);
       setCancelButtonState(!cancelButtonState);
     }
-  */
 
-  /*
+
+  
     const handleCancel = () => {
       setCheckBoxSelection([]);
       setCheckboxActiveState(false);
       setCancelButtonState(false);
     }
-    */
+  
 
   /*
     useEffect(() => 
@@ -363,19 +363,18 @@ export function Dashboard() {
     setMachineSelection(event.target.value);
   };
 
-  const sortDate = () => {
-    testRunResultsCopy?.sort((a, b) => b.date - a.date);
-    setTestRunResults(testRunResultsCopy);
+  function sortDate () {
+    var testRunsResultsSorted = testRunResultsCopy;
+    setTestRunResults([].concat(testRunsResultsSorted).sort((a, b) => b.date - a.date))
   };
 
   const [checkBoxSelection, setCheckBoxSelection] = React.useState([]);
 
   const updateSelectedTestRunsToCompare = (childToParentData) => {
+    console.log(childToParentData);
     if (checkBoxSelection.find((checkBoxSelection) => checkBoxSelection === childToParentData))
       setCheckBoxSelection(checkBoxSelection.filter((checkBoxSelection) => checkBoxSelection !== childToParentData));
     else setCheckBoxSelection((checkBoxSelection) => [...checkBoxSelection, childToParentData]);
-    setTestRunResultsCopy(testRunResultsCopy);
-    setCheckboxActiveState(false);
   };
 
   useEffect(() => {
@@ -416,7 +415,7 @@ export function Dashboard() {
             <Typography variant="h5">
               <b>Test Run</b>
             </Typography>
-            {/*
+         
             {
               cancelButtonState
                 ?
@@ -451,7 +450,7 @@ export function Dashboard() {
             >
               Compare
             </Button>
-          */}
+         
           </Stack>
 
           <Box sx={{ marginTop: '0.8%', marginBottom: '0.8%' }}>
@@ -459,7 +458,7 @@ export function Dashboard() {
               <InputLabel>Test Runs</InputLabel>
               <Select value={testRunSelection} onChange={handleChangeTestRunSelection} label="Test Runs">
                 <MenuItem value={'All Test Runs'}>All Test Runs</MenuItem>
-                <MenuItem value={'Master Only'}>Master Only</MenuItem>
+                <MenuItem data-testid="Master Only" value={'Master Only'}>Master Only</MenuItem>
               </Select>
             </FormControl>
 
@@ -473,24 +472,23 @@ export function Dashboard() {
             </FormControl>
           </Box>
 
-          {/*
+      
           {
             isCheckBoxActive === true
               ?
               checkBoxSelection.length > 2
                 ?
-                <Alert severity="warning" sx={{ width: "30%", marginTop: "1.6%" }}>You can only select 2 test runs to compare!</Alert>
+                <Alert data-testid="alert-warning" severity="warning" sx={{ width: "30%", marginTop: "1.6%" }}>You can only select 2 test runs to compare!</Alert>
                 :
                 checkBoxSelection.length === 2
                   ?
-                  <Alert severity="success" sx={{ width: "30%", marginTop: "1.6%" }}>Nice selection! You can now compare this 2 test runs</Alert>
+                  <Alert data-testid="alert-succes" severity="success" sx={{ width: "30%", marginTop: "1.6%" }}>Nice selection! You can now compare this 2 test runs</Alert>
                   :
-                  <Alert severity="info" sx={{ width: "30%", marginTop: "1.6%" }}>Select {2 - checkBoxSelection.length} Test Runs to compare</Alert>
+                  <Alert data-testid="alert-info" severity="info" sx={{ width: "30%", marginTop: "1.6%" }}>Select {2 - checkBoxSelection.length} Test Runs to compare</Alert>
               :
               null
           }
-        */}
-
+        
           <TestRunsTable
             updateSelectedTestRunsToCompare={updateSelectedTestRunsToCompare}
             isCheckBoxActive={isCheckBoxActive}
