@@ -42,17 +42,9 @@ main:
     - validate_saved_document:
         switch:
           - condition: ${got.fields.jobId.stringValue == job_id AND got.fields.status.mapValue.fields.core_2.stringValue == "CREATED"}
-            next: get_latest_image
+            next: parallel_step
     - failed:
         raise: ${"got unexpected document"}
-
-    # Get the latest boot image.
-    - get_latest_image:
-        call: googleapis.compute.v1.images.getFromFamily
-        args:
-          family: "cos-stable"
-          project: "cos-cloud"
-        result: getFromFamilyResult
 
     # Create, start, execute tests and delete compute engine vm in parallel.
     - parallel_step:
@@ -77,7 +69,7 @@ main:
                       machineType: ${"zones/" + zone + "/machineTypes/" + machine}
                       disks:
                         - initializeParams:
-                            sourceImage: ${"projects/cos-cloud/global/images/" + getFromFamilyResult.name}
+                            sourceImage: "projects/debian-cloud/global/images/family/debian-10"
                           boot: true
                           autoDelete: true
                       networkInterfaces:
@@ -88,7 +80,34 @@ main:
                       metadata:
                         items:
                           - key: "startup-script"
-                            value: "#! /bin/bash \ncd tmp\nmkdir test-runner\ncd test-runner\ngit clone https://github.com/adarsh-jaiswal/graphql-java-test-runner.git\ncd graphql-java-test-runner/ \ncd test-runner-backend \ndocker build --no-cache -t test-runner .\ndocker run --publish 80:8080 test-runner"
+                            value: |
+                              #! /bin/bash
+                              # We will an Azul Zulu build of jdk-8, since we can no longer install
+                              # it directly.
+
+                              # Add Azul's public key
+                              sudo apt-key adv \
+                                --keyserver hkp://keyserver.ubuntu.com:80 \
+                                --recv-keys 0xB1998361219BD9C9
+
+                              # Download and install the package that adds 
+                              # the Azul APT repository to the list of sources 
+                              curl -O https://cdn.azul.com/zulu/bin/zulu-repo_1.0.0-3_all.deb
+                              sudo apt-get install ./zulu-repo_1.0.0-3_all.deb
+                              sudo apt-get update
+
+                              # Install git and open zulu open jdk
+                              sudo apt-get install zulu8-jdk -y
+                              sudo apt-get install git -y
+
+                              # Install Test Runner
+                              git clone https://github.com/adarsh-jaiswal/graphql-java-test-runner.git
+                              cd graphql-java-test-runner
+                              cd test-runner-backend
+                              ./gradlew build
+                              cd build/libs
+                              sudo nohup java -jar -Dserver.port=80 graphql-java-test-runner-0.0.1-SNAPSHOT.jar &
+
                       serviceAccounts:
                         - email: ${service_account_email}
                           scopes:

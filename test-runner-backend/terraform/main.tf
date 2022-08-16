@@ -20,7 +20,7 @@ provider "google" {
 
 # Define and deploy a workflow
 resource "google_workflows_workflow" "test_runner_workflow" {
-  name            = "test-runner-workflow"
+  name            = "test-runner-workflow-v2"
   region          = var.region
   description     = "Test runner workflow"
   service_account = local.email
@@ -32,7 +32,7 @@ resource "google_workflows_workflow" "test_runner_workflow" {
 # Define and deploy a tasks queue
 # Queue should not be named the same as any other queue created 7 days before within the same GCP account. It will throw an error.
 resource "google_cloud_tasks_queue" "test_runner_tasks_queue" {
-  name     = "test-runner-tasks-queue-v1"
+  name     = "test-runner-tasks-queue-v2"
   location = var.region
 
   rate_limits {
@@ -61,7 +61,7 @@ resource "google_app_engine_application" "firestore" {
 # Create a firewall rule to allow http communication to compute instance.
 resource "google_compute_firewall" "rules" {
   project     = var.project_id
-  name        = "allow-http-firewall-rule"
+  name        = "allow-http-firewall-rule-v2"
   network     = "default"
   description = "Creates firewall rule targeting tagged instances"
 
