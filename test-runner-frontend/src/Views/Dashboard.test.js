@@ -3,18 +3,6 @@ import { render, fireEvent, waitFor, screen, getByRole, queryHelpers, getByTestI
 import userEvent from '@testing-library/user-event';
 
 describe('Dashboard', () => {
-  /*
-  test('Check buttons rendering and functionality', async () => {
-    const { debug, getByRole } = render(<Dashboard/>);
-    const CompareButton = getByRole('button', { name: /Compare/i });
-    expect(CompareButton).toBeDefined();
-    await userEvent.click(CompareButton);
-    const CancelButton = getByRole('button', { name: /Cancel/i });
-    expect(CancelButton).toBeDefined();
-    await userEvent.click(CancelButton);
-  });
-  */
-
   test('Check dropwdown menu All Test Runs', async () => {
     const { debug, getByRole, getAllByText, queryByText } = render(<Dashboard />);
     expect(getAllByText('master')).toBeDefined();
