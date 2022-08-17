@@ -7,13 +7,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
-import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
-import Checkbox from '@mui/material/Checkbox';
-import { IconButton, Stack, Typography } from '@mui/material';
-import ProgressBar from 'react-bootstrap/ProgressBar';
+import { IconButton, Stack } from '@mui/material';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ProgressBarCell from './ProgressBarCell';
+import IdCell from './IdCell';
 
 const columns = [
   {
@@ -50,7 +48,7 @@ const columns = [
   },
 ];
 
-export default function TestRunsTable({ updateSelectedTestRunsToCompare, isCheckBoxActive, testRunResults, sortDate }) {
+export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, testRunResults, sortDate }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -63,8 +61,8 @@ export default function TestRunsTable({ updateSelectedTestRunsToCompare, isCheck
     setPage(0);
   };
 
-  const handleChange = (value) => {
-    updateSelectedTestRunsToCompare(value);
+  const onChange = (value) => {
+    onCheckboxChange(value);
   };
 
   return (
@@ -83,10 +81,9 @@ export default function TestRunsTable({ updateSelectedTestRunsToCompare, isCheck
                         <b>{column.label}</b>
                       </div>
                       <IconButton
+                        data-testid="iconButton"
                         sx={{ top: '13%', position: 'absolute' }}
-                        onClick={() => {
-                          sortDate();
-                        }}
+                        onClick={() => sortDate()}
                       >
                         <ArrowDownwardIcon />
                       </IconButton>
@@ -106,66 +103,32 @@ export default function TestRunsTable({ updateSelectedTestRunsToCompare, isCheck
           <TableBody>
             {testRunResults.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
               return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.id} sx={{ maxHeight: '70px', height: '70px' }}>
+                <TableRow
+                  data-testid="testRunsTableBodyRow"
+                  hover
+                  role="checkbox"
+                  tabIndex={-1}
+                  key={row.id}
+                  sx={{ maxHeight: '70px', height: '70px' }}
+                >
                   {columns.map((column) => {
                     const value = row[column.id];
                     let cell = null;
 
                     if (column.id === 'improvedVsRegressed') {
-                      cell = (
-                        <Stack direction="row" spacing={2}>
-                          <Typography sx={{ color: 'green' }}>{value.improved}</Typography>
-                          <ProgressBar style={{ width: '57%', height: '0.9vh', marginTop: '4%' }}>
-                            <ProgressBar variant="success" now={value.improved * 100} key={1} />
-                            <ProgressBar variant="danger" now={value.regressed * 100} key={2} />
-                          </ProgressBar>
-                          <Typography variant="h8" sx={{ color: 'red' }}>
-                            {value.regressed}
-                          </Typography>
-                        </Stack>
-                      );
+                      cell = <ProgressBarCell improvedValue={value.improved} regressedValue={value.regressed} />;
                     } else if (column.id !== 'id') {
                       cell = value;
                     } else {
-                      if (isCheckBoxActive === true) {
-                        if (row.status === 'FINISHED') {
-                          cell = (
-                            <Stack direction="row" spacing={2}>
-                              <Checkbox onChange={() => handleChange(value)} />
-                              <Stack direction="row" spacing={2} style={{ marginTop: '1.8%' }}>
-                                <CheckCircleOutlinedIcon sx={{ color: 'green' }} />
-                                <div>{value}</div>
-                              </Stack>
-                            </Stack>
-                          );
-                        } else {
-                          cell = (
-                            <Stack direction="row" spacing={2}>
-                              <Checkbox onChange={() => handleChange(value)} />
-                              <Stack direction="row" spacing={2} style={{ marginTop: '1.8%' }}>
-                                <HighlightOffOutlinedIcon sx={{ color: 'red' }} />
-                                <div>{value}</div>
-                              </Stack>
-                            </Stack>
-                          );
-                        }
-                      } else {
-                        if (row.status === 'FINISHED') {
-                          cell = (
-                            <Stack direction="row" spacing={2}>
-                              <CheckCircleOutlinedIcon sx={{ color: 'green' }} />
-                              <div>{value}</div>
-                            </Stack>
-                          );
-                        } else {
-                          cell = (
-                            <Stack direction="row" spacing={2}>
-                              <HighlightOffOutlinedIcon sx={{ color: 'red' }} />
-                              <div>{value}</div>
-                            </Stack>
-                          );
-                        }
-                      }
+                      cell = (
+                        <IdCell
+                          data-testid="checkboxTest"
+                          value={value}
+                          hasCheckbox={isCheckBoxActive}
+                          onChange={() => onChange(row)}
+                          status={row.status}
+                        />
+                      );
                     }
                     return (
                       <TableCell key={column.id} align={column.align}>
