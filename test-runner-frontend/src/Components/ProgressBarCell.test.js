@@ -4,9 +4,9 @@ import { Experimental_CssVarsProvider } from '@mui/material';
 
 describe('ProgressBarCell', () => {
   test('Renders improved vs regressed value', () => {
-    const { getByText } = render(<ProgressBarCell improvedValue={10} regressedValue={2} />);
+    const { getByText } = render(<ProgressBarCell improvedValue={10} regressedValue={3} />);
     expect(getByText(10)).toBeDefined();
-    expect(getByText(2)).toBeDefined();
+    expect(getByText(3)).toBeDefined();
   });
 
   test('Renders improved vs regressed progress bar', () => {

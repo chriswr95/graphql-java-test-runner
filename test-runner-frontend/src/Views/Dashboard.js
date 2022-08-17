@@ -2,7 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
+//import Button from '@mui/material/Button';
 import GraphQL_Logo from '../Assets/GraphQL_Java_Logo_v2.png';
 import Alert from '@mui/material/Alert';
 import { useEffect, useState } from 'react';
@@ -18,7 +18,7 @@ import Select from '@mui/material/Select';
 export default function Dashboard() {
   const [isCheckBoxActive, setCheckboxActiveState] = React.useState(false);
 
-  const [cancelButtonState, setCancelButtonState] = React.useState(false);
+  //const [cancelButtonState, setCancelButtonState] = React.useState(false);
 
   var branchArray = ['master', 'add_error_logs', 'save_data'];
 
@@ -30,7 +30,7 @@ export default function Dashboard() {
 
   //const navigate = useNavigate();
 
-  
+  /*
     function manageCompareAction() {
       if (checkBoxSelection.length >= 2) {
         setCheckBoxSelection([]);
@@ -48,6 +48,7 @@ export default function Dashboard() {
       setCheckboxActiveState(false);
       setCancelButtonState(false);
     }
+    */
   
 
   /*
@@ -370,11 +371,12 @@ export default function Dashboard() {
 
   const [checkBoxSelection, setCheckBoxSelection] = React.useState([]);
 
-  const updateSelectedTestRunsToCompare = (childToParentData) => {
-    console.log(childToParentData);
+  const onCheckboxChange = (childToParentData) => {
     if (checkBoxSelection.find((checkBoxSelection) => checkBoxSelection === childToParentData))
       setCheckBoxSelection(checkBoxSelection.filter((checkBoxSelection) => checkBoxSelection !== childToParentData));
     else setCheckBoxSelection((checkBoxSelection) => [...checkBoxSelection, childToParentData]);
+    setCheckboxActiveState(false);
+    setTestRunResultsCopy(testRunResultsCopy);
   };
 
   useEffect(() => {
@@ -415,6 +417,7 @@ export default function Dashboard() {
             <Typography variant="h5">
               <b>Test Run</b>
             </Typography>
+            {/*
          
             {
               cancelButtonState
@@ -450,6 +453,8 @@ export default function Dashboard() {
             >
               Compare
             </Button>
+
+          */}
          
           </Stack>
 
@@ -490,7 +495,7 @@ export default function Dashboard() {
           }
         
           <TestRunsTable
-            updateSelectedTestRunsToCompare={updateSelectedTestRunsToCompare}
+            onCheckboxChange={onCheckboxChange}
             isCheckBoxActive={isCheckBoxActive}
             testRunResults={testRunResults}
             sortDate={sortDate}

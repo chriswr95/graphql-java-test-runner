@@ -1,61 +1,88 @@
 import TestRunsTable from './TestRunsTable';
 import { render, fireEvent, waitFor, screen, getByRole, getByTestId } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import crypto from 'node:crypto';
 
+
+const generateMockData = () => {
+    var branchArray = ['master', 'add_error_logs', 'save_data'];
+
+  var statusArray = ['FAILED', 'FINISHED'];
+
+  var machinesArray = ['e2-standard-2', 'e2-standard-32'];
+
+    var testRunResult = 
+    {
+        id: crypto.randomUUID(),
+        branch: branchArray[Math.floor(Math.random() * branchArray.length)],
+        status: statusArray[Math.floor(Math.random() * statusArray.length)],
+        benchmarks: 11,
+        improvedVsRegressed: {
+          improved: 9,
+          regressed: 2,
+        },
+        machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
+        date: '12/08/2022 4:35 pm',
+      }
+
+    return testRunResult;
+
+}
+
+const generateMockDataCaller = (times) => {
+    var testRunsResults = [];
+
+    for(var i=0; i<times; i++){
+        testRunsResults.push(generateMockData());
+    }
+
+    return testRunsResults;
+}
 
 describe('Test Runs Table', () => {
-    var testRunResults = [{
-        id: 'a1224f86-1981-11ed-861d-0242ac120002',
-        branch: 'master',
-        status: 'FAILED',
-        benchmarks: 10,
-        improvedVsRegressed: {
-            improved: 5,
-            regressed: 5,
-        },
-        machine: 'e2-standard-2',
-        date: '12/08/2022 9:12 pm',
-    },
-    {
-        id: 'af2ac950-1981-11ed-861d-0242ac120002',
-        branch: 'add_error_logs',
-        status: 'FAILED',
-        benchmarks: 7,
-        improvedVsRegressed: {
-            improved: 4,
-            regressed: 3,
-        },
-        machine: 'e2-standard-32',
-        date: '12/08/2022 10:42 pm',
-    }]
-
     test('Renders tests', () => {
+        var testRunResults = generateMockDataCaller(25);
         const { debug, getByText, getAllByRole, getByTestId } = render(<TestRunsTable testRunResults={testRunResults} />);
-        expect(getByText('a1224f86-1981-11ed-861d-0242ac120002')).toBeDefined();
-        expect(getAllByRole('cell', { name: /master/i })).toBeDefined();
-        expect(getAllByRole('cell', { name: /af2ac950-1981-11ed-861d-0242ac120002/i })).toBeDefined();
+        expect(getByText(testRunResults[0].id)).toBeDefined();
+        expect(getAllByRole('cell', { name: testRunResults[0].branch })).toBeDefined();
+        expect(getAllByRole('cell', { name: testRunResults[0].id })).toBeDefined();
         expect(getAllByRole('columnheader', { name: /Date/i })).toBeDefined();
         expect(getByTestId('ArrowDownwardIcon')).toBeDefined();
-        console.log(debug());
     });
 
-    test('Renders tests on the table', () => {
-        const { debug, getAllByRole } = render(<TestRunsTable testRunResults={testRunResults} />);
-        expect(getAllByRole('button', { name: /Rows per page: 10/i })).toBeDefined();
-        expect(getAllByRole('button', { name: /Go to previous page/i })).toBeDefined();
-        expect(getAllByRole('button', { name: /Go to next page/i })).toBeDefined();
+    test('Renders row per page', async () => {
+        var testRunResults = generateMockDataCaller(25);
+        const { debug, getByRole, getAllByTestId } = render(<TestRunsTable testRunResults={testRunResults} />);
+        expect(getAllByTestId('testRunsTableBodyRow')).toHaveLength(10);
+        const RowsPerPage = getByRole('button', { name: /Rows per page: 10/i });
+        await userEvent.click(RowsPerPage);
+        const Option = getByRole('option', { name: /5/i });
+        await userEvent.click(Option);
+        expect(getAllByTestId('testRunsTableBodyRow')).toHaveLength(5);
     });
 
-    test('Renders tests on the table', () => {
-        const { debug, getAllByRole } = render(<TestRunsTable testRunResults={testRunResults} />);
-        expect(getAllByRole('button', { name: /Rows per page: 10/i })).toBeDefined();
-        expect(getAllByRole('button', { name: /Go to previous page/i })).toBeDefined();
-        expect(getAllByRole('button', { name: /Go to next page/i })).toBeDefined();
+    test('Pagination', async () => {
+        var testRunResults = generateMockDataCaller(25);
+        const { debug, getByRole, getAllByTestId, getByText } = render(<TestRunsTable testRunResults={testRunResults} />);
+        expect(getAllByTestId('testRunsTableBodyRow')).toHaveLength(10);
+        const NextPage = getByRole('button', { name: /Go to next page/i });
+        for(var i=0; i<10; i++){
+            expect(getByText(testRunResults[i].id)).toBeDefined();
+        }
+        await userEvent.click(NextPage);
+        for(var i=10; i<20; i++){
+            expect(getByText(testRunResults[i].id)).toBeDefined();
+        }
+        await userEvent.click(NextPage);
+        for(var i=20; i<25; i++){
+            expect(getByText(testRunResults[i].id)).toBeDefined();
+        }
     });
 
     test('Renders sortDate', async () => {
+        var testRunResults = generateMockDataCaller(25);
         var sortDate = jest.fn();
-        const { debug, getByTestId, getAllByRole } = render(<TestRunsTable testRunResults={testRunResults} sortDate={sortDate} />);
+        const { debug, getByTestId } = render(<TestRunsTable testRunResults={testRunResults} sortDate={sortDate} />);
         const SortButton = screen.getByTestId('iconButton');
         await userEvent.click(SortButton);
         expect(sortDate).toHaveBeenCalled();
@@ -63,13 +90,12 @@ describe('Test Runs Table', () => {
 
 
     test('Renders checkboxActive', async () => {
-        var updateSelectedTestRunsToCompare = jest.fn();
-        const { debug, getByRole } = render(<TestRunsTable updateSelectedTestRunsToCompare={updateSelectedTestRunsToCompare} testRunResults={testRunResults} isCheckBoxActive={true} />);
-        const checkbox1 = screen.getByRole('checkbox', {name: /a1224f86-1981-11ed-861d-0242ac120002 5 500 500 5 10 master e2-standard-2 12\/08\/2022 9:12 pm/i });
-        const checkbox2 = screen.getByRole('checkbox', {name: /af2ac950-1981-11ed-861d-0242ac120002 4 400 300 3 7 add_error_logs e2-standard-32 12\/08\/2022 10:42 pm/i });
+        var onCheckboxChange = jest.fn();
+        var testRunResults = [generateMockData()];
+        const { debug, getAllByRole } = render(<TestRunsTable onCheckboxChange={onCheckboxChange} testRunResults={testRunResults} isCheckBoxActive={true} />);
+        const checkbox1 = getAllByRole('checkbox')[1];
         await userEvent.click(checkbox1);
-        await userEvent.click(checkbox2);
-        expect(checkbox1).toBeDefined();
-        expect(checkbox2).toBeDefined();
+        expect(onCheckboxChange).toHaveBeenCalledWith(testRunResults[0]);
         });
+    
     });

@@ -29,7 +29,7 @@ export default function IdCell({ value, hasCheckbox, onChange, status }) {
     <>
       {hasCheckbox ? (
         <Stack direction="row" spacing={2}>
-          <Checkbox onChange={() => onChange(value)} />
+          <Checkbox value={value} onChange={() => onChange(value)} />
           <Stack direction="row" spacing={2} style={{ marginTop: '1.8%' }}>
             <IconComponent sx={{ color: iconColor }} />
             <div>{value}</div>

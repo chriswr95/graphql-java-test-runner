@@ -7,11 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
-import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
-import Checkbox from '@mui/material/Checkbox';
-import { IconButton, Stack, Typography } from '@mui/material';
-import ProgressBar from 'react-bootstrap/ProgressBar';
+import { IconButton, Stack } from '@mui/material';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ProgressBarCell from './ProgressBarCell';
@@ -52,7 +48,7 @@ const columns = [
   },
 ];
 
-export default function TestRunsTable({ updateSelectedTestRunsToCompare, isCheckBoxActive, testRunResults, sortDate }) {
+export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, testRunResults, sortDate }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -66,7 +62,7 @@ export default function TestRunsTable({ updateSelectedTestRunsToCompare, isCheck
   };
 
   const onChange = (value) => {
-    updateSelectedTestRunsToCompare(value);
+    onCheckboxChange(value);
   };
 
   return (
@@ -109,7 +105,7 @@ export default function TestRunsTable({ updateSelectedTestRunsToCompare, isCheck
           <TableBody>
             {testRunResults.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
               return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.id} sx={{ maxHeight: '70px', height: '70px' }}>
+                <TableRow data-testid="testRunsTableBodyRow" hover role="checkbox" tabIndex={-1} key={row.id} sx={{ maxHeight: '70px', height: '70px' }}>
                   {columns.map((column) => {
                     const value = row[column.id];
                     let cell = null;
@@ -124,7 +120,8 @@ export default function TestRunsTable({ updateSelectedTestRunsToCompare, isCheck
                           data-testid="checkboxTest"
                           value={value}
                           hasCheckbox={isCheckBoxActive}
-                          onChange={() => onChange(value)}
+                         
+                          onChange={() => onChange(row)}
                           status={row.status}
                         />
                       );
