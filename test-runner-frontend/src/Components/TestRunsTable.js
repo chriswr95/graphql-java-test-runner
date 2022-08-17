@@ -83,9 +83,7 @@ export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, test
                       <IconButton
                         data-testid="iconButton"
                         sx={{ top: '13%', position: 'absolute' }}
-                        onClick={() => 
-                          sortDate()
-                        }
+                        onClick={() => sortDate()}
                       >
                         <ArrowDownwardIcon />
                       </IconButton>
@@ -105,7 +103,14 @@ export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, test
           <TableBody>
             {testRunResults.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
               return (
-                <TableRow data-testid="testRunsTableBodyRow" hover role="checkbox" tabIndex={-1} key={row.id} sx={{ maxHeight: '70px', height: '70px' }}>
+                <TableRow
+                  data-testid="testRunsTableBodyRow"
+                  hover
+                  role="checkbox"
+                  tabIndex={-1}
+                  key={row.id}
+                  sx={{ maxHeight: '70px', height: '70px' }}
+                >
                   {columns.map((column) => {
                     const value = row[column.id];
                     let cell = null;
@@ -120,7 +125,6 @@ export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, test
                           data-testid="checkboxTest"
                           value={value}
                           hasCheckbox={isCheckBoxActive}
-                         
                           onChange={() => onChange(row)}
                           status={row.status}
                         />

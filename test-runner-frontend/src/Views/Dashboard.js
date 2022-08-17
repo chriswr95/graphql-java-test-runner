@@ -49,7 +49,6 @@ export default function Dashboard() {
       setCancelButtonState(false);
     }
     */
-  
 
   /*
     useEffect(() => 
@@ -364,10 +363,10 @@ export default function Dashboard() {
     setMachineSelection(event.target.value);
   };
 
-  function sortDate () {
+  function sortDate() {
     var testRunsResultsSorted = testRunResultsCopy;
-    setTestRunResults([].concat(testRunsResultsSorted).sort((a, b) => b.date - a.date))
-  };
+    setTestRunResults([].concat(testRunsResultsSorted).sort((a, b) => b.date - a.date));
+  }
 
   const [checkBoxSelection, setCheckBoxSelection] = React.useState([]);
 
@@ -455,7 +454,6 @@ export default function Dashboard() {
             </Button>
 
           */}
-         
           </Stack>
 
           <Box sx={{ marginTop: '0.8%', marginBottom: '0.8%' }}>
@@ -463,7 +461,9 @@ export default function Dashboard() {
               <InputLabel>Test Runs</InputLabel>
               <Select value={testRunSelection} onChange={handleChangeTestRunSelection} label="Test Runs">
                 <MenuItem value={'All Test Runs'}>All Test Runs</MenuItem>
-                <MenuItem data-testid="Master Only" value={'Master Only'}>Master Only</MenuItem>
+                <MenuItem data-testid="Master Only" value={'Master Only'}>
+                  Master Only
+                </MenuItem>
               </Select>
             </FormControl>
 
@@ -477,23 +477,22 @@ export default function Dashboard() {
             </FormControl>
           </Box>
 
-      
-          {
-            isCheckBoxActive === true
-              ?
-              checkBoxSelection.length > 2
-                ?
-                <Alert data-testid="alert-warning" severity="warning" sx={{ width: "30%", marginTop: "1.6%" }}>You can only select 2 test runs to compare!</Alert>
-                :
-                checkBoxSelection.length === 2
-                  ?
-                  <Alert data-testid="alert-succes" severity="success" sx={{ width: "30%", marginTop: "1.6%" }}>Nice selection! You can now compare this 2 test runs</Alert>
-                  :
-                  <Alert data-testid="alert-info" severity="info" sx={{ width: "30%", marginTop: "1.6%" }}>Select {2 - checkBoxSelection.length} Test Runs to compare</Alert>
-              :
-              null
-          }
-        
+          {isCheckBoxActive === true ? (
+            checkBoxSelection.length > 2 ? (
+              <Alert data-testid="alert-warning" severity="warning" sx={{ width: '30%', marginTop: '1.6%' }}>
+                You can only select 2 test runs to compare!
+              </Alert>
+            ) : checkBoxSelection.length === 2 ? (
+              <Alert data-testid="alert-succes" severity="success" sx={{ width: '30%', marginTop: '1.6%' }}>
+                Nice selection! You can now compare this 2 test runs
+              </Alert>
+            ) : (
+              <Alert data-testid="alert-info" severity="info" sx={{ width: '30%', marginTop: '1.6%' }}>
+                Select {2 - checkBoxSelection.length} Test Runs to compare
+              </Alert>
+            )
+          ) : null}
+
           <TestRunsTable
             onCheckboxChange={onCheckboxChange}
             isCheckBoxActive={isCheckBoxActive}

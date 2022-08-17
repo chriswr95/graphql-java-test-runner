@@ -3,7 +3,7 @@ import { render, fireEvent, waitFor, screen, getByRole, queryHelpers, getByTestI
 import userEvent from '@testing-library/user-event';
 
 describe('Dashboard', () => {
-    /*
+  /*
   test('Check buttons rendering and functionality', async () => {
     const { debug, getByRole } = render(<Dashboard/>);
     const CompareButton = getByRole('button', { name: /Compare/i });
@@ -16,7 +16,7 @@ describe('Dashboard', () => {
   */
 
   test('Check dropwdown menu All Test Runs', async () => {
-    const { debug, getByRole, getAllByText, queryByText } = render(<Dashboard/>);
+    const { debug, getByRole, getAllByText, queryByText } = render(<Dashboard />);
     expect(getAllByText('master')).toBeDefined();
     expect(getAllByText('save_data')).toBeDefined();
     const AllTestRunsButton = getByRole('button', { name: /All Test Runs/i });
@@ -33,9 +33,8 @@ describe('Dashboard', () => {
     expect(getAllByText('save_data')).toBeDefined();
   });
 
-  
   test('Check dropdown menu All Machines', async () => {
-    const { debug, getByRole, getAllByText } = render(<Dashboard/>);
+    const { debug, getByRole, getAllByText } = render(<Dashboard />);
     expect(getAllByText('e2-standard-32')).toBeDefined();
     expect(getAllByText('e2-standard-2')).toBeDefined();
     const AllMachinesButton = getByRole('button', { name: /All Machines/i });
@@ -49,5 +48,4 @@ describe('Dashboard', () => {
     await userEvent.click(e2Standard2Option);
     expect(getAllByText('e2-standard-2')).toBeDefined();
   });
-  
 });
