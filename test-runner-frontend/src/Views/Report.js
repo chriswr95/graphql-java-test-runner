@@ -1,4 +1,4 @@
-import { Box, Link, Stack } from '@mui/material';
+import { Box, getListItemTextUtilityClass, Link, Stack } from '@mui/material';
 import * as React from 'react';
 import Typography from "@mui/material/Typography";
 import GraphQL_Logo from "../Assets/GraphQL_Java_Logo_v2.png"
@@ -13,9 +13,12 @@ import { useEffect, useState } from 'react';
 export default function Report() {
     const location = useLocation()
     const { from } = location.state
-    console.log(from);
 
-    const classesAndBenchmarks = new Map();
+    const classesAndBenchmarks = {};
+
+    const classesAndBenchmarksLength = ["1", "2"];
+
+    const [classesAndBenchmarksState, setClassesAndBenchmarksState] = useState({});
 
     const getBenchmarks = () => {
         from.statistics?.map(testRun => {
@@ -26,12 +29,12 @@ export default function Report() {
             classesAndBenchmarks[benchmarkClass].push(benchmarkMethod);
         });
         console.log(classesAndBenchmarks);
+        setClassesAndBenchmarksState(classesAndBenchmarks);
     }
 
     useEffect(() => {
-        //alert("Avoid infite loop builingRows")
         getBenchmarks();
-    }, [classesAndBenchmarks]);
+    }, []);
 
     return (
         <div>
@@ -62,23 +65,18 @@ export default function Report() {
                 {/* Lateral menu BOX */}
                 <Box sx={{ display: "flex", flexDirection: "column", position: "fixed" }}>
                     <HashLink smooth to='/report/#Summary' style={{ textDecoration: 'none', color: 'black' }}> <Typography variant='h6' sx={{ marginBottom: "3%" }}><b>Benchmarks</b></Typography> </HashLink>
+
                     {
-                        /*
-                        Array.from(classesAndBenchmarks)?.map((benchmarkClass) => {
-                          <HashLink smooth to={`/report/#${benchmarkClass}`} style={{ textDecoration: 'none', color: 'black' }}> <Typography variant='h7'>${benchmarkClass}</Typography> </HashLink>
-                        })
-                        */
+                        Object.keys(classesAndBenchmarksState).map((item, i) => (
+                            <HashLink key={i} smooth to={`/report/#${item}`} style={{ textDecoration: 'none', color: 'black' }} >
+                                <Typography variant='h7' >{item}</Typography>
+                            </HashLink>
 
 
-                        classesAndBenchmarks.map(benchmarkClass => {
-                            return benchmarkClass.map(benchmarkMethod => (
-                              <HashLink key={benchmarkClass.id} smooth to={`/report/#${benchmarkClass}`} style={{ textDecoration: 'none', color: 'black' }}>
-                                {benchmarkClass}
-                              </HashLink>
-                            ))
-                        })
+                        ))
+
                     }
-                    
+
                     {/*
                     <HashLink smooth to='/report/#Summary' style={{ textDecoration: 'none', color: 'black' }}> <Typography variant='h6' sx={{ marginBottom: "3%" }}><b>Benchmarks</b></Typography> </HashLink>
                     <HashLink smooth to='/report/#Class1' style={{ textDecoration: 'none', color: 'black' }}>  <Typography variant='h7'>Benchmark Class 1</Typography>  </HashLink>
@@ -92,117 +90,28 @@ export default function Report() {
                 </Box>
 
                 {/* Charts BOX */}
-                <Box sx={{ width: "84%", marginLeft: "15%" }}>
+                <Box sx={{ width: "84%", marginLeft: "15%", display: "flex", flexDirection: "row" }}>
                     {/* Bar columns BOX */}
-                    <Stack direction="row" spacing="5%" sx={{ marginTop: "0/3%" }}>
-                        <Box sx={{ width: "50%" }}>
-                            <Typography variant='h5' id='Class1'><b>Benchmark Class 1</b></Typography>
-                            <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
-                            <BarCharts />
+
+                        <Box sx={{ width: "50%", display: "flex", flexDirection: "column" }}>
+                            <Box sx={{marginBottom: "3%"}}>
+                                <Typography variant='h5' id='Class1'><b>Benchmark Class 1</b></Typography>
+                                <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
+                                <BarCharts />
+                            </Box>
                         </Box>
 
-                        <Box sx={{ width: "50%" }}>
-                            <Typography variant='h5'><b>Benchmark Class 1</b></Typography>
-                            <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
-                            <BarCharts />
+                        <Box sx={{ width: "50%",  display: "flex", flexDirection: "column" }}>
+                            <Box sx={{marginBottom: "3%"}}>
+                                <Typography variant='h5'><b>Benchmark Class 1</b></Typography>
+                                <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
+                                <BarCharts />
+                            </Box>
+
+                            
                         </Box>
 
-                    </Stack>
-
-                    {/*Delete all this boxes when data is dynamical */}
-
-                    <Stack direction="row" spacing="5%" sx={{ marginTop: "3%" }}>
-                        <Box sx={{ width: "50%" }}>
-                            <Typography variant='h5' id='Class2'><b>Benchmark Class 2</b></Typography>
-                            <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
-                            <BarCharts />
-                        </Box>
-
-                        <Box sx={{ width: "50%" }}>
-                            <Typography variant='h5'><b>Benchmark Class 2</b></Typography>
-                            <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
-                            <BarCharts />
-                        </Box>
-
-                    </Stack>
-
-                    <Stack direction="row" spacing="5%" sx={{ marginTop: "3%" }}>
-                        <Box sx={{ width: "50%" }}>
-                            <Typography variant='h5' id='Class3'><b>Benchmark Class 3</b></Typography>
-                            <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
-                            <BarCharts />
-                        </Box>
-
-                        <Box sx={{ width: "50%" }}>
-                            <Typography variant='h5'><b>Benchmark Class 3</b></Typography>
-                            <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
-                            <BarCharts />
-                        </Box>
-
-                    </Stack>
-
-                    <Stack direction="row" spacing="5%" sx={{ marginTop: "3%" }}>
-                        <Box sx={{ width: "50%" }}>
-                            <Typography variant='h5' id='Class4'><b>Benchmark Class 4</b></Typography>
-                            <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
-                            <BarCharts />
-                        </Box>
-
-                        <Box sx={{ width: "50%" }}>
-                            <Typography variant='h5'><b>Benchmark Class 4</b></Typography>
-                            <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
-                            <BarCharts />
-                        </Box>
-
-                    </Stack>
-
-
-                    <Stack direction="row" spacing="5%" sx={{ marginTop: "3%" }}>
-                        <Box sx={{ width: "50%" }}>
-                            <Typography variant='h5' id='Class5'><b>Benchmark Class 5</b></Typography>
-                            <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
-                            <BarCharts />
-                        </Box>
-
-                        <Box sx={{ width: "50%" }}>
-                            <Typography variant='h5'><b>Benchmark Class 5</b></Typography>
-                            <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
-                            <BarCharts />
-                        </Box>
-
-                    </Stack>
-
-
-                    <Stack direction="row" spacing="5%" sx={{ marginTop: "3%" }}>
-                        <Box sx={{ width: "50%" }}>
-                            <Typography variant='h5' id='Class6'><b>Benchmark Class 6</b></Typography>
-                            <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
-                            <BarCharts />
-                        </Box>
-
-                        <Box sx={{ width: "50%" }}>
-                            <Typography variant='h5'><b>Benchmark Class 6</b></Typography>
-                            <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
-                            <BarCharts />
-                        </Box>
-
-                    </Stack>
-
-
-                    <Stack direction="row" spacing="5%" sx={{ marginTop: "3%" }}>
-                        <Box sx={{ width: "50%" }}>
-                            <Typography variant='h5' id='Class7'><b>Benchmark Class 7</b></Typography>
-                            <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
-                            <BarCharts />
-                        </Box>
-
-                        <Box sx={{ width: "50%" }}>
-                            <Typography variant='h5'><b>Benchmark Class 7</b></Typography>
-                            <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
-                            <BarCharts />
-                        </Box>
-
-                    </Stack>
+                    
                 </Box>
 
 

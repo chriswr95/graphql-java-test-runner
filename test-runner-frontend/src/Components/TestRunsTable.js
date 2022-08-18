@@ -122,7 +122,7 @@ export default function TestRunsTable({ onCheckboxChange, checkBoxSelection, isC
                       cell = value;
                     } else {
                       cell = (
-                        <Link to="/report" state={{ from: row }}>
+                        <Link to="/report" state={{ from: row }} style={{ textDecoration: 'none', color: 'black' }}>
                         <IdCell
                           data-testid="checkboxTest"
                           value={value}
