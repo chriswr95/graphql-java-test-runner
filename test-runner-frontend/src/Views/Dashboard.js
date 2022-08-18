@@ -2,14 +2,14 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-//import Button from '@mui/material/Button';
+import Button from '@mui/material/Button';
 import GraphQL_Logo from '../Assets/GraphQL_Java_Logo_v2.png';
 import Alert from '@mui/material/Alert';
 import { useEffect, useState } from 'react';
-//import { onSnapshot, collection } from '@firebase/firestore';
-//import db from './firebase';
+import { onSnapshot, collection } from '@firebase/firestore';
+import db from './firebase';
 import TestRunsTable from '../Components/TestRunsTable';
-//import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -26,7 +26,7 @@ export default function Dashboard() {
 
   var machinesArray = ['e2-standard-2', 'e2-standard-32'];
 
-  //const [testResults, setTestResults] = useState([]);
+  const [testResults, setTestResults] = useState([]);
 
   //const navigate = useNavigate();
 
@@ -50,7 +50,7 @@ export default function Dashboard() {
     }
     */
 
-  /*
+  
     useEffect(() => 
         () =>
             onSnapshot(collection(db, 'test-runs'), (snapshot) => 
@@ -64,263 +64,67 @@ export default function Dashboard() {
       buildRows()
     }, [testResults]);
   
-*/
 
-  const [testRunResults, setTestRunResults] = useState([
-    {
-      id: '2c89206c-1929-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 11,
-      improvedVsRegressed: {
-        improved: 9,
-        regressed: 2,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 4:35 pm',
-    },
-    {
-      id: '84598338-1931-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 11,
-      improvedVsRegressed: {
-        improved: 3,
-        regressed: 9,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 4:40 pm',
-    },
-    {
-      id: 'ac9cc066-192d-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 12,
-      improvedVsRegressed: {
-        improved: 5,
-        regressed: 7,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 4:51 pm',
-    },
-    {
-      id: 'f71da006-1937-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 11,
-      improvedVsRegressed: {
-        improved: 11,
-        regressed: 0,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 6:35 pm',
-    },
-    {
-      id: '888fafca-192e-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 21,
-      improvedVsRegressed: {
-        improved: 10,
-        regressed: 11,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 7:02 pm',
-    },
-    {
-      id: '6f7b7ed0-1981-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 21,
-      improvedVsRegressed: {
-        improved: 12,
-        regressed: 9,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 8:35 pm',
-    },
-    {
-      id: 'a7b884b4-1981-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 15,
-      improvedVsRegressed: {
-        improved: 8,
-        regressed: 7,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 8:59 pm',
-    },
-    {
-      id: 'a1224f86-1981-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 10,
-      improvedVsRegressed: {
-        improved: 5,
-        regressed: 5,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 9:12 pm',
-    },
-    {
-      id: 'af2ac950-1981-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 7,
-      improvedVsRegressed: {
-        improved: 4,
-        regressed: 3,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 10:42 pm',
-    },
-  ]);
 
-  const [testRunResultsCopy, setTestRunResultsCopy] = useState([
-    {
-      id: '2c89206c-1929-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 12,
-      improvedVsRegressed: {
-        improved: 9,
-        regressed: 2,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 4:35 pm',
-    },
-    {
-      id: '84598338-1931-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 11,
-      improvedVsRegressed: {
-        improved: 3,
-        regressed: 9,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 4:40 pm',
-    },
-    {
-      id: 'ac9cc066-192d-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 12,
-      improvedVsRegressed: {
-        improved: 5,
-        regressed: 7,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 4:51 pm',
-    },
-    {
-      id: 'f71da006-1937-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 11,
-      improvedVsRegressed: {
-        improved: 11,
-        regressed: 0,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 6:35 pm',
-    },
-    {
-      id: '888fafca-192e-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 21,
-      improvedVsRegressed: {
-        improved: 10,
-        regressed: 11,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 7:02 pm',
-    },
-    {
-      id: '6f7b7ed0-1981-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 21,
-      improvedVsRegressed: {
-        improved: 12,
-        regressed: 9,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 8:35 pm',
-    },
-    {
-      id: 'a7b884b4-1981-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 15,
-      improvedVsRegressed: {
-        improved: 8,
-        regressed: 7,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 8:59 pm',
-    },
-    {
-      id: 'a1224f86-1981-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 10,
-      improvedVsRegressed: {
-        improved: 5,
-        regressed: 5,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 9:12 pm',
-    },
-    {
-      id: 'af2ac950-1981-11ed-861d-0242ac120002',
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: statusArray[Math.floor(Math.random() * statusArray.length)],
-      benchmarks: 7,
-      improvedVsRegressed: {
-        improved: 4,
-        regressed: 3,
-      },
-      machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-      date: '12/08/2022 10:42 pm',
-    },
-  ]);
+  const [testRunResults, setTestRunResults] = useState([]);
+  const [testRunResultsCopy, setTestRunResultsCopy] = useState([]);
 
-  /*
+  const buildRow = (machine, testStatus, jobId, commitHash, machineType) => {
+    var timestamp = machine?.startTime
+    var date = new Date(timestamp * 26);
+    const newTestRun = {
+      id: jobId,
+      commitHash: commitHash,
+      branch: branchArray[Math.floor(Math.random()*branchArray.length)],
+      status: testStatus,
+      benchmarks: machine?.testStatistics.length,
+      //improvedVsRegresed: compareBenchmarks(testResults[index], testResults[index + 1] ? testResults[index + 1] : []),
+      improvedVsRegressed:{
+        improved: 0,
+        regressed: 0
+      }, 
+      machine: machineType,
+      date: date.toLocaleString(),
+      statistics: machine?.testStatistics,
+    }
+    return newTestRun;
+  }
+
+  var bestCopyEver = [];
   const buildRows = () => {
-    testResults?.sort((a, b) => b.testRunnerResults.core_32.startTime - a.testRunnerResults.core_32.startTime);
-    testResults?.map((test, index) => {
-      var timestamp = test.testRunnerResults.core_32.startTime;
-      var date = new Date(timestamp * 26);
-      const newObj = {
-        id: test.commitHash,
-        //branch: textArray[Math.floor(Math.random()*textArray.length)],
-        status: test.status.core_32,
-        benchmarks: test.testRunnerResults.core_32.testStatistics?.length,
-        improvedVsRegresed: compareBenchmarks(testResults[index], testResults[index + 1] ? testResults[index + 1] : []),
-        machine: machinesArray[Math.floor(Math.random() * machinesArray.length)],
-        date: date.toLocaleString(),
-      }
-      setTestRunResults(testRunResults => [...testRunResults, newObj]);
-      setTestRunResultsCopy(testRunResultsCopy => [...testRunResultsCopy, newObj]);
-      console.log(newObj.improvedVsRegresed);
-    })
+      testResults?.sort((a,b) => b.testRunnerResults?.core_32.startTime - a.testRunnerResults?.core_32.startTime);
+      testResults?.map(testResult => {
+        const core32_testRun = buildRow(testResult.testRunnerResults?.core_32, testResult.status?.core_32, testResult.jobId+"-32", testResult.id, "e2-standard-32");
+        //setTestRunResults(testRunResults => [...testRunResults, core32_testRun]);
+        setTestRunResultsCopy(testRunResultsCopy => [...testRunResultsCopy, core32_testRun]);
+        bestCopyEver.push(core32_testRun);
+        const core2_testRun = buildRow(testResult.testRunnerResults?.core_2, testResult.status?.core_2, testResult.jobId+"-2", testResult.id, "e2-standard-2");
+        //setTestRunResults(testRunResults => [...testRunResults, core2_testRun]);
+        setTestRunResultsCopy(testRunResultsCopy => [...testRunResultsCopy, core2_testRun]);
+        bestCopyEver.push(core2_testRun);
+      });
+      setBenchmarks(0);
   };
-  */
 
-  /*
-  const compareBenchmarks = (currentTestRun, previousTestRun) => {
+  const setBenchmarks = (index) => {
+    compareBenchmarks(index);
+    setTestRunResults(bestCopyEver);
+  }
+
+  const compareBenchmarks = (index) => {
     var results = {
       improved: 0,
       regressed: 0
     };
 
-    for (var i = 0; i < currentTestRun.testRunnerResults?.core_32.testStatistics?.length; i++) {
-      for (var j = 0; j < previousTestRun.testRunnerResults?.core_32.testStatistics?.length; j++) {
-        if (currentTestRun.testRunnerResults?.core_32.testStatistics?.[i].benchmark === previousTestRun.testRunnerResults?.core_32.testStatistics?.[j].benchmark) {
-          if (currentTestRun.testRunnerResults?.core_32.testStatistics?.[i].primaryMetric.score >= previousTestRun.testRunnerResults?.core_32.testStatistics?.[j].primaryMetric.score) {
+    if(index <= bestCopyEver.length){
+    var currentTestRun = bestCopyEver[index]?.statistics;
+    var previousTestRun = bestCopyEver[index+2]?.statistics;
+
+    for (var i = 0; i < currentTestRun?.length; i++) {
+      for (var j = 0; j < previousTestRun?.length; j++) {
+        if (currentTestRun[i].benchmark === previousTestRun[j].benchmark) {
+          if (currentTestRun[i].primaryMetric.score >= previousTestRun[j].primaryMetric.score) {
             results.improved++;
           } else {
             results.regressed++;
@@ -328,9 +132,13 @@ export default function Dashboard() {
         }
       }
     }
-    return results;
+
+    if(bestCopyEver[index]?.improvedVsRegressed.improved === 0){
+      bestCopyEver[index].improvedVsRegressed = results;
+    }
+    compareBenchmarks(index+1);
+    }
   }
-*/
 
   const [testRunSelection, setTestRunSelection] = useState('All Test Runs');
   const [machineSelection, setMachineSelection] = useState('All Machines');
@@ -495,6 +303,7 @@ export default function Dashboard() {
 
           <TestRunsTable
             onCheckboxChange={onCheckboxChange}
+            checkBoxSelection={checkBoxSelection}
             isCheckBoxActive={isCheckBoxActive}
             testRunResults={testRunResults}
             sortDate={sortDate}

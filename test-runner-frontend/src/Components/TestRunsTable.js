@@ -12,6 +12,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ProgressBarCell from './ProgressBarCell';
 import IdCell from './IdCell';
+import { Link } from 'react-router-dom';
 
 const columns = [
   {
@@ -48,7 +49,7 @@ const columns = [
   },
 ];
 
-export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, testRunResults, sortDate }) {
+export default function TestRunsTable({ onCheckboxChange, checkBoxSelection, isCheckBoxActive, testRunResults, sortDate }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -121,6 +122,7 @@ export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, test
                       cell = value;
                     } else {
                       cell = (
+                        <Link to="/report" state={{ from: row }}>
                         <IdCell
                           data-testid="checkboxTest"
                           value={value}
@@ -128,6 +130,7 @@ export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, test
                           onChange={() => onChange(row)}
                           status={row.status}
                         />
+                        </Link>
                       );
                     }
                     return (
