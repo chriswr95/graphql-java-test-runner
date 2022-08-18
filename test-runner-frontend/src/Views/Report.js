@@ -12,29 +12,36 @@ import { useEffect, useState } from 'react';
 
 export default function Report() {
     const location = useLocation()
-    const { from } = location.state
+    const { from } = location.state;
 
     const classesAndBenchmarks = {};
-
-    const classesAndBenchmarksLength = ["1", "2"];
 
     const [classesAndBenchmarksState, setClassesAndBenchmarksState] = useState({});
 
     const getBenchmarks = () => {
         from.statistics?.map(testRun => {
-            var benchmarkData = testRun.benchmark.split(".");
-            var benchmarkClass = benchmarkData[1];
-            var benchmarkMethod = benchmarkData[2];
+            var benchmarkCassAndMethod = testRun.benchmark.split(".");
+            var benchmarkClass = benchmarkCassAndMethod[1];
+            var benchmarkMethod = benchmarkCassAndMethod[2];
+            var benchmarkData = {
+                "benchmarkMethod": benchmarkMethod,
+                "benchmarkScore": testRun.primaryMetric.score,
+                "benchmarkError": testRun.primaryMetric.scoreError,
+                "mode": testRun.mode
+            }
             classesAndBenchmarks[benchmarkClass] ??= [];
-            classesAndBenchmarks[benchmarkClass].push(benchmarkMethod);
+            classesAndBenchmarks[benchmarkClass].push(benchmarkData);
         });
-        console.log(classesAndBenchmarks);
+        //console.log(from);
+        //console.log(classesAndBenchmarks);
         setClassesAndBenchmarksState(classesAndBenchmarks);
     }
 
     useEffect(() => {
         getBenchmarks();
     }, []);
+
+    let currM;
 
     return (
         <div>
@@ -51,7 +58,7 @@ export default function Report() {
             {/* Test Runs info */}
             <Box sx={{ width: "95%", marginBottom: "2%", marginLeft: "2%" }}>
                 <Typography variant='h4'><b>Test run {from.id}</b></Typography>
-                <Typography style={{ color: "grey" }}>Time of Run: 10:34 AM PST - July 20, 2022</Typography>
+                <Typography style={{ color: "grey" }}>Time of Run: {from.date}</Typography>
                 <Typography style={{ color: "grey" }}>Git Commit Hash: {from.commitHash}</Typography>
                 <Typography style={{ color: "grey" }}>Branch: {from.branch}</Typography>
             </Box>
@@ -68,8 +75,9 @@ export default function Report() {
 
                     {
                         Object.keys(classesAndBenchmarksState).map((item, i) => (
+
                             <HashLink key={i} smooth to={`/report/#${item}`} style={{ textDecoration: 'none', color: 'black' }} >
-                                <Typography variant='h7' >{item}</Typography>
+                                <Typography variant='h7' style={{maxWidth:"63%", textOverflow: "ellipsis",  whiteSpace: "nowrap", overflow: "hidden", display: "block"}} >{item}</Typography>
                             </HashLink>
 
 
@@ -77,41 +85,43 @@ export default function Report() {
 
                     }
 
-                    {/*
-                    <HashLink smooth to='/report/#Summary' style={{ textDecoration: 'none', color: 'black' }}> <Typography variant='h6' sx={{ marginBottom: "3%" }}><b>Benchmarks</b></Typography> </HashLink>
-                    <HashLink smooth to='/report/#Class1' style={{ textDecoration: 'none', color: 'black' }}>  <Typography variant='h7'>Benchmark Class 1</Typography>  </HashLink>
-                    <HashLink smooth to='/report/#Class2' style={{ textDecoration: 'none', color: 'black' }}>  <Typography variant='h7'>Benchmark Class 2</Typography>  </HashLink>
-                    <HashLink smooth to='/report/#Class3' style={{ textDecoration: 'none', color: 'black' }} >  <Typography variant='h7'>Benchmark Class 3</Typography>  </HashLink>
-                    <HashLink smooth to='/report/#Class4' style={{ textDecoration: 'none', color: 'black' }}>  <Typography variant='h7'>Benchmark Class 4</Typography>  </HashLink>
-                    <HashLink smooth to='/report/#Class5' style={{ textDecoration: 'none', color: 'black' }}>  <Typography variant='h7'>Benchmark Class 5</Typography>  </HashLink>
-                    <HashLink smooth to='/report/#Class6' style={{ textDecoration: 'none', color: 'black' }} >  <Typography variant='h7'>Benchmark Class 6</Typography>  </HashLink>
-                    <HashLink smooth to='/report/#Class7' style={{ textDecoration: 'none', color: 'black' }}>  <Typography variant='h7'>Benchmark Class 7</Typography>  </HashLink>
-                    */}
                 </Box>
 
                 {/* Charts BOX */}
                 <Box sx={{ width: "84%", marginLeft: "15%", display: "flex", flexDirection: "row" }}>
                     {/* Bar columns BOX */}
 
-                        <Box sx={{ width: "50%", display: "flex", flexDirection: "column" }}>
-                            <Box sx={{marginBottom: "3%"}}>
-                                <Typography variant='h5' id='Class1'><b>Benchmark Class 1</b></Typography>
-                                <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
-                                <BarCharts />
-                            </Box>
-                        </Box>
+                    <Box sx={{ width: "50%", display: "flex", flexDirection: "column" }}>
 
+
+
+
+                        {
+                            Object.entries(classesAndBenchmarksState).map((benchmarkData, i) => (
+
+                                <Box key={i} sx={{ marginBottom: "3%" }}>
+                                    <Typography variant='h5' id={`${benchmarkData[0]}`}><b>{benchmarkData[0]}</b></Typography>
+                                    <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label={benchmarkData[0]} />
+                                    <BarCharts classesAndBenchmarksState={benchmarkData[1]} />
+                                </Box>
+
+
+                            ))
+
+                        }
+                        {/*
                         <Box sx={{ width: "50%",  display: "flex", flexDirection: "column" }}>
                             <Box sx={{marginBottom: "3%"}}>
                                 <Typography variant='h5'><b>Benchmark Class 1</b></Typography>
                                 <Chip sx={{ marginBottom: "3.6%", backgroundColor: "F1F1F1" }} label="Throughput" />
                                 <BarCharts />
                             </Box>
-
+                
                             
                         </Box>
 
-                    
+                */}
+                    </Box>
                 </Box>
 
 

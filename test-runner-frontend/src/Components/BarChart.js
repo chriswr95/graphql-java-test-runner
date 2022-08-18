@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -10,31 +10,55 @@ import {
   ErrorBar
 } from "recharts";
 
-const data = [
-  { name: "arrLst", Throughput_Ops: 4000, pv: 2400, amt: 2400, error: [100,200] },
-  { name: "arrLst", Throughput_Ops: 3000, pv: 1398, amt: 2210, error: [1100,1300] },
-  { name: "arrLst", Throughput_Ops: 2000, pv: 9800, amt: 2290, error: [1000,1100] },
-  { name: "arrLst", Throughput_Ops: 2780, pv: 3908, amt: 2000, error: [200,210] },
-  { name: "arrLst", Throughput_Ops: 1600, pv: 3908, amt: 2000, error: [170,210] }
-];
+export default function BarCharts(classesAndBenchmarksState) {
+  var benchmarksData = [];
 
-export default function BarCharts() {
+  console.log(classesAndBenchmarksState)
+  console.log(classesAndBenchmarksState.classesAndBenchmarksState)
+
+  const [benchmarksDataState, setBenchmarksDataState] = useState([]);
+  
+  const updateCurrentBenchmarkData = (currentClass) => {
+    for(var i=0; i<currentClass.length; i++){
+    var currentBenchmarkData = {};
+      for (const [key, value] of Object.entries(currentClass[i])) {
+        if(key === "benchmarkMethod")
+          currentBenchmarkData.name = value
+        else if(key === "benchmarkScore")
+          currentBenchmarkData.Throughput_Ops = value
+        else if(key === "benchmarkError")
+          currentBenchmarkData.error =[0, value]
+      }
+      benchmarksData.push(currentBenchmarkData)
+    }
+  }
+  
+  const constructbenchmarksData = () => {
+    updateCurrentBenchmarkData(classesAndBenchmarksState.classesAndBenchmarksState)
+    setBenchmarksDataState(benchmarksData);
+    benchmarksData = [];
+  }
+
+  useEffect(() => {
+    constructbenchmarksData();
+  }, [])
+
   return (
-    <BarChart 
-  width={520} 
-  height={300} 
-  data={data} 
-  layout="vertical"
->
-  <XAxis type="number"/>
-  <YAxis type="category" dataKey="name" />
-  <CartesianGrid strokeDasharray="2 2"/>
-  <Tooltip/>
-  <Legend />
-  <Bar dataKey="Throughput_Ops" fill="#337ab7">
-      <ErrorBar  dataKey="error" width={4} strokeWidth={2} stroke="black" />
-      <ErrorBar dataKey="errorNegative" width={4} strokeWidth={2} stroke="red" />
-  </Bar>
-</BarChart>
+    <BarChart
+      width={520}
+      height={300}
+      data={benchmarksDataState}
+      layout="vertical"
+    >
+      <XAxis type="number" />
+      <YAxis type="category" dataKey="name" />
+      <CartesianGrid strokeDasharray="2 2" />
+      <Tooltip />
+      <Legend />
+      <Bar dataKey="Throughput_Ops" fill="#337ab7">
+        <ErrorBar dataKey="error" width={4} strokeWidth={2} stroke="black" />
+        <ErrorBar dataKey="errorNegative" width={4} strokeWidth={2} stroke="red" />
+      </Bar>
+    </BarChart>
   );
 }
