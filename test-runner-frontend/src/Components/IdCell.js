@@ -32,13 +32,13 @@ export default function IdCell({ value, hasCheckbox, onChange, status, textDecor
           <Checkbox value={value} onChange={() => onChange(value)} />
           <Stack direction="row" spacing={2} style={{ marginTop: '1.8%' }}>
             <IconComponent sx={{ color: iconColor }} />
-            <div style={{textDecoration: textDecoration}}>{value}</div>
+            <div style={{ textDecoration: textDecoration }}>{value}</div>
           </Stack>
         </Stack>
       ) : (
         <Stack direction="row" spacing={2}>
           <IconComponent sx={{ color: iconColor }} />
-          <div style={{textDecoration: textDecoration}}>{value}</div>
+          <div style={{ textDecoration: textDecoration }}>{value}</div>
         </Stack>
       )}
     </>

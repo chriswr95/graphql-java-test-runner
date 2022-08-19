@@ -49,7 +49,13 @@ const columns = [
   },
 ];
 
-export default function TestRunsTable({ onCheckboxChange, checkBoxSelection, isCheckBoxActive, testRunResults, sortDate }) {
+export default function TestRunsTable({
+  onCheckboxChange,
+  checkBoxSelection,
+  isCheckBoxActive,
+  testRunResults,
+  sortDate,
+}) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -121,32 +127,28 @@ export default function TestRunsTable({ onCheckboxChange, checkBoxSelection, isC
                     } else if (column.id !== 'id') {
                       cell = value;
                     } else {
-                      cell = (                        
-                        row.status === "CREATED" || row.status === "RUNNING"
-                        ?
-                        <IdCell
-                          data-testid="checkboxTest"
-                          value={value}
-                          hasCheckbox={isCheckBoxActive}
-                          onChange={() => onChange(row)}
-                          status={row.status}
-                          textDecoration={"none"}
-                        />
-                        :
-                        <Link to="/report" state={{ from: row }} style={{ textDecoration: 'none', color: 'black' }}>
-                        <IdCell
-                          data-testid="checkboxTest"
-                          value={value}
-                          hasCheckbox={isCheckBoxActive}
-                          onChange={() => onChange(row)}
-                          status={row.status}
-                          textDecoration={"underline"}
-                        />
-                        </Link>
-                        
-
-                        
-                      );
+                      cell =
+                        row.status === 'CREATED' || row.status === 'RUNNING' ? (
+                          <IdCell
+                            data-testid="checkboxTest"
+                            value={value}
+                            hasCheckbox={isCheckBoxActive}
+                            onChange={() => onChange(row)}
+                            status={row.status}
+                            textDecoration={'none'}
+                          />
+                        ) : (
+                          <Link to="/report" state={{ from: row }} style={{ textDecoration: 'none', color: 'black' }}>
+                            <IdCell
+                              data-testid="checkboxTest"
+                              value={value}
+                              hasCheckbox={isCheckBoxActive}
+                              onChange={() => onChange(row)}
+                              status={row.status}
+                              textDecoration={'underline'}
+                            />
+                          </Link>
+                        );
                     }
                     return (
                       <TableCell key={column.id} align={column.align}>

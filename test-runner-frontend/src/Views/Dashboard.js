@@ -50,135 +50,142 @@ export default function Dashboard() {
     }
     */
 
-  
-    useEffect(() => 
-        () =>
-            onSnapshot(collection(db, 'test-runs'), (snapshot) => 
-                setTestResults(snapshot.docs.map((doc) => ({...doc.data(), id: doc.id})))
-            ),
-        []
-    );
+  useEffect(
+    () => () =>
+      onSnapshot(collection(db, 'test-runs'), (snapshot) =>
+        setTestResults(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+      ),
+    []
+  );
 
-    useEffect(() => {
-      //alert("Avoid infite loop builingRows")
-      buildRows()
-    }, [testResults]);
-  
-
+  useEffect(() => {
+    //alert("Avoid infite loop builingRows")
+    buildRows();
+  }, [testResults]);
 
   const [testRunResults, setTestRunResults] = useState([]);
   const [testRunResultsCopy, setTestRunResultsCopy] = useState([]);
 
   const buildRow = (machine, testStatus, jobId, commitHash, machineType) => {
-    var timestamp = machine?.startTime
+    var timestamp = machine?.startTime;
     var date = new Date(timestamp * 26);
     const newTestRun = {
       id: jobId,
       commitHash: commitHash,
-      branch: branchArray[Math.floor(Math.random()*branchArray.length)],
+      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
       status: testStatus,
       benchmarks: machine?.testStatistics.length,
       //improvedVsRegresed: compareBenchmarks(testResults[index], testResults[index + 1] ? testResults[index + 1] : []),
-      improvedVsRegressed:{
+      improvedVsRegressed: {
         improved: 0,
-        regressed: 0
-      }, 
+        regressed: 0,
+      },
       machine: machineType,
       date: date.toLocaleString(),
       statistics: machine?.testStatistics,
-    }
+    };
     return newTestRun;
-  }
+  };
 
   var bestCopyEver = [];
   const buildRows = () => {
-      testResults?.sort((a,b) => b.testRunnerResults?.core_32.startTime - a.testRunnerResults?.core_32.startTime);
-      testResults?.map(testResult => {
-        const core32_testRun = buildRow(testResult.testRunnerResults?.core_32, testResult.status?.core_32, testResult.jobId+"-32", testResult.id, "e2-standard-32");
-        //setTestRunResults(testRunResults => [...testRunResults, core32_testRun]);
-        setTestRunResultsCopy(testRunResultsCopy => [...testRunResultsCopy, core32_testRun]);
-        bestCopyEver.push(core32_testRun);
-        const core2_testRun = buildRow(testResult.testRunnerResults?.core_2, testResult.status?.core_2, testResult.jobId+"-2", testResult.id, "e2-standard-2");
-        //setTestRunResults(testRunResults => [...testRunResults, core2_testRun]);
-        setTestRunResultsCopy(testRunResultsCopy => [...testRunResultsCopy, core2_testRun]);
-        bestCopyEver.push(core2_testRun);
-      });
-      setBenchmarks(0);
-      //buildRowsv2();
+    testResults?.sort((a, b) => b.testRunnerResults?.core_32.startTime - a.testRunnerResults?.core_32.startTime);
+    testResults?.map((testResult) => {
+      const core32_testRun = buildRow(
+        testResult.testRunnerResults?.core_32,
+        testResult.status?.core_32,
+        testResult.jobId + '-32',
+        testResult.id,
+        'e2-standard-32'
+      );
+      //setTestRunResults(testRunResults => [...testRunResults, core32_testRun]);
+      setTestRunResultsCopy((testRunResultsCopy) => [...testRunResultsCopy, core32_testRun]);
+      bestCopyEver.push(core32_testRun);
+      const core2_testRun = buildRow(
+        testResult.testRunnerResults?.core_2,
+        testResult.status?.core_2,
+        testResult.jobId + '-2',
+        testResult.id,
+        'e2-standard-2'
+      );
+      //setTestRunResults(testRunResults => [...testRunResults, core2_testRun]);
+      setTestRunResultsCopy((testRunResultsCopy) => [...testRunResultsCopy, core2_testRun]);
+      bestCopyEver.push(core2_testRun);
+    });
+    setBenchmarks(0);
+    //buildRowsv2();
   };
 
   //Dynamic cores
   const buildRowsv2 = () => {
-    testResults?.sort((a,b) => b.testRunnerResults?.core_32.startTime - a.testRunnerResults?.core_32.startTime);
-    testResults?.map(testResult => {
+    testResults?.sort((a, b) => b.testRunnerResults?.core_32.startTime - a.testRunnerResults?.core_32.startTime);
+    testResults?.map((testResult) => {
       console.log(testResult);
-      Object.entries(testResult.testRunnerResults)?.map(([key, value]) => { 
-                //const testRun = buildRow(testResult.testRunnerResults?.core_32, testResult.status?.core_32, testResult.jobId+"-32", testResult.id, "e2-standard-32");
-                //setTestRunResultsCopy(testRunResultsCopy => [...testRunResultsCopy, testRun]);
-                //bestCopyEver.push(testRun);
-                console.log("1");
-                console.log(key);
-                console.log("2");
-                //console.log(value);
-    })
+      Object.entries(testResult.testRunnerResults)?.map(([key, value]) => {
+        //const testRun = buildRow(testResult.testRunnerResults?.core_32, testResult.status?.core_32, testResult.jobId+"-32", testResult.id, "e2-standard-32");
+        //setTestRunResultsCopy(testRunResultsCopy => [...testRunResultsCopy, testRun]);
+        //bestCopyEver.push(testRun);
+        console.log('1');
+        console.log(key);
+        console.log('2');
+        //console.log(value);
+      });
     });
-  }
+  };
 
   const setBenchmarks = (index) => {
     compareBenchmarks(index);
     setTestRunResults(bestCopyEver);
-  }
+  };
 
   const compareBenchmarks = (index) => {
     var results = {
       improved: 0,
-      regressed: 0
+      regressed: 0,
     };
 
-    if(index <= bestCopyEver.length){
-    var currentTestRun = bestCopyEver[index]?.statistics;
-    var previousTestRun = bestCopyEver[index+2]?.statistics;
+    if (index <= bestCopyEver.length) {
+      var currentTestRun = bestCopyEver[index]?.statistics;
+      var previousTestRun = bestCopyEver[index + 2]?.statistics;
 
-    for (var i = 0; i < currentTestRun?.length; i++) {
-      for (var j = 0; j < previousTestRun?.length; j++) {
-        if (currentTestRun[i].benchmark === previousTestRun[j].benchmark) {
-          if (currentTestRun[i].primaryMetric.score >= previousTestRun[j].primaryMetric.score) {
-            results.improved++;
-          } else {
-            results.regressed++;
+      for (var i = 0; i < currentTestRun?.length; i++) {
+        for (var j = 0; j < previousTestRun?.length; j++) {
+          if (currentTestRun[i].benchmark === previousTestRun[j].benchmark) {
+            if (currentTestRun[i].primaryMetric.score >= previousTestRun[j].primaryMetric.score) {
+              results.improved++;
+            } else {
+              results.regressed++;
+            }
           }
         }
       }
-    }
 
-    if(bestCopyEver[index]?.improvedVsRegressed.improved === 0){
-      bestCopyEver[index].improvedVsRegressed = results;
+      if (bestCopyEver[index]?.improvedVsRegressed.improved === 0) {
+        bestCopyEver[index].improvedVsRegressed = results;
+      }
+      compareBenchmarks(index + 1);
     }
-    compareBenchmarks(index+1);
-    }
-  }
+  };
 
   const modeData = {
-    thrpt: "higherIsBetter",
-    avgt: "lowerIsBetter",
-    sample: "higherIsBetter",
-    ss: "lowerIsBetter",
-    all: "higherIsBetter"
-  }
+    thrpt: 'higherIsBetter',
+    avgt: 'lowerIsBetter',
+    sample: 'higherIsBetter',
+    ss: 'lowerIsBetter',
+    all: 'higherIsBetter',
+  };
 
   const compareBenchmarksv2 = (testRunResults, modeData) => {
     var modesWhereHigherIsBetter = [];
     var modesWhereLowerIsBetter = [];
 
-    for(const [key, value] of Object.entries(modeData)){
-      if(value === "higherIsBetter")
-        modesWhereHigherIsBetter.push(key);
-      else if(value === "lowerIsBetter")
-        modesWhereLowerIsBetter.push(key);
+    for (const [key, value] of Object.entries(modeData)) {
+      if (value === 'higherIsBetter') modesWhereHigherIsBetter.push(key);
+      else if (value === 'lowerIsBetter') modesWhereLowerIsBetter.push(key);
     }
 
-    Object.entries(modeData).filter(([key, value]) => value === "higherIsBetter")
-  }
+    Object.entries(modeData).filter(([key, value]) => value === 'higherIsBetter');
+  };
 
   const [testRunSelection, setTestRunSelection] = useState('All Test Runs');
   const [machineSelection, setMachineSelection] = useState('All Machines');
