@@ -104,7 +104,25 @@ export default function Dashboard() {
         bestCopyEver.push(core2_testRun);
       });
       setBenchmarks(0);
+      //buildRowsv2();
   };
+
+  //Dynamic cores
+  const buildRowsv2 = () => {
+    testResults?.sort((a,b) => b.testRunnerResults?.core_32.startTime - a.testRunnerResults?.core_32.startTime);
+    testResults?.map(testResult => {
+      console.log(testResult);
+      Object.entries(testResult.testRunnerResults)?.map(([key, value]) => { 
+                //const testRun = buildRow(testResult.testRunnerResults?.core_32, testResult.status?.core_32, testResult.jobId+"-32", testResult.id, "e2-standard-32");
+                //setTestRunResultsCopy(testRunResultsCopy => [...testRunResultsCopy, testRun]);
+                //bestCopyEver.push(testRun);
+                console.log("1");
+                console.log(key);
+                console.log("2");
+                //console.log(value);
+    })
+    });
+  }
 
   const setBenchmarks = (index) => {
     compareBenchmarks(index);
@@ -138,6 +156,28 @@ export default function Dashboard() {
     }
     compareBenchmarks(index+1);
     }
+  }
+
+  const modeData = {
+    thrpt: "higherIsBetter",
+    avgt: "lowerIsBetter",
+    sample: "higherIsBetter",
+    ss: "lowerIsBetter",
+    all: "higherIsBetter"
+  }
+
+  const compareBenchmarksv2 = (testRunResults, modeData) => {
+    var modesWhereHigherIsBetter = [];
+    var modesWhereLowerIsBetter = [];
+
+    for(const [key, value] of Object.entries(modeData)){
+      if(value === "higherIsBetter")
+        modesWhereHigherIsBetter.push(key);
+      else if(value === "lowerIsBetter")
+        modesWhereLowerIsBetter.push(key);
+    }
+
+    Object.entries(modeData).filter(([key, value]) => value === "higherIsBetter")
   }
 
   const [testRunSelection, setTestRunSelection] = useState('All Test Runs');

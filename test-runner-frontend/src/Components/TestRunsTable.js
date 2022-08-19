@@ -121,7 +121,18 @@ export default function TestRunsTable({ onCheckboxChange, checkBoxSelection, isC
                     } else if (column.id !== 'id') {
                       cell = value;
                     } else {
-                      cell = (
+                      cell = (                        
+                        row.status === "CREATED" || row.status === "RUNNING"
+                        ?
+                        <IdCell
+                          data-testid="checkboxTest"
+                          value={value}
+                          hasCheckbox={isCheckBoxActive}
+                          onChange={() => onChange(row)}
+                          status={row.status}
+                          textDecoration={"none"}
+                        />
+                        :
                         <Link to="/report" state={{ from: row }} style={{ textDecoration: 'none', color: 'black' }}>
                         <IdCell
                           data-testid="checkboxTest"
@@ -129,8 +140,12 @@ export default function TestRunsTable({ onCheckboxChange, checkBoxSelection, isC
                           hasCheckbox={isCheckBoxActive}
                           onChange={() => onChange(row)}
                           status={row.status}
+                          textDecoration={"underline"}
                         />
                         </Link>
+                        
+
+                        
                       );
                     }
                     return (

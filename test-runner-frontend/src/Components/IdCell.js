@@ -6,7 +6,7 @@ import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 
-export default function IdCell({ value, hasCheckbox, onChange, status }) {
+export default function IdCell({ value, hasCheckbox, onChange, status, textDecoration }) {
   var iconColor = '';
 
   var IconComponent;
@@ -32,13 +32,13 @@ export default function IdCell({ value, hasCheckbox, onChange, status }) {
           <Checkbox value={value} onChange={() => onChange(value)} />
           <Stack direction="row" spacing={2} style={{ marginTop: '1.8%' }}>
             <IconComponent sx={{ color: iconColor }} />
-            <div style={{textDecoration: "underline"}}>{value}</div>
+            <div style={{textDecoration: textDecoration}}>{value}</div>
           </Stack>
         </Stack>
       ) : (
         <Stack direction="row" spacing={2}>
           <IconComponent sx={{ color: iconColor }} />
-          <div style={{textDecoration: "underline"}}>{value}</div>
+          <div style={{textDecoration: textDecoration}}>{value}</div>
         </Stack>
       )}
     </>
