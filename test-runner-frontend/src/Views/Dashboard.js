@@ -15,15 +15,26 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import CircularProgress from '@mui/material/CircularProgress';
+import {
+  getMachineNames,
+  sortTestRunsByMachine,
+  getBenchmarksByMachine,
+  flattenSortedTestRuns,
+  getAllBenchmarks,
+} from './DashboardUtils';
 
 export default function Dashboard() {
   const [isCheckBoxActive, setCheckboxActiveState] = React.useState(false);
-
   //const [cancelButtonState, setCancelButtonState] = React.useState(false);
-
   const [testResults, setTestResults] = useState([]);
-
   const [loadingState, setLoadingState] = useState(true);
+  const [testRunResults, setTestRunResults] = useState([]);
+  const [testRunResultsCopy, setTestRunResultsCopy] = useState([]);
+  const [testRunSelection, setTestRunSelection] = useState('All Test Runs');
+  const [machineSelection, setMachineSelection] = useState('All Machines');
+  const [checkBoxSelection, setCheckBoxSelection] = React.useState([]);
+
+  const FIRESTORE_COLLECTION_NAME = 'test-runs';
 
   //const navigate = useNavigate();
 
@@ -38,8 +49,6 @@ export default function Dashboard() {
       setCancelButtonState(!cancelButtonState);
     }
 
-
-  
     const handleCancel = () => {
       setCheckBoxSelection([]);
       setCheckboxActiveState(false);
@@ -49,7 +58,7 @@ export default function Dashboard() {
 
   useEffect(
     () => () =>
-      onSnapshot(collection(db, 'test-runs'), (snapshot) =>
+      onSnapshot(collection(db, FIRESTORE_COLLECTION_NAME), (snapshot) =>
         setTestResults(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
       ),
     []
@@ -60,205 +69,10 @@ export default function Dashboard() {
     // eslint-disable-next-line
   }, [testResults]);
 
-  const [testRunResults, setTestRunResults] = useState([]);
-  const [testRunResultsCopy, setTestRunResultsCopy] = useState([]);
-  const [testRunSelection, setTestRunSelection] = useState('All Test Runs');
-  const [machineSelection, setMachineSelection] = useState('All Machines');
-
-  const HIGHER_IS_BETTER = 'higherIsBetter';
-  const LOWER_IS_BETTER = 'lowerIsBetter';
-
-  const modeData = {
-    thrpt: HIGHER_IS_BETTER,
-    avgt: LOWER_IS_BETTER,
-    sample: HIGHER_IS_BETTER,
-    ss: LOWER_IS_BETTER,
-    all: HIGHER_IS_BETTER,
-  };
-
-  const getMachineNames = (testRunResults) => {
-    var machines = [];
-    testRunResults.forEach((testRunResult) => {
-      Object.keys(testRunResult?.status).forEach((machine) => {
-        if (!machines.includes(machine)) {
-          machines.push(machine);
-        }
-      });
-    });
-
-    return machines;
-  };
-
-  const helper = (modeData, isHigherBetter) => {
-    const valueToFilter = isHigherBetter ? HIGHER_IS_BETTER : LOWER_IS_BETTER;
-    return Object.entries(modeData)
-      .filter(([key, value]) => value === valueToFilter)
-      .map(([first]) => first);
-  };
-
-  const sortTestRunsByMachine = (machines, testRunResults) => {
-    return machines.map((machineName) => {
-      const testDataForSpecificMachine = testRunResults
-        .map((testRunResult) => {
-          const id = testRunResult.jobId + '-' + machineName;
-          const commitHash = testRunResult.commitHash;
-          const branch = testRunResult.branch;
-          const status = testRunResult.status[machineName];
-          const machine = machineName;
-          if (testRunResult.testRunnerResults) {
-            const benchmarks = testRunResult.testRunnerResults[machineName]?.testStatistics?.length;
-            const timestamp = testRunResult.testRunnerResults[machineName].startTime;
-            const dateTimestamp = new Date(timestamp * 26);
-            const improvedVsRegressed = { improved: 0, regressed: 0 };
-            const date = dateTimestamp.toLocaleString();
-            const statistics = testRunResult.testRunnerResults[machineName].testStatistics;
-
-            return {
-              id,
-              commitHash,
-              branch,
-              status,
-              benchmarks,
-              improvedVsRegressed,
-              machine,
-              date,
-              statistics,
-            };
-          } else {
-            return {
-              id,
-              commitHash,
-              branch,
-              status,
-              benchmarks: 0,
-              improvedVsRegressed: {},
-              machine,
-              date: 'Test run on progress',
-              statistics: [],
-            };
-          }
-        })
-        .filter((testData) => testData);
-
-      return testDataForSpecificMachine;
-    });
-  };
-
-  const convertToMap = (testRun) => {
-    if (!testRun) return null;
-    return testRun?.statistics.reduce((map, testMethod) => {
-      map[testMethod.benchmark] = {
-        score: testMethod.primaryMetric.score,
-        mode: testMethod.mode,
-      };
-      return map;
-    }, {});
-  };
-
-  const compare = (score, comparisonScore, mode) => {
-    const modesWhereLowerIsBetter = helper(modeData, false);
-    const modesWhereHigherIsBetter = helper(modeData, true);
-    const scoreDifference = score - comparisonScore;
-
-    var result = '';
-
-    if (modesWhereHigherIsBetter.includes(mode)) result = scoreDifference > 0 ? 'improved' : 'regressed';
-    else if (modesWhereLowerIsBetter.includes(mode)) result = scoreDifference < 0 ? 'improved' : 'regressed';
-    else result = 'No change';
-
-    return result;
-  };
-
-  const generateComparisonBetween = (currentTestRun, previousTestRun) => {
-    const currentTestRunModeAndScore = currentTestRun.statistics?.map((testMethod) => [
-      testMethod.benchmark,
-      testMethod.mode,
-      testMethod.primaryMetric.score,
-    ]);
-
-    const previousTestRunModeAndScore = convertToMap(previousTestRun);
-
-    let improvementsAndRegressions = currentTestRunModeAndScore
-      ?.map(([benchmark, mode, score]) => {
-        const comparisonBenchmark = previousTestRunModeAndScore[benchmark];
-        const comparisonMode = previousTestRunModeAndScore[benchmark]?.mode;
-        const comparisonScore = previousTestRunModeAndScore[benchmark]?.score;
-        if (comparisonBenchmark && comparisonMode === mode && score !== 0) {
-          return compare(score, comparisonScore, mode);
-        }
-        return null;
-      })
-      .filter((testRun) => testRun);
-
-    var counter = 0;
-
-    const improvedVsRegressed = {
-      improved: improvementsAndRegressions
-        ?.filter((improved) => improved === 'improved')
-        .reduce((first, second) => first + 1, counter),
-      regressed: improvementsAndRegressions
-        ?.filter((regressed) => regressed === 'regressed')
-        .reduce((first, second) => first + 1, counter),
-    };
-
-    return improvedVsRegressed;
-  };
-
-  const flattenedSortedTestRuns = (sortedTestRuns) => {
-    return sortedTestRuns.map((testRunsSortedByMachine) => {
-      return testRunsSortedByMachine.map((testRun) => testRun).filter((testRun) => testRun);
-    });
-  };
-
-  const getAllBenchmarks = (benchmarksByMachine) => {
-    const allBenchmarks = benchmarksByMachine.flatMap((benchmarkByMachine) => {
-      return benchmarkByMachine
-        .map((testRun) => {
-          return testRun;
-        })
-        .filter((testRun) => testRun);
-    });
-
-    return allBenchmarks;
-  };
-
-  const getBenchmarksByMachine = (flattenedTestRuns) => {
-    const benchmarksByMachine = flattenedTestRuns.map((testRunsSortedByMachine) => {
-      return testRunsSortedByMachine
-        .map((testRun, index) => {
-          if (testRunsSortedByMachine[index + 1] && testRunsSortedByMachine[index + 1].statistics) {
-            const getImprovedVsRegressedValues = generateComparisonBetween(
-              testRun,
-              testRunsSortedByMachine[index + 1] ? testRunsSortedByMachine[index + 1] : {}
-            );
-            testRun.improvedVsRegressed.improved = getImprovedVsRegressedValues?.improved
-              ? getImprovedVsRegressedValues.improved
-              : 0;
-            testRun.improvedVsRegressed.regressed = getImprovedVsRegressedValues?.regressed
-              ? getImprovedVsRegressedValues.regressed
-              : 0;
-          }
-          return {
-            id: testRun.id,
-            commitHash: testRun.commitHash,
-            branch: testRun.branch,
-            status: testRun.status,
-            benchmarks: testRun.benchmarks,
-            machine: testRun.machine,
-            date: testRun.date,
-            statistics: testRun.statistics,
-            improvedVsRegressed: testRun.improvedVsRegressed,
-          };
-        })
-        .filter((testRun) => testRun);
-    });
-    return benchmarksByMachine;
-  };
-
   const compareBenchmarks = (testRunResults) => {
     const machines = getMachineNames(testRunResults);
     const sortedTestRuns = sortTestRunsByMachine(machines, testRunResults);
-    const flattenedTestRuns = flattenedSortedTestRuns(sortedTestRuns);
+    const flattenedTestRuns = flattenSortedTestRuns(sortedTestRuns);
     const benchmarksByMachine = getBenchmarksByMachine(flattenedTestRuns);
     const allBenchmarks = getAllBenchmarks(benchmarksByMachine);
     setTestRunResultsCopy(allBenchmarks);
@@ -298,8 +112,6 @@ export default function Dashboard() {
     var testRunsResultsSorted = testRunResultsCopy;
     setTestRunResults([].concat(testRunsResultsSorted).sort((a, b) => a.date - b.date));
   }
-
-  const [checkBoxSelection, setCheckBoxSelection] = React.useState([]);
 
   const onCheckboxChange = (childToParentData) => {
     if (checkBoxSelection.find((checkBoxSelection) => checkBoxSelection === childToParentData))
@@ -444,7 +256,7 @@ export default function Dashboard() {
             </Typography>
 
             <Typography variant="h7" sx={{ color: 'gray', left: '9%', position: 'absolute' }}>
-              Updated July, 2022
+              Updated August, 2022
             </Typography>
 
             <Typography variant="h7" sx={{ color: 'gray', right: '3%', position: 'absolute' }}>
