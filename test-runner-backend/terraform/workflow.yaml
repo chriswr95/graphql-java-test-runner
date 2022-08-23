@@ -6,6 +6,7 @@ main:
           - project_id: ${sys.get_env("GOOGLE_CLOUD_PROJECT_ID")}
           - collection: "test-runs"
           - job_id: ${job.jobId}
+          - branch: ${job.branch}
           - zone: "us-west1-b"
           - region: "us-west1"
           - machine_type: ["e2-medium", "e2-standard-4"]
@@ -31,6 +32,8 @@ main:
                       stringValue: "CREATED"
                     core_32:
                       stringValue: "CREATED"
+              branch:
+                stringValue: ${branch}
     - get_document:
         call: googleapis.firestore.v1.projects.databases.documents.get
         args:

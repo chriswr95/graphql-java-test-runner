@@ -2,31 +2,28 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
+//import Button from '@mui/material/Button';
 import GraphQL_Logo from '../Assets/GraphQL_Java_Logo_v2.png';
 import Alert from '@mui/material/Alert';
 import { useEffect, useState } from 'react';
 import { onSnapshot, collection } from '@firebase/firestore';
 import db from './firebase';
 import TestRunsTable from '../Components/TestRunsTable';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function Dashboard() {
   const [isCheckBoxActive, setCheckboxActiveState] = React.useState(false);
 
   //const [cancelButtonState, setCancelButtonState] = React.useState(false);
 
-  var branchArray = ['master', 'add_error_logs', 'save_data'];
-
-  var statusArray = ['FAILED', 'FINISHED'];
-
-  var machinesArray = ['e2-standard-2', 'e2-standard-32'];
-
   const [testResults, setTestResults] = useState([]);
+
+  const [loadingState, setLoadingState] = useState(true);
 
   //const navigate = useNavigate();
 
@@ -59,136 +56,215 @@ export default function Dashboard() {
   );
 
   useEffect(() => {
-    //alert("Avoid infite loop builingRows")
-    buildRows();
+    compareBenchmarks(testResults);
+    // eslint-disable-next-line
   }, [testResults]);
 
   const [testRunResults, setTestRunResults] = useState([]);
   const [testRunResultsCopy, setTestRunResultsCopy] = useState([]);
-
-  const buildRow = (machine, testStatus, jobId, commitHash, machineType) => {
-    var timestamp = machine?.startTime;
-    var date = new Date(timestamp * 26);
-    const newTestRun = {
-      id: jobId,
-      commitHash: commitHash,
-      branch: branchArray[Math.floor(Math.random() * branchArray.length)],
-      status: testStatus,
-      benchmarks: machine?.testStatistics.length,
-      //improvedVsRegresed: compareBenchmarks(testResults[index], testResults[index + 1] ? testResults[index + 1] : []),
-      improvedVsRegressed: {
-        improved: 0,
-        regressed: 0,
-      },
-      machine: machineType,
-      date: date.toLocaleString(),
-      statistics: machine?.testStatistics,
-    };
-    return newTestRun;
-  };
-
-  var bestCopyEver = [];
-  const buildRows = () => {
-    testResults?.sort((a, b) => b.testRunnerResults?.core_32.startTime - a.testRunnerResults?.core_32.startTime);
-    testResults?.map((testResult) => {
-      const core32_testRun = buildRow(
-        testResult.testRunnerResults?.core_32,
-        testResult.status?.core_32,
-        testResult.jobId + '-32',
-        testResult.id,
-        'e2-standard-32'
-      );
-      //setTestRunResults(testRunResults => [...testRunResults, core32_testRun]);
-      setTestRunResultsCopy((testRunResultsCopy) => [...testRunResultsCopy, core32_testRun]);
-      bestCopyEver.push(core32_testRun);
-      const core2_testRun = buildRow(
-        testResult.testRunnerResults?.core_2,
-        testResult.status?.core_2,
-        testResult.jobId + '-2',
-        testResult.id,
-        'e2-standard-2'
-      );
-      //setTestRunResults(testRunResults => [...testRunResults, core2_testRun]);
-      setTestRunResultsCopy((testRunResultsCopy) => [...testRunResultsCopy, core2_testRun]);
-      bestCopyEver.push(core2_testRun);
-    });
-    setBenchmarks(0);
-    //buildRowsv2();
-  };
-
-  //Dynamic cores
-  const buildRowsv2 = () => {
-    testResults?.sort((a, b) => b.testRunnerResults?.core_32.startTime - a.testRunnerResults?.core_32.startTime);
-    testResults?.map((testResult) => {
-      console.log(testResult);
-      Object.entries(testResult.testRunnerResults)?.map(([key, value]) => {
-        //const testRun = buildRow(testResult.testRunnerResults?.core_32, testResult.status?.core_32, testResult.jobId+"-32", testResult.id, "e2-standard-32");
-        //setTestRunResultsCopy(testRunResultsCopy => [...testRunResultsCopy, testRun]);
-        //bestCopyEver.push(testRun);
-        console.log('1');
-        console.log(key);
-        console.log('2');
-        //console.log(value);
-      });
-    });
-  };
-
-  const setBenchmarks = (index) => {
-    compareBenchmarks(index);
-    setTestRunResults(bestCopyEver);
-  };
-
-  const compareBenchmarks = (index) => {
-    var results = {
-      improved: 0,
-      regressed: 0,
-    };
-
-    if (index <= bestCopyEver.length) {
-      var currentTestRun = bestCopyEver[index]?.statistics;
-      var previousTestRun = bestCopyEver[index + 2]?.statistics;
-
-      for (var i = 0; i < currentTestRun?.length; i++) {
-        for (var j = 0; j < previousTestRun?.length; j++) {
-          if (currentTestRun[i].benchmark === previousTestRun[j].benchmark) {
-            if (currentTestRun[i].primaryMetric.score >= previousTestRun[j].primaryMetric.score) {
-              results.improved++;
-            } else {
-              results.regressed++;
-            }
-          }
-        }
-      }
-
-      if (bestCopyEver[index]?.improvedVsRegressed.improved === 0) {
-        bestCopyEver[index].improvedVsRegressed = results;
-      }
-      compareBenchmarks(index + 1);
-    }
-  };
-
-  const modeData = {
-    thrpt: 'higherIsBetter',
-    avgt: 'lowerIsBetter',
-    sample: 'higherIsBetter',
-    ss: 'lowerIsBetter',
-    all: 'higherIsBetter',
-  };
-
-  const compareBenchmarksv2 = (testRunResults, modeData) => {
-    var modesWhereHigherIsBetter = [];
-    var modesWhereLowerIsBetter = [];
-
-    for (const [key, value] of Object.entries(modeData)) {
-      if (value === 'higherIsBetter') modesWhereHigherIsBetter.push(key);
-      else if (value === 'lowerIsBetter') modesWhereLowerIsBetter.push(key);
-    }
-
-    Object.entries(modeData).filter(([key, value]) => value === 'higherIsBetter');
-  };
-
   const [testRunSelection, setTestRunSelection] = useState('All Test Runs');
   const [machineSelection, setMachineSelection] = useState('All Machines');
+
+  const HIGHER_IS_BETTER = 'higherIsBetter';
+  const LOWER_IS_BETTER = 'lowerIsBetter';
+
+  const modeData = {
+    thrpt: HIGHER_IS_BETTER,
+    avgt: LOWER_IS_BETTER,
+    sample: HIGHER_IS_BETTER,
+    ss: LOWER_IS_BETTER,
+    all: HIGHER_IS_BETTER,
+  };
+
+  const getMachineNames = (testRunResults) => {
+    var machines = [];
+    testRunResults.forEach((testRunResult) => {
+      Object.keys(testRunResult?.status).forEach((machine) => {
+        if (!machines.includes(machine)) {
+          machines.push(machine);
+        }
+      });
+    });
+
+    return machines;
+  };
+
+  const helper = (modeData, isHigherBetter) => {
+    const valueToFilter = isHigherBetter ? HIGHER_IS_BETTER : LOWER_IS_BETTER;
+    return Object.entries(modeData)
+      .filter(([key, value]) => value === valueToFilter)
+      .map(([first]) => first);
+  };
+
+  const sortTestRunsByMachine = (machines, testRunResults) => {
+    return machines.map((machineName) => {
+      const testDataForSpecificMachine = testRunResults
+        .map((testRunResult) => {
+          const id = testRunResult.jobId + '-' + machineName;
+          const commitHash = testRunResult.commitHash;
+          const branch = testRunResult.branch;
+          const status = testRunResult.status[machineName];
+          const machine = machineName;
+          if (testRunResult.testRunnerResults) {
+            const benchmarks = testRunResult.testRunnerResults[machineName]?.testStatistics?.length;
+            const timestamp = testRunResult.testRunnerResults[machineName].startTime;
+            const dateTimestamp = new Date(timestamp * 26);
+            const improvedVsRegressed = { improved: 0, regressed: 0 };
+            const date = dateTimestamp.toLocaleString();
+            const statistics = testRunResult.testRunnerResults[machineName].testStatistics;
+
+            return {
+              id,
+              commitHash,
+              branch,
+              status,
+              benchmarks,
+              improvedVsRegressed,
+              machine,
+              date,
+              statistics,
+            };
+          } else {
+            return {
+              id,
+              commitHash,
+              branch,
+              status,
+              benchmarks: 0,
+              improvedVsRegressed: {},
+              machine,
+              date: 'Test run on progress',
+              statistics: [],
+            };
+          }
+        })
+        .filter((testData) => testData);
+
+      return testDataForSpecificMachine;
+    });
+  };
+
+  const convertToMap = (testRun) => {
+    if (!testRun) return null;
+    return testRun?.statistics.reduce((map, testMethod) => {
+      map[testMethod.benchmark] = {
+        score: testMethod.primaryMetric.score,
+        mode: testMethod.mode,
+      };
+      return map;
+    }, {});
+  };
+
+  const compare = (score, comparisonScore, mode) => {
+    const modesWhereLowerIsBetter = helper(modeData, false);
+    const modesWhereHigherIsBetter = helper(modeData, true);
+    const scoreDifference = score - comparisonScore;
+
+    var result = '';
+
+    if (modesWhereHigherIsBetter.includes(mode)) result = scoreDifference > 0 ? 'improved' : 'regressed';
+    else if (modesWhereLowerIsBetter.includes(mode)) result = scoreDifference < 0 ? 'improved' : 'regressed';
+    else result = 'No change';
+
+    return result;
+  };
+
+  const generateComparisonBetween = (currentTestRun, previousTestRun) => {
+    const currentTestRunModeAndScore = currentTestRun.statistics?.map((testMethod) => [
+      testMethod.benchmark,
+      testMethod.mode,
+      testMethod.primaryMetric.score,
+    ]);
+
+    const previousTestRunModeAndScore = convertToMap(previousTestRun);
+
+    let improvementsAndRegressions = currentTestRunModeAndScore
+      ?.map(([benchmark, mode, score]) => {
+        const comparisonBenchmark = previousTestRunModeAndScore[benchmark];
+        const comparisonMode = previousTestRunModeAndScore[benchmark]?.mode;
+        const comparisonScore = previousTestRunModeAndScore[benchmark]?.score;
+        if (comparisonBenchmark && comparisonMode === mode && score !== 0) {
+          return compare(score, comparisonScore, mode);
+        }
+        return null;
+      })
+      .filter((testRun) => testRun);
+
+    var counter = 0;
+
+    const improvedVsRegressed = {
+      improved: improvementsAndRegressions
+        ?.filter((improved) => improved === 'improved')
+        .reduce((first, second) => first + 1, counter),
+      regressed: improvementsAndRegressions
+        ?.filter((regressed) => regressed === 'regressed')
+        .reduce((first, second) => first + 1, counter),
+    };
+
+    return improvedVsRegressed;
+  };
+
+  const flattenedSortedTestRuns = (sortedTestRuns) => {
+    return sortedTestRuns.map((testRunsSortedByMachine) => {
+      return testRunsSortedByMachine.map((testRun) => testRun).filter((testRun) => testRun);
+    });
+  };
+
+  const getAllBenchmarks = (benchmarksByMachine) => {
+    const allBenchmarks = benchmarksByMachine.flatMap((benchmarkByMachine) => {
+      return benchmarkByMachine
+        .map((testRun) => {
+          return testRun;
+        })
+        .filter((testRun) => testRun);
+    });
+
+    return allBenchmarks;
+  };
+
+  const getBenchmarksByMachine = (flattenedTestRuns) => {
+    const benchmarksByMachine = flattenedTestRuns.map((testRunsSortedByMachine) => {
+      return testRunsSortedByMachine
+        .map((testRun, index) => {
+          if (testRunsSortedByMachine[index + 1] && testRunsSortedByMachine[index + 1].statistics) {
+            const getImprovedVsRegressedValues = generateComparisonBetween(
+              testRun,
+              testRunsSortedByMachine[index + 1] ? testRunsSortedByMachine[index + 1] : {}
+            );
+            testRun.improvedVsRegressed.improved = getImprovedVsRegressedValues?.improved
+              ? getImprovedVsRegressedValues.improved
+              : 0;
+            testRun.improvedVsRegressed.regressed = getImprovedVsRegressedValues?.regressed
+              ? getImprovedVsRegressedValues.regressed
+              : 0;
+          }
+          return {
+            id: testRun.id,
+            commitHash: testRun.commitHash,
+            branch: testRun.branch,
+            status: testRun.status,
+            benchmarks: testRun.benchmarks,
+            machine: testRun.machine,
+            date: testRun.date,
+            statistics: testRun.statistics,
+            improvedVsRegressed: testRun.improvedVsRegressed,
+          };
+        })
+        .filter((testRun) => testRun);
+    });
+    return benchmarksByMachine;
+  };
+
+  const compareBenchmarks = (testRunResults) => {
+    const machines = getMachineNames(testRunResults);
+    const sortedTestRuns = sortTestRunsByMachine(machines, testRunResults);
+    const flattenedTestRuns = flattenedSortedTestRuns(sortedTestRuns);
+    const benchmarksByMachine = getBenchmarksByMachine(flattenedTestRuns);
+    const allBenchmarks = getAllBenchmarks(benchmarksByMachine);
+    setTestRunResultsCopy(allBenchmarks);
+    setTestRunResults(allBenchmarks);
+    setLoadingState(false);
+  };
 
   const drowpdownMenusManager = React.useCallback(() => {
     if (testRunSelection === 'Master Only') {
@@ -220,7 +296,7 @@ export default function Dashboard() {
 
   function sortDate() {
     var testRunsResultsSorted = testRunResultsCopy;
-    setTestRunResults([].concat(testRunsResultsSorted).sort((a, b) => b.date - a.date));
+    setTestRunResults([].concat(testRunsResultsSorted).sort((a, b) => a.date - b.date));
   }
 
   const [checkBoxSelection, setCheckBoxSelection] = React.useState([]);
@@ -243,35 +319,39 @@ export default function Dashboard() {
 
   return (
     <div>
-      <img
-        style={{
-          marginLeft: '2%',
-          marginTop: '0.5%',
-          marginBottom: '0.7%',
-          width: '18%',
-        }}
-        src={GraphQL_Logo}
-        alt="GraphQL Java Logo"
-      />
+      {loadingState === true ? (
+        <CircularProgress color="secondary" />
+      ) : (
+        <div>
+          <img
+            style={{
+              marginLeft: '2%',
+              marginTop: '0.5%',
+              marginBottom: '0.7%',
+              width: '18%',
+            }}
+            src={GraphQL_Logo}
+            alt="GraphQL Java Logo"
+          />
 
-      <Typography sx={{ marginLeft: '2%', marginBottom: '0.4%' }} variant="h4">
-        <b>Summary</b>
-      </Typography>
-      <br></br>
+          <Typography sx={{ marginLeft: '2%', marginBottom: '0.4%' }} variant="h4">
+            <b>Summary</b>
+          </Typography>
+          <br></br>
 
-      <Stack sx={{ marginBottom: '2%' }} direction="row" spacing={9}>
-        <Box
-          sx={{
-            width: '100%',
-            marginLeft: '2%',
-            marginRight: '2%',
-          }}
-        >
-          <Stack direction="row">
-            <Typography variant="h5">
-              <b>Test Run</b>
-            </Typography>
-            {/*
+          <Stack sx={{ marginBottom: '2%' }} direction="row" spacing={9}>
+            <Box
+              sx={{
+                width: '100%',
+                marginLeft: '2%',
+                marginRight: '2%',
+              }}
+            >
+              <Stack direction="row">
+                <Typography variant="h5">
+                  <b>Test Run</b>
+                </Typography>
+                {/*
          
             {
               cancelButtonState
@@ -309,68 +389,70 @@ export default function Dashboard() {
             </Button>
 
           */}
+              </Stack>
+
+              <Box sx={{ marginTop: '0.8%', marginBottom: '0.8%' }}>
+                <FormControl sx={{ minWidth: '10.2%' }} size="small">
+                  <InputLabel>Test Runs</InputLabel>
+                  <Select value={testRunSelection} onChange={handleChangeTestRunSelection} label="Test Runs">
+                    <MenuItem value={'All Test Runs'}>All Test Runs</MenuItem>
+                    <MenuItem data-testid="Master Only" value={'Master Only'}>
+                      Master Only
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+
+                <FormControl sx={{ marginLeft: '1.2%', minWidth: '9%' }} size="small">
+                  <InputLabel>Machine</InputLabel>
+                  <Select value={machineSelection} onChange={handleChangeMachineSelection} label="Machine">
+                    <MenuItem value={'All Machines'}>All Machines</MenuItem>
+                    <MenuItem value={'core_32'}>core_32</MenuItem>
+                    <MenuItem value={'core_2'}>core_2</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+
+              {isCheckBoxActive === true ? (
+                checkBoxSelection.length > 2 ? (
+                  <Alert data-testid="alert-warning" severity="warning" sx={{ width: '30%', marginTop: '1.6%' }}>
+                    You can only select 2 test runs to compare!
+                  </Alert>
+                ) : checkBoxSelection.length === 2 ? (
+                  <Alert data-testid="alert-succes" severity="success" sx={{ width: '30%', marginTop: '1.6%' }}>
+                    Nice selection! You can now compare this 2 test runs
+                  </Alert>
+                ) : (
+                  <Alert data-testid="alert-info" severity="info" sx={{ width: '30%', marginTop: '1.6%' }}>
+                    Select {2 - checkBoxSelection.length} Test Runs to compare
+                  </Alert>
+                )
+              ) : null}
+
+              <TestRunsTable
+                onCheckboxChange={onCheckboxChange}
+                checkBoxSelection={checkBoxSelection}
+                isCheckBoxActive={isCheckBoxActive}
+                testRunResults={testRunResults}
+                sortDate={sortDate}
+              />
+            </Box>
           </Stack>
 
-          <Box sx={{ marginTop: '0.8%', marginBottom: '0.8%' }}>
-            <FormControl sx={{ minWidth: '10.2%' }} size="small">
-              <InputLabel>Test Runs</InputLabel>
-              <Select value={testRunSelection} onChange={handleChangeTestRunSelection} label="Test Runs">
-                <MenuItem value={'All Test Runs'}>All Test Runs</MenuItem>
-                <MenuItem data-testid="Master Only" value={'Master Only'}>
-                  Master Only
-                </MenuItem>
-              </Select>
-            </FormControl>
+          <Box sx={{ width: '100%', bottom: '5%', position: 'absolute' }}>
+            <Typography variant="h7" sx={{ color: 'gray', left: '3%', position: 'absolute' }}>
+              <b>v1.0</b>
+            </Typography>
 
-            <FormControl sx={{ marginLeft: '1.2%', minWidth: '9%' }} size="small">
-              <InputLabel>Machine</InputLabel>
-              <Select value={machineSelection} onChange={handleChangeMachineSelection} label="Machine">
-                <MenuItem value={'All Machines'}>All Machines</MenuItem>
-                <MenuItem value={'e2-standard-32'}>e2-standard-32</MenuItem>
-                <MenuItem value={'e2-standard-2'}>e2-standard-2</MenuItem>
-              </Select>
-            </FormControl>
+            <Typography variant="h7" sx={{ color: 'gray', left: '9%', position: 'absolute' }}>
+              Updated July, 2022
+            </Typography>
+
+            <Typography variant="h7" sx={{ color: 'gray', right: '3%', position: 'absolute' }}>
+              Created by Twitter, Inc.
+            </Typography>
           </Box>
-
-          {isCheckBoxActive === true ? (
-            checkBoxSelection.length > 2 ? (
-              <Alert data-testid="alert-warning" severity="warning" sx={{ width: '30%', marginTop: '1.6%' }}>
-                You can only select 2 test runs to compare!
-              </Alert>
-            ) : checkBoxSelection.length === 2 ? (
-              <Alert data-testid="alert-succes" severity="success" sx={{ width: '30%', marginTop: '1.6%' }}>
-                Nice selection! You can now compare this 2 test runs
-              </Alert>
-            ) : (
-              <Alert data-testid="alert-info" severity="info" sx={{ width: '30%', marginTop: '1.6%' }}>
-                Select {2 - checkBoxSelection.length} Test Runs to compare
-              </Alert>
-            )
-          ) : null}
-
-          <TestRunsTable
-            onCheckboxChange={onCheckboxChange}
-            checkBoxSelection={checkBoxSelection}
-            isCheckBoxActive={isCheckBoxActive}
-            testRunResults={testRunResults}
-            sortDate={sortDate}
-          />
-        </Box>
-      </Stack>
-
-      <Box sx={{ width: '100%', bottom: '5%', position: 'absolute' }}>
-        <Typography variant="h7" sx={{ color: 'gray', left: '3%', position: 'absolute' }}>
-          <b>v1.0</b>
-        </Typography>
-
-        <Typography variant="h7" sx={{ color: 'gray', left: '9%', position: 'absolute' }}>
-          Updated July, 2022
-        </Typography>
-
-        <Typography variant="h7" sx={{ color: 'gray', right: '3%', position: 'absolute' }}>
-          Created by Twitter, Inc.
-        </Typography>
-      </Box>
+        </div>
+      )}
     </div>
   );
 }
