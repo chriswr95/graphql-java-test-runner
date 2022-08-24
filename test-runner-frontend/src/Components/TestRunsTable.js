@@ -12,7 +12,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ProgressBarCell from './ProgressBarCell';
 import IdCell from './IdCell';
-import { Link } from 'react-router-dom';
 
 const columns = [
   {
@@ -127,28 +126,16 @@ export default function TestRunsTable({
                     } else if (column.id !== 'id') {
                       cell = value;
                     } else {
-                      cell =
-                        row.status === 'CREATED' || row.status === 'RUNNING' ? (
-                          <IdCell
-                            data-testid="checkboxTest"
-                            value={value}
-                            hasCheckbox={isCheckBoxActive}
-                            onChange={() => onChange(row)}
-                            status={row.status}
-                            textDecoration={'none'}
-                          />
-                        ) : (
-                          <Link to="/report" state={{ from: row }} style={{ textDecoration: 'none', color: 'black' }}>
-                            <IdCell
-                              data-testid="checkboxTest"
-                              value={value}
-                              hasCheckbox={isCheckBoxActive}
-                              onChange={() => onChange(row)}
-                              status={row.status}
-                              textDecoration={'underline'}
-                            />
-                          </Link>
-                        );
+                      cell = (
+                        <IdCell
+                          data-testid="checkboxTest"
+                          value={value}
+                          hasCheckbox={isCheckBoxActive}
+                          onChange={() => onChange(row)}
+                          status={row.status}
+                          row={row}
+                        />
+                      );
                     }
                     return (
                       <TableCell key={column.id} align={column.align}>

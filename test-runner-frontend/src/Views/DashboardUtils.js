@@ -4,14 +4,14 @@ const LOWER_IS_BETTER = 'lowerIsBetter';
 const modeData = {
   thrpt: HIGHER_IS_BETTER,
   avgt: LOWER_IS_BETTER,
-  sample: HIGHER_IS_BETTER,
+  sample: LOWER_IS_BETTER,
   ss: LOWER_IS_BETTER,
-  all: HIGHER_IS_BETTER,
+  all: LOWER_IS_BETTER,
 };
 
 export const getMachineNames = (testRunResults) => {
   var machines = [];
-  testRunResults.forEach((testRunResult) => {
+  testRunResults?.forEach((testRunResult) => {
     Object.keys(testRunResult?.status).forEach((machine) => {
       if (!machines.includes(machine)) {
         machines.push(machine);
@@ -36,9 +36,11 @@ export const compare = (score, comparisonScore, mode) => {
 
   var result = '';
 
-  if (modesWhereHigherIsBetter.includes(mode)) result = scoreDifference > 0 ? 'improved' : 'regressed';
-  else if (modesWhereLowerIsBetter.includes(mode)) result = scoreDifference < 0 ? 'improved' : 'regressed';
-  else result = 'No change';
+  if (modesWhereHigherIsBetter.includes(mode) && scoreDifference)
+    result = scoreDifference > 0 ? 'improved' : 'regressed';
+  else if (modesWhereLowerIsBetter.includes(mode) && scoreDifference)
+    result = scoreDifference < 0 ? 'improved' : 'regressed';
+  else result = 'no change';
 
   return result;
 };
@@ -168,12 +170,6 @@ export const getBenchmarksByMachine = (flattenedTestRuns) => {
       .filter((testRun) => testRun);
   });
   return benchmarksByMachine;
-};
-
-export const flattenSortedTestRuns = (sortedTestRuns) => {
-  return sortedTestRuns.map((testRunsSortedByMachine) => {
-    return testRunsSortedByMachine.map((testRun) => testRun).filter((testRun) => testRun);
-  });
 };
 
 export const getAllBenchmarks = (benchmarksByMachine) => {

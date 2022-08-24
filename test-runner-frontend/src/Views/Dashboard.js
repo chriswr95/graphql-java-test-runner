@@ -5,8 +5,9 @@ import Stack from '@mui/material/Stack';
 //import Button from '@mui/material/Button';
 import GraphQL_Logo from '../Assets/GraphQL_Java_Logo_v2.png';
 import Alert from '@mui/material/Alert';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { onSnapshot, collection } from '@firebase/firestore';
+import { useReducer } from 'react';
 import db from './firebase';
 import TestRunsTable from '../Components/TestRunsTable';
 //import { useNavigate } from 'react-router-dom';
@@ -15,24 +16,39 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import CircularProgress from '@mui/material/CircularProgress';
-import {
-  getMachineNames,
-  sortTestRunsByMachine,
-  getBenchmarksByMachine,
-  flattenSortedTestRuns,
-  getAllBenchmarks,
-} from './DashboardUtils';
+import { getMachineNames, sortTestRunsByMachine, getBenchmarksByMachine, getAllBenchmarks } from './DashboardUtils';
+
+function reducer(state, action) {
+  const { type, payload } = action;
+  return { ...state, [type]: payload };
+}
 
 export default function Dashboard() {
-  const [isCheckBoxActive, setCheckboxActiveState] = React.useState(false);
-  //const [cancelButtonState, setCancelButtonState] = React.useState(false);
-  const [testResults, setTestResults] = useState([]);
-  const [loadingState, setLoadingState] = useState(true);
-  const [testRunResults, setTestRunResults] = useState([]);
-  const [testRunResultsCopy, setTestRunResultsCopy] = useState([]);
-  const [testRunSelection, setTestRunSelection] = useState('All Test Runs');
-  const [machineSelection, setMachineSelection] = useState('All Machines');
-  const [checkBoxSelection, setCheckBoxSelection] = React.useState([]);
+  const initialState = {
+    isCheckBoxActive: false,
+    //cancelButtonState: false,
+    testResults: [],
+    loadingState: true,
+    testRunResults: [],
+    testRunResultsCopy: [],
+    testRunSelection: 'All Test Runs',
+    machineSelection: 'All Machines',
+    checkBoxSelection: [],
+  };
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const {
+    isCheckBoxActive,
+    //cancelButtonState,
+    testResults,
+    loadingState,
+    testRunResults,
+    testRunResultsCopy,
+    testRunSelection,
+    machineSelection,
+    checkBoxSelection,
+  } = state;
 
   const FIRESTORE_COLLECTION_NAME = 'test-runs';
 
@@ -41,25 +57,25 @@ export default function Dashboard() {
   /*
     function manageCompareAction() {
       if (checkBoxSelection.length >= 2) {
-        setCheckBoxSelection([]);
+        dispatch({ type: "checkBoxSelection", payload: [] })
         //navigate("/report")
       }
-      setCheckBoxSelection([]);
-      setCheckboxActiveState(!isCheckBoxActive);
-      setCancelButtonState(!cancelButtonState);
+      dispatch({ type: "checkBoxSelection", payload: [] })
+      dispatch({ type: "isCheckBoxActive", payload: !isCheckBoxActive })
+      dispatch({ type: "cancelButtonState", payload: !cancelButtonState })
     }
 
     const handleCancel = () => {
-      setCheckBoxSelection([]);
-      setCheckboxActiveState(false);
-      setCancelButtonState(false);
+      dispatch({ type: "checkBoxSelection", payload: [] })
+      dispatch({ type: "isCheckBoxActive", payload: false })
+      dispatch({ type: "cancelButtonState", payload: false })
     }
     */
 
   useEffect(
     () => () =>
       onSnapshot(collection(db, FIRESTORE_COLLECTION_NAME), (snapshot) =>
-        setTestResults(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+        dispatch({ type: 'testResults', payload: snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })) })
       ),
     []
   );
@@ -72,53 +88,63 @@ export default function Dashboard() {
   const compareBenchmarks = (testRunResults) => {
     const machines = getMachineNames(testRunResults);
     const sortedTestRuns = sortTestRunsByMachine(machines, testRunResults);
-    const flattenedTestRuns = flattenSortedTestRuns(sortedTestRuns);
-    const benchmarksByMachine = getBenchmarksByMachine(flattenedTestRuns);
+    const benchmarksByMachine = getBenchmarksByMachine(sortedTestRuns);
     const allBenchmarks = getAllBenchmarks(benchmarksByMachine);
-    setTestRunResultsCopy(allBenchmarks);
-    setTestRunResults(allBenchmarks);
-    setLoadingState(false);
+    dispatch({ type: 'testRunResultsCopy', payload: allBenchmarks });
+    dispatch({ type: 'testRunResults', payload: allBenchmarks });
+    dispatch({ type: 'loadingState', payload: allBenchmarks });
   };
 
   const drowpdownMenusManager = React.useCallback(() => {
     if (testRunSelection === 'Master Only') {
       if (machineSelection === 'All Machines') {
-        setTestRunResults(testRunResultsCopy.filter((test) => test.branch === 'master'));
+        dispatch({ type: 'testRunResults', payload: testRunResultsCopy.filter((test) => test.branch === 'master') });
       } else {
-        setTestRunResults(
-          testRunResultsCopy
+        dispatch({
+          type: 'testRunResults',
+          payload: testRunResultsCopy
             .filter((test) => test.branch === 'master')
-            .filter((test) => test.machine === machineSelection)
-        );
+            .filter((test) => test.machine === machineSelection),
+        });
       }
     } else {
       if (machineSelection === 'All Machines') {
-        setTestRunResults(testRunResultsCopy);
+        dispatch({ type: 'testRunResults', payload: testRunResultsCopy });
       } else {
-        setTestRunResults(testRunResultsCopy.filter((test) => test.machine === machineSelection));
+        dispatch({
+          type: 'testRunResults',
+          payload: testRunResultsCopy.filter((test) => test.machine === machineSelection),
+        });
       }
     }
   }, [testRunSelection, machineSelection, testRunResultsCopy]);
 
   const handleChangeTestRunSelection = (event) => {
-    setTestRunSelection(event.target.value);
+    dispatch({ type: 'testRunSelection', payload: event.target.value });
   };
 
   const handleChangeMachineSelection = (event) => {
-    setMachineSelection(event.target.value);
+    dispatch({ type: 'machineSelection', payload: event.target.value });
   };
 
   function sortDate() {
     var testRunsResultsSorted = testRunResultsCopy;
-    setTestRunResults([].concat(testRunsResultsSorted).sort((a, b) => a.date - b.date));
+    dispatch({ type: 'testRunResults', payload: [].concat(testRunsResultsSorted).sort((a, b) => a.date - b.date) });
   }
 
   const onCheckboxChange = (childToParentData) => {
     if (checkBoxSelection.find((checkBoxSelection) => checkBoxSelection === childToParentData))
-      setCheckBoxSelection(checkBoxSelection.filter((checkBoxSelection) => checkBoxSelection !== childToParentData));
-    else setCheckBoxSelection((checkBoxSelection) => [...checkBoxSelection, childToParentData]);
-    setCheckboxActiveState(false);
-    setTestRunResultsCopy(testRunResultsCopy);
+      dispatch({
+        type: 'checkBoxSelection',
+        payload: checkBoxSelection.filter((checkBoxSelection) => checkBoxSelection !== childToParentData),
+      });
+    else
+      dispatch({
+        type: 'checkBoxSelection',
+        payload: (checkBoxSelection) => [...checkBoxSelection, childToParentData],
+      });
+    dispatch({ typel: 'isCheckBoxActive', payload: false });
+    dispatch({ typel: 'testRunResultsCopy', payload: testRunResultsCopy });
   };
 
   useEffect(() => {
