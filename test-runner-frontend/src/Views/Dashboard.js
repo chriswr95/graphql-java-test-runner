@@ -34,6 +34,7 @@ const initialState = {
   // The current machine selection
   machineSelection: '*',
   checkBoxSelection: [],
+  machineNames: [],
 };
 
 const reducer = (state, action) => {
@@ -51,6 +52,7 @@ const reducer = (state, action) => {
         testRunResults,
         testRunResultsCopy: testRunResults,
         loadingState: false,
+        machineNames: machines,
       };
     case 'isCheckBoxActive':
       return { ...state, isCheckBoxActive: action.payload };
@@ -118,6 +120,7 @@ export default function Dashboard() {
     testRunSelection,
     machineSelection,
     checkBoxSelection,
+    machineNames,
   } = state;
 
   const FIRESTORE_COLLECTION_NAME = 'test-runs';
@@ -282,8 +285,9 @@ export default function Dashboard() {
                     label="Machine"
                   >
                     <MenuItem value={'*'}>All Machines</MenuItem>
-                    <MenuItem value={'core_32'}>core_32</MenuItem>
-                    <MenuItem value={'core_2'}>core_2</MenuItem>
+                    {machineNames.map((machine) => {
+                      return <MenuItem value={machine}>{machine}</MenuItem>;
+                    })}
                   </Select>
                 </FormControl>
               </Box>
