@@ -48,13 +48,7 @@ const columns = [
   },
 ];
 
-export default function TestRunsTable({
-  onCheckboxChange,
-  checkBoxSelection,
-  isCheckBoxActive,
-  testRunResults,
-  sortDate,
-}) {
+export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, testRunResults, sortDate }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 

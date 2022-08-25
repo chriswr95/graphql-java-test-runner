@@ -10,28 +10,26 @@ const modeData = {
 };
 
 export const getMachineNames = (testRunResults) => {
-  var machines = [];
+  const machinesSet = new Set();
   testRunResults?.forEach((testRunResult) => {
     Object.keys(testRunResult?.status).forEach((machine) => {
-      if (!machines.includes(machine)) {
-        machines.push(machine);
-      }
+      machinesSet.add(machine);
     });
   });
 
-  return machines;
+  return Array.from(machinesSet);
 };
 
-export const helper = (modeData, isHigherBetter) => {
+export const filterModesByHighersIsBetterOrLowerIsBetter = (modeData, isHigherBetter) => {
   const valueToFilter = isHigherBetter ? HIGHER_IS_BETTER : LOWER_IS_BETTER;
   return Object.entries(modeData)
     .filter(([key, value]) => value === valueToFilter)
-    .map(([first]) => first);
+    .map(([modeDataName]) => modeDataName);
 };
 
 export const compare = (score, comparisonScore, mode) => {
-  const modesWhereLowerIsBetter = helper(modeData, false);
-  const modesWhereHigherIsBetter = helper(modeData, true);
+  const modesWhereLowerIsBetter = filterModesByHighersIsBetterOrLowerIsBetter(modeData, false);
+  const modesWhereHigherIsBetter = filterModesByHighersIsBetterOrLowerIsBetter(modeData, true);
   const scoreDifference = score - comparisonScore;
 
   var result = '';
@@ -47,47 +45,45 @@ export const compare = (score, comparisonScore, mode) => {
 
 export const sortTestRunsByMachine = (machines, testRunResults) => {
   return machines.map((machineName) => {
-    const testDataForSpecificMachine = testRunResults
-      .map((testRunResult) => {
-        const id = testRunResult.jobId + '-' + machineName;
-        const commitHash = testRunResult.commitHash;
-        const branch = testRunResult.branch;
-        const status = testRunResult.status[machineName];
-        const machine = machineName;
-        if (testRunResult.testRunnerResults) {
-          const benchmarks = testRunResult.testRunnerResults[machineName]?.testStatistics?.length;
-          const timestamp = testRunResult.testRunnerResults[machineName].startTime;
-          const dateTimestamp = new Date(timestamp * 26);
-          const improvedVsRegressed = { improved: 0, regressed: 0 };
-          const date = dateTimestamp.toLocaleString();
-          const statistics = testRunResult.testRunnerResults[machineName].testStatistics;
+    const testDataForSpecificMachine = testRunResults.map((testRunResult) => {
+      const id = testRunResult.jobId + '-' + machineName;
+      const commitHash = testRunResult.commitHash;
+      const branch = testRunResult.branch;
+      const status = testRunResult.status[machineName];
+      const machine = machineName;
+      if (testRunResult.testRunnerResults) {
+        const benchmarks = testRunResult.testRunnerResults[machineName]?.testStatistics?.length;
+        const timestamp = testRunResult.testRunnerResults[machineName].startTime;
+        const dateTimestamp = new Date(timestamp * 26);
+        const improvedVsRegressed = { improved: 0, regressed: 0 };
+        const date = dateTimestamp.toLocaleString();
+        const statistics = testRunResult.testRunnerResults[machineName].testStatistics;
 
-          return {
-            id,
-            commitHash,
-            branch,
-            status,
-            benchmarks,
-            improvedVsRegressed,
-            machine,
-            date,
-            statistics,
-          };
-        } else {
-          return {
-            id,
-            commitHash,
-            branch,
-            status,
-            benchmarks: 0,
-            improvedVsRegressed: {},
-            machine,
-            date: 'Test run on progress',
-            statistics: [],
-          };
-        }
-      })
-      .filter((testData) => testData);
+        return {
+          id,
+          commitHash,
+          branch,
+          status,
+          benchmarks,
+          improvedVsRegressed,
+          machine,
+          date,
+          statistics,
+        };
+      } else {
+        return {
+          id,
+          commitHash,
+          branch,
+          status,
+          benchmarks: 0,
+          improvedVsRegressed: {},
+          machine,
+          date: 'Test run on progress',
+          statistics: [],
+        };
+      }
+    });
 
     return testDataForSpecificMachine;
   });
@@ -120,8 +116,7 @@ export const generateComparisonBetween = (currentTestRun, previousTestRun) => {
       const comparisonScore = previousTestRunModeAndScore[benchmark]?.score;
       if (comparisonBenchmark && comparisonMode === mode && score !== 0) {
         return compare(score, comparisonScore, mode);
-      }
-      return null;
+      } else return null;
     })
     .filter((testRun) => testRun);
 
@@ -130,10 +125,10 @@ export const generateComparisonBetween = (currentTestRun, previousTestRun) => {
   const improvedVsRegressed = {
     improved: improvementsAndRegressions
       ?.filter((improved) => improved === 'improved')
-      .reduce((first, second) => first + 1, counter),
+      .reduce((improvedCounter) => improvedCounter + 1, counter),
     regressed: improvementsAndRegressions
       ?.filter((regressed) => regressed === 'regressed')
-      .reduce((first, second) => first + 1, counter),
+      .reduce((regressedCounter) => regressedCounter + 1, counter),
   };
 
   return improvedVsRegressed;
@@ -143,7 +138,7 @@ export const getBenchmarksByMachine = (flattenedTestRuns) => {
   const benchmarksByMachine = flattenedTestRuns.map((testRunsSortedByMachine) => {
     return testRunsSortedByMachine
       .map((testRun, index) => {
-        if (testRunsSortedByMachine[index + 1] && testRunsSortedByMachine[index + 1].statistics) {
+        if (testRunsSortedByMachine[index + 1] && testRunsSortedByMachine[index + 1]?.statistics) {
           const getImprovedVsRegressedValues = generateComparisonBetween(
             testRun,
             testRunsSortedByMachine[index + 1] ? testRunsSortedByMachine[index + 1] : {}
@@ -173,13 +168,5 @@ export const getBenchmarksByMachine = (flattenedTestRuns) => {
 };
 
 export const getAllBenchmarks = (benchmarksByMachine) => {
-  const allBenchmarks = benchmarksByMachine.flatMap((benchmarkByMachine) => {
-    return benchmarkByMachine
-      .map((testRun) => {
-        return testRun;
-      })
-      .filter((testRun) => testRun);
-  });
-
-  return allBenchmarks;
+  return benchmarksByMachine.flat();
 };

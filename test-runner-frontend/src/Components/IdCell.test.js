@@ -1,8 +1,7 @@
 import IdCell from './IdCell';
 import { render, fireEvent, waitFor, screen, getByRole } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { BrowserRouter, Router } from 'react-router-dom';
-import { MemoryRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 
 describe('IdCell', () => {
   test('Renders value', () => {

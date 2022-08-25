@@ -18,24 +18,49 @@ import Select from '@mui/material/Select';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getMachineNames, sortTestRunsByMachine, getBenchmarksByMachine, getAllBenchmarks } from './DashboardUtils';
 
-function reducer(state, action) {
-  const { type, payload } = action;
-  return { ...state, [type]: payload };
-}
+const initialState = {
+  isCheckBoxActive: false,
+  //cancelButtonState: false,
+  testResults: [],
+  loadingState: true,
+  testRunResults: [],
+  testRunResultsCopy: [],
+  testRunSelection: 'All Test Runs',
+  machineSelection: 'All Machines',
+  checkBoxSelection: [],
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'isCheckBoxActive':
+      return { ...state, isCheckBoxActive: action.payload };
+    case 'testResults':
+      return { ...state, testResults: action.payload };
+    case 'loadingState':
+      return { ...state, loadingState: action.payload };
+    case 'testRunResults':
+      return { ...state, testRunResults: action.payload };
+    case 'testRunResultsCopy':
+      return { ...state, testRunResultsCopy: action.payload };
+    case 'testRunSelection':
+      return { ...state, testRunSelection: action.payload };
+    case 'machineSelection':
+      return { ...state, machineSelection: action.payload };
+    case 'checkBoxSelection':
+      return { ...state, checkBoxSelection: action.payload };
+    case 'compare':
+      return {
+        ...state,
+        testRunResultsCopy: action.payload,
+        testRunResults: action.payload,
+        loadingState: action.payload,
+      };
+    default:
+      return state;
+  }
+};
 
 export default function Dashboard() {
-  const initialState = {
-    isCheckBoxActive: false,
-    //cancelButtonState: false,
-    testResults: [],
-    loadingState: true,
-    testRunResults: [],
-    testRunResultsCopy: [],
-    testRunSelection: 'All Test Runs',
-    machineSelection: 'All Machines',
-    checkBoxSelection: [],
-  };
-
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const {
@@ -90,9 +115,7 @@ export default function Dashboard() {
     const sortedTestRuns = sortTestRunsByMachine(machines, testRunResults);
     const benchmarksByMachine = getBenchmarksByMachine(sortedTestRuns);
     const allBenchmarks = getAllBenchmarks(benchmarksByMachine);
-    dispatch({ type: 'testRunResultsCopy', payload: allBenchmarks });
-    dispatch({ type: 'testRunResults', payload: allBenchmarks });
-    dispatch({ type: 'loadingState', payload: allBenchmarks });
+    dispatch({ type: 'compare', payload: allBenchmarks });
   };
 
   const drowpdownMenusManager = React.useCallback(() => {
@@ -143,8 +166,8 @@ export default function Dashboard() {
         type: 'checkBoxSelection',
         payload: (checkBoxSelection) => [...checkBoxSelection, childToParentData],
       });
-    dispatch({ typel: 'isCheckBoxActive', payload: false });
-    dispatch({ typel: 'testRunResultsCopy', payload: testRunResultsCopy });
+    dispatch({ type: 'isCheckBoxActive', payload: false });
+    dispatch({ type: 'testRunResultsCopy', payload: testRunResultsCopy });
   };
 
   useEffect(() => {
@@ -268,7 +291,6 @@ export default function Dashboard() {
 
               <TestRunsTable
                 onCheckboxChange={onCheckboxChange}
-                checkBoxSelection={checkBoxSelection}
                 isCheckBoxActive={isCheckBoxActive}
                 testRunResults={testRunResults}
                 sortDate={sortDate}
@@ -279,10 +301,6 @@ export default function Dashboard() {
           <Box sx={{ width: '100%', bottom: '5%', position: 'absolute' }}>
             <Typography variant="h7" sx={{ color: 'gray', left: '3%', position: 'absolute' }}>
               <b>v1.0</b>
-            </Typography>
-
-            <Typography variant="h7" sx={{ color: 'gray', left: '9%', position: 'absolute' }}>
-              Updated August, 2022
             </Typography>
 
             <Typography variant="h7" sx={{ color: 'gray', right: '3%', position: 'absolute' }}>

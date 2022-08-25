@@ -8,13 +8,25 @@ import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import { Link } from 'react-router-dom';
 
 export default function IdCell({ value, hasCheckbox, onChange, status, row }) {
-  var iconColor = '';
+  const NONE = 'none';
+  const BLACK = 'black';
 
+  var iconColor = '';
   var IconComponent;
+  var textDecoration = NONE;
+  var pointerEvent = NONE;
+  var routingReference = '#';
+  var dataTestid = 'disabledCheckbox';
+  var isDisabled = true;
 
   if (status === 'FINISHED') {
     iconColor = 'green';
     IconComponent = CheckCircleOutlinedIcon;
+    textDecoration = 'underline';
+    routingReference = '/report';
+    pointerEvent = 'auto';
+    dataTestid = 'enabledCheckbox';
+    isDisabled = false;
   } else if (status === 'FAILED') {
     iconColor = 'red';
     IconComponent = HighlightOffOutlinedIcon;
@@ -30,32 +42,28 @@ export default function IdCell({ value, hasCheckbox, onChange, status, row }) {
     <>
       {hasCheckbox ? (
         <Stack direction="row" spacing={2}>
-          {status === 'FINISHED' ? (
-            <Checkbox data-testid="enabledCheckbox" value={value} onChange={() => onChange(value)} />
-          ) : (
-            <Checkbox data-testid="disabledCheckbox" disabled={true} value={value} onChange={() => onChange(value)} />
-          )}
+          <Checkbox data-testid={dataTestid} disabled={isDisabled} value={value} onChange={() => onChange(value)} />
           <Stack direction="row" spacing={2} style={{ marginTop: '1.8%' }}>
             <IconComponent sx={{ color: iconColor }} />
-            {status === 'FINISHED' ? (
-              <Link to="/report" state={{ from: row }} style={{ textDecoration: 'none', color: 'black' }}>
-                <div style={{ textDecoration: 'underline' }}>{value}</div>
-              </Link>
-            ) : (
-              <div style={{ textDecoration: 'none' }}>{value}</div>
-            )}
+            <Link
+              to={routingReference}
+              state={{ from: row }}
+              style={{ textDecoration: NONE, color: BLACK, pointerEvents: pointerEvent }}
+            >
+              <div style={{ textDecoration: textDecoration }}>{value}</div>
+            </Link>
           </Stack>
         </Stack>
       ) : (
         <Stack direction="row" spacing={2}>
           <IconComponent sx={{ color: iconColor }} />
-          {status === 'FINISHED' ? (
-            <Link to="/report" state={{ from: row }} style={{ textDecoration: 'none', color: 'black' }}>
-              <div style={{ textDecoration: 'underline' }}>{value}</div>
-            </Link>
-          ) : (
-            <div style={{ textDecoration: 'none' }}>{value}</div>
-          )}
+          <Link
+            to={routingReference}
+            state={{ from: row }}
+            style={{ textDecoration: NONE, color: BLACK, pointerEvents: pointerEvent }}
+          >
+            <div style={{ textDecoration: textDecoration }}>{value}</div>
+          </Link>
         </Stack>
       )}
     </>
