@@ -145,11 +145,11 @@ export default function Dashboard() {
     }
     */
 
-  useEffect(
-    () => () =>
-      onSnapshot(collection(db, FIRESTORE_COLLECTION_NAME), (snapshot) =>
-        dispatch({ type: 'saveFirestore', payload: snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })) })
-      ),
+  useEffect(() => {
+    onSnapshot(collection(db, FIRESTORE_COLLECTION_NAME), (snapshot) =>
+      dispatch({ type: 'saveFirestore', payload: snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })) })
+    )
+  },
     []
   );
 
