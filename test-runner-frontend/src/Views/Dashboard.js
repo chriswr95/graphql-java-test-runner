@@ -21,31 +21,63 @@ import { getMachineNames, sortTestRunsByMachine, getBenchmarksByMachine, getAllB
 const initialState = {
   isCheckBoxActive: false,
   //cancelButtonState: false,
+  // The original data from Firebase
   testResults: [],
+  // Whether we are loading the original data
   loadingState: true,
+  // The test run results displayed on screen
   testRunResults: [],
+  // All unfiltered test run results
   testRunResultsCopy: [],
-  testRunSelection: 'All Test Runs',
-  machineSelection: 'All Machines',
+  // The current branch selection
+  testRunSelection: '*',
+  // The current machine selection
+  machineSelection: '*',
   checkBoxSelection: [],
 };
 
 const reducer = (state, action) => {
+  let filteredResults;
   switch (action.type) {
+    case 'saveFirestore':
+      const machines = getMachineNames(action.payload);
+      const sortedTestRuns = sortTestRunsByMachine(machines, action.payload);
+      const benchmarksByMachine = getBenchmarksByMachine(sortedTestRuns);
+      const testRunResults = getAllBenchmarks(benchmarksByMachine);
+
+      return {
+        ...state,
+        testResults: action.payload,
+        testRunResults,
+        testRunResultsCopy: testRunResults,
+        loadingState: false,
+      };
     case 'isCheckBoxActive':
       return { ...state, isCheckBoxActive: action.payload };
-    case 'testResults':
-      return { ...state, testResults: action.payload };
-    case 'loadingState':
-      return { ...state, loadingState: action.payload };
-    case 'testRunResults':
-      return { ...state, testRunResults: action.payload };
-    case 'testRunResultsCopy':
-      return { ...state, testRunResultsCopy: action.payload };
-    case 'testRunSelection':
-      return { ...state, testRunSelection: action.payload };
-    case 'machineSelection':
-      return { ...state, machineSelection: action.payload };
+    case 'filterBranch':
+      const newBranch = action.payload;
+      filteredResults = state.testRunResultsCopy
+        .filter((test) => {
+          return newBranch === '*' || test.branch === newBranch;
+        })
+        .filter((test) => test.machine === state.machineSelection || state.machineSelection === '*');
+      return {
+        ...state,
+        testRunResults: filteredResults,
+        testRunSelection: action.payload,
+      };
+    case 'filterMachine':
+      const newMachineSelection = action.payload;
+      filteredResults = state.testRunResultsCopy
+        .filter((test) => test.branch === state.testRunSelection || state.testRunSelection === '*')
+        .filter((test) => {
+          return newMachineSelection === '*' || test.machine === newMachineSelection;
+        });
+      return {
+        ...state,
+        testRunResults: filteredResults,
+        machineSelection: action.payload,
+      };
     case 'checkBoxSelection':
       return { ...state, checkBoxSelection: action.payload };
     case 'compare':
@@ -55,6 +87,21 @@ const reducer = (state, action) => {
         testRunResults: action.payload,
         loadingState: action.payload,
       };
+    case 'sortResults':
+      const sortingMode = action.payload.key;
+      const sortingBy = action.payload.sortBy;
+      if (sortingBy === 'ascending') {
+        return {
+          ...state,
+          testRunResults: [].concat(state.testRunResultsCopy).sort((a, b) => a[sortingMode] - b[sortingMode]),
+        };
+      } else if (sortingBy === 'decreasing') {
+        return {
+          ...state,
+          testRunResults: [].concat(state.testRunResultsCopy).sort((a, b) => b[sortingMode] - a[sortingMode]),
+        };
+      }
+    // eslint-disable-next-line
     default:
       return state;
   }
@@ -66,10 +113,8 @@ export default function Dashboard() {
   const {
     isCheckBoxActive,
     //cancelButtonState,
-    testResults,
     loadingState,
     testRunResults,
-    testRunResultsCopy,
     testRunSelection,
     machineSelection,
     checkBoxSelection,
@@ -100,59 +145,21 @@ export default function Dashboard() {
   useEffect(
     () => () =>
       onSnapshot(collection(db, FIRESTORE_COLLECTION_NAME), (snapshot) =>
-        dispatch({ type: 'testResults', payload: snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })) })
+        dispatch({ type: 'saveFirestore', payload: snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })) })
       ),
     []
   );
 
-  useEffect(() => {
-    compareBenchmarks(testResults);
-    // eslint-disable-next-line
-  }, [testResults]);
-
-  const compareBenchmarks = (testRunResults) => {
-    const machines = getMachineNames(testRunResults);
-    const sortedTestRuns = sortTestRunsByMachine(machines, testRunResults);
-    const benchmarksByMachine = getBenchmarksByMachine(sortedTestRuns);
-    const allBenchmarks = getAllBenchmarks(benchmarksByMachine);
-    dispatch({ type: 'compare', payload: allBenchmarks });
-  };
-
-  const drowpdownMenusManager = React.useCallback(() => {
-    if (testRunSelection === 'Master Only') {
-      if (machineSelection === 'All Machines') {
-        dispatch({ type: 'testRunResults', payload: testRunResultsCopy.filter((test) => test.branch === 'master') });
-      } else {
-        dispatch({
-          type: 'testRunResults',
-          payload: testRunResultsCopy
-            .filter((test) => test.branch === 'master')
-            .filter((test) => test.machine === machineSelection),
-        });
-      }
-    } else {
-      if (machineSelection === 'All Machines') {
-        dispatch({ type: 'testRunResults', payload: testRunResultsCopy });
-      } else {
-        dispatch({
-          type: 'testRunResults',
-          payload: testRunResultsCopy.filter((test) => test.machine === machineSelection),
-        });
-      }
-    }
-  }, [testRunSelection, machineSelection, testRunResultsCopy]);
-
   const handleChangeTestRunSelection = (event) => {
-    dispatch({ type: 'testRunSelection', payload: event.target.value });
+    dispatch({ type: 'filterBranch', payload: event.target.value });
   };
 
   const handleChangeMachineSelection = (event) => {
-    dispatch({ type: 'machineSelection', payload: event.target.value });
+    dispatch({ type: 'filterMachine', payload: event.target.value });
   };
 
-  function sortDate() {
-    var testRunsResultsSorted = testRunResultsCopy;
-    dispatch({ type: 'testRunResults', payload: [].concat(testRunsResultsSorted).sort((a, b) => a.date - b.date) });
+  function sortTests(key, descending) {
+    dispatch({ type: 'sortResults', payload: { key: key, sortBy: descending } });
   }
 
   const onCheckboxChange = (childToParentData) => {
@@ -167,21 +174,19 @@ export default function Dashboard() {
         payload: (checkBoxSelection) => [...checkBoxSelection, childToParentData],
       });
     dispatch({ type: 'isCheckBoxActive', payload: false });
-    dispatch({ type: 'testRunResultsCopy', payload: testRunResultsCopy });
   };
-
-  useEffect(() => {
-    drowpdownMenusManager();
-  }, [drowpdownMenusManager]);
-
-  useEffect(() => {
-    drowpdownMenusManager();
-  }, [drowpdownMenusManager]);
 
   return (
     <div>
       {loadingState === true ? (
-        <CircularProgress color="secondary" />
+        <CircularProgress
+          color="secondary"
+          sx={{
+            position: 'absolute',
+            top: '45%',
+            left: '50%',
+          }}
+        />
       ) : (
         <div>
           <img
@@ -255,9 +260,14 @@ export default function Dashboard() {
               <Box sx={{ marginTop: '0.8%', marginBottom: '0.8%' }}>
                 <FormControl sx={{ minWidth: '10.2%' }} size="small">
                   <InputLabel>Test Runs</InputLabel>
-                  <Select value={testRunSelection} onChange={handleChangeTestRunSelection} label="Test Runs">
-                    <MenuItem value={'All Test Runs'}>All Test Runs</MenuItem>
-                    <MenuItem data-testid="Master Only" value={'Master Only'}>
+                  <Select
+                    data-testid="TestRuns"
+                    value={testRunSelection}
+                    onChange={handleChangeTestRunSelection}
+                    label="Test Runs"
+                  >
+                    <MenuItem value={'*'}>All Test Runs</MenuItem>
+                    <MenuItem data-testid="Master Only" value={'master'}>
                       Master Only
                     </MenuItem>
                   </Select>
@@ -265,8 +275,13 @@ export default function Dashboard() {
 
                 <FormControl sx={{ marginLeft: '1.2%', minWidth: '9%' }} size="small">
                   <InputLabel>Machine</InputLabel>
-                  <Select value={machineSelection} onChange={handleChangeMachineSelection} label="Machine">
-                    <MenuItem value={'All Machines'}>All Machines</MenuItem>
+                  <Select
+                    data-testid="Machines"
+                    value={machineSelection}
+                    onChange={handleChangeMachineSelection}
+                    label="Machine"
+                  >
+                    <MenuItem value={'*'}>All Machines</MenuItem>
                     <MenuItem value={'core_32'}>core_32</MenuItem>
                     <MenuItem value={'core_2'}>core_2</MenuItem>
                   </Select>
@@ -293,7 +308,7 @@ export default function Dashboard() {
                 onCheckboxChange={onCheckboxChange}
                 isCheckBoxActive={isCheckBoxActive}
                 testRunResults={testRunResults}
-                sortDate={sortDate}
+                sortTests={sortTests}
               />
             </Box>
           </Stack>

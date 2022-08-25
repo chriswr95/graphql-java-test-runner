@@ -89,17 +89,17 @@ describe('Test Runs Table', () => {
     }
   });
 
-  test('Renders sortDate', async () => {
+  test('Renders sortTests', async () => {
     var testRunResults = generateMockDataCaller(25);
-    var sortDate = jest.fn();
+    var sortTests = jest.fn();
     const { debug, getByTestId } = render(
       <BrowserRouter>
-        <TestRunsTable testRunResults={testRunResults} sortDate={sortDate} />
+        <TestRunsTable testRunResults={testRunResults} sortTests={sortTests} />
       </BrowserRouter>
     );
     const SortButton = screen.getByTestId('iconButton');
     await userEvent.click(SortButton);
-    expect(sortDate).toHaveBeenCalled();
+    expect(sortTests).toHaveBeenCalled();
   });
 
   test('Renders checkboxActive', async () => {
