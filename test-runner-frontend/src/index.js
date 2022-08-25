@@ -6,6 +6,7 @@ import { Route, BrowserRouter, Routes } from 'react-router-dom';
 import Dashboard from './Views/Dashboard';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
   <React.StrictMode>
     <BrowserRouter basename="/graphql-java-test-runner">

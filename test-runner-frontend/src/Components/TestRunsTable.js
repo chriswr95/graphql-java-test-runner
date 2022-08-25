@@ -48,7 +48,7 @@ const columns = [
   },
 ];
 
-export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, testRunResults, sortDate }) {
+export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, testRunResults, sortTests }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -83,7 +83,7 @@ export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, test
                       <IconButton
                         data-testid="iconButton"
                         sx={{ top: '13%', position: 'absolute' }}
-                        onClick={() => sortDate()}
+                        onClick={() => sortTests('date', 'ascending')}
                       >
                         <ArrowDownwardIcon />
                       </IconButton>
@@ -127,6 +127,7 @@ export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, test
                           hasCheckbox={isCheckBoxActive}
                           onChange={() => onChange(row)}
                           status={row.status}
+                          row={row}
                         />
                       );
                     }
