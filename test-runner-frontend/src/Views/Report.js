@@ -274,16 +274,14 @@ export default function Report() {
           <Box sx={{ marginLeft: '2%', width: '98%', display: 'flex', flexDirection: 'row' }}>
             {/* Lateral menu BOX */}
             <Box sx={{ display: 'flex', flexDirection: 'column', position: 'fixed' }}>
-              <HashLink smooth to="/report/#Summary" style={{ textDecoration: 'none', color: 'black' }}>
-                {' '}
                 <Typography variant="h6" sx={{ marginBottom: '3%' }}>
-                  <b>Benchmarks</b>
-                </Typography>{' '}
-              </HashLink>
+                  <b>Classes</b>
+                </Typography>
 
               {Object.keys(classesAndBenchmarksState).map((item, i) => (
-                <HashLink key={i} smooth to={`/report/#${item}`} style={{ textDecoration: 'none', color: 'black' }}>
+                
                   <Typography
+                    key={i} 
                     variant="h7"
                     style={{
                       maxWidth: '63%',
@@ -293,9 +291,9 @@ export default function Report() {
                       display: 'block',
                     }}
                   >
-                    {item}
+                    <HashLink smooth to={`/report/#${item}`} style={{ textDecoration: 'none', color: 'black' }}>{item}</HashLink>
                   </Typography>
-                </HashLink>
+                
               ))}
             </Box>
 
@@ -303,7 +301,7 @@ export default function Report() {
             <Box sx={{ width: '100%', marginLeft: '15%', display: 'flex', flexDirection: 'row' }}>
               {/* Bar columns BOX */}
 
-              <Box sx={{ width: '50%', display: 'flex', flexDirection: 'column' }}>
+              <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
                 {Object.entries(classesAndBenchmarksState).map((benchmarkData, i) => {
                   arrayBenchmarks.push(benchmarkData);
                   return null;
@@ -314,7 +312,7 @@ export default function Report() {
                   if (i % 2 === 0 || i === 0) {
                     return (
                       <Box key={i} sx={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
-                        <Box key={i} sx={{ marginBottom: '3%', marginRight: '21%' }}>
+                        <Box key={i} sx={{ marginBottom: '3.6%', marginRight: '10%' }}>
                           <Typography variant="h5" id={`${currentChart[0]}`} sx={{ display: 'block' }}>
                             <b>{currentChart[0]}</b>
                           </Typography>

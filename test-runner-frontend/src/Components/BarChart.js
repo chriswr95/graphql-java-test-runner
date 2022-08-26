@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import Chip from '@mui/material/Chip';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ErrorBar } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ErrorBar, ResponsiveContainer } from 'recharts';
 
 export default function BarCharts(classesAndBenchmarksState) {
   var benchmarksData = [];
@@ -53,9 +53,10 @@ export default function BarCharts(classesAndBenchmarksState) {
   };
 
   return (
-    <Box>
-      <Chip sx={{ marginTop: '1.6%', marginBottom: '3.6%', backgroundColor: 'F1F1F1' }} label={getModeName(mode)} />
-      <BarChart width={537} height={270} data={benchmarksDataState} layout="vertical">
+    <Box sx={{width:"62vh"}}>
+    <Chip sx={{ marginTop: '1.6%', marginBottom: '3.4%', backgroundColor: 'F1F1F1' }} label={getModeName(mode)} />
+    <ResponsiveContainer minWidth="100%" height={270} >
+      <BarChart data={benchmarksDataState} layout="vertical">
         <XAxis type="number" />
         <YAxis type="category" dataKey="name" />
         <CartesianGrid strokeDasharray="2 2" />
@@ -66,6 +67,7 @@ export default function BarCharts(classesAndBenchmarksState) {
           <ErrorBar dataKey="errorNegative" width={4} strokeWidth={2} stroke="red" />
         </Bar>
       </BarChart>
+    </ResponsiveContainer>
     </Box>
   );
 }
