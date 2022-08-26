@@ -53,11 +53,11 @@ export const sortTestRunsByMachine = (machines, testRunResults) => {
       const machine = machineName;
       if (testRunResult.testRunnerResults) {
         const benchmarks = testRunResult.testRunnerResults[machineName]?.testStatistics?.length;
-        const timestamp = testRunResult.testRunnerResults[machineName].startTime;
+        const timestamp = testRunResult.testRunnerResults[machineName]?.startTime;
         const dateTimestamp = new Date(timestamp * 26);
         const improvedVsRegressed = { improved: 0, regressed: 0 };
-        const date = dateTimestamp.toLocaleString();
-        const statistics = testRunResult.testRunnerResults[machineName].testStatistics;
+        const date = dateTimestamp?.toLocaleString();
+        const statistics = testRunResult.testRunnerResults[machineName]?.testStatistics;
 
         return {
           id,

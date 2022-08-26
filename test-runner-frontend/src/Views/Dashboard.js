@@ -5,9 +5,8 @@ import Stack from '@mui/material/Stack';
 //import Button from '@mui/material/Button';
 import GraphQL_Logo from '../Assets/GraphQL_Java_Logo_v2.png';
 import Alert from '@mui/material/Alert';
-import { useEffect } from 'react';
+import { useEffect, useReducer } from 'react';
 import { onSnapshot, collection } from '@firebase/firestore';
-import { useReducer } from 'react';
 import db from './firebase';
 import TestRunsTable from '../Components/TestRunsTable';
 //import { useNavigate } from 'react-router-dom';
@@ -17,6 +16,10 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getMachineNames, sortTestRunsByMachine, getBenchmarksByMachine, getAllBenchmarks } from './DashboardUtils';
+import { Link } from 'react-router-dom';
+
+const FIRESTORE_COLLECTION_NAME = 'test-runs';
+const GRAPHQL_JAVA_GITHUB = 'https://github.com/graphql-java/graphql-java';
 
 const initialState = {
   isCheckBoxActive: false,
@@ -123,8 +126,6 @@ export default function Dashboard() {
     machineNames,
   } = state;
 
-  const FIRESTORE_COLLECTION_NAME = 'test-runs';
-
   //const navigate = useNavigate();
 
   /*
@@ -148,10 +149,8 @@ export default function Dashboard() {
   useEffect(() => {
     onSnapshot(collection(db, FIRESTORE_COLLECTION_NAME), (snapshot) =>
       dispatch({ type: 'saveFirestore', payload: snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })) })
-    )
-  },
-    []
-  );
+    );
+  }, []);
 
   const handleChangeTestRunSelection = (event) => {
     dispatch({ type: 'filterBranch', payload: event.target.value });
@@ -202,6 +201,21 @@ export default function Dashboard() {
             src={GraphQL_Logo}
             alt="GraphQL Java Logo"
           />
+
+          <a
+            style={{
+              marginRight: '3.5%',
+              marginTop: '1.1%',
+              float: 'right',
+              color: '#e535ab',
+              textDecoration: 'none',
+              color: 'gray',
+              fontWeight: '720',
+            }}
+            href={GRAPHQL_JAVA_GITHUB}
+          >
+            GitHub
+          </a>
 
           <Typography sx={{ marginLeft: '2%', marginBottom: '0.4%' }} variant="h4">
             <b>Summary</b>
@@ -285,8 +299,12 @@ export default function Dashboard() {
                     label="Machine"
                   >
                     <MenuItem value={'*'}>All Machines</MenuItem>
-                    {machineNames.map((machine) => {
-                      return <MenuItem value={machine}>{machine}</MenuItem>;
+                    {machineNames.map((machine, index) => {
+                      return (
+                        <MenuItem key={index} value={machine}>
+                          {machine}
+                        </MenuItem>
+                      );
                     })}
                   </Select>
                 </FormControl>

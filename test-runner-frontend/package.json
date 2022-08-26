@@ -25,7 +25,8 @@
     "react-scripts": "5.0.1",
     "recharts": "^2.1.12",
     "util": "^0.12.4",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "jspdf-html2canvas": "^1.4.9"
   },
   "scripts": {
     "start": "react-scripts start",
