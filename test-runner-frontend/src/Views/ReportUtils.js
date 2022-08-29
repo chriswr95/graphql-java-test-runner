@@ -41,13 +41,10 @@ export const buildChartsData = (selectedTestRunFromDashboard) => {
 };
 
 export const buildJsonResults = (benchmarks) => {
-  console.log('benchmarks');
-  console.log(benchmarks);
   const jobId = benchmarks[0].jobId;
   const className = benchmarks[0].benchmarkClass;
   const jsonResults = benchmarks.map((benchmark) => benchmark.json);
-  console.log('result');
-  console.log({ jobId, className, jsonResults });
+
   return {
     jobId,
     className,
