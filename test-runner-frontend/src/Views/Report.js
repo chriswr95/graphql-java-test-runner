@@ -18,13 +18,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { HashLink } from 'react-router-hash-link';
 import BarCharts from '../Components/BarChart';
 import { useLocation } from 'react-router-dom';
-import { useEffect, useState, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { makeStyles, Dialog } from '@material-ui/core';
-import { fontWeight, Stack } from '@mui/system';
+import { Stack } from '@mui/system';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { builChartsData, buildJsonResults, downloadJSON, printPDF } from './ReportUtils';
-import { Link } from 'react-router-dom';
+import { buildChartsData, buildJsonResults, downloadJSON, printPDF } from './ReportUtils';
 
 const GRAPHQL_JAVA_GITHUB = 'https://github.com/graphql-java/graphql-java';
 
@@ -50,14 +49,23 @@ function TransitionSnackBar(props) {
 }
 
 const initialState = {
-  open: false,
+  // State of the dialog that shows test results with JSON format.
+  openDialog: false,
+  // Data that will be used to build charts.
   classesAndBenchmarksState: [],
+  // Test results with JSON format.
   jsonResult: {},
-  fromCopy: {},
+  // Copy of the selected test run from Dashboard
+  selectedTestRunFromDashboardCopy: {},
+  // State of the snackbar that appears after clicking on downloading and copy buttons.
   openSnackBar: false,
+  // Whether we are loading data.
   loadingState: true,
+  // Snackbar message according to type of button clicked.
   snackBarMessage: '',
+  // Snackbar duration according to type of button clicked.
   snackBarMessageDuration: null,
+  // Snackbar transition state.
   transitionSnackBar: undefined,
 };
 
@@ -66,7 +74,7 @@ const reducer = (state, action) => {
     case 'handleDialog':
       return {
         ...state,
-        open: action.payload.isOpen,
+        openDialog: action.payload.isOpen,
         jsonResult: action.payload.jsonResults,
       };
     case 'setClassesAndBenchmarksState':
@@ -75,10 +83,10 @@ const reducer = (state, action) => {
         classesAndBenchmarksState: action.payload,
         loadingState: false,
       };
-    case 'setFromCopy':
+    case 'setSelectedTestRunFromDashboardCopy':
       return {
         ...state,
-        fromCopy: action.payload,
+        selectedTestRunFromDashboardCopy: action.payload,
       };
     case 'handleSnackBar':
       return {
@@ -97,10 +105,10 @@ export default function Report() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const {
-    open,
+    openDialog,
     classesAndBenchmarksState,
     jsonResult,
-    fromCopy,
+    selectedTestRunFromDashboardCopy,
     openSnackBar,
     loadingState,
     snackBarMessage,
@@ -110,8 +118,7 @@ export default function Report() {
 
   const location = useLocation();
   const classes = useStyles();
-  const { from } = location.state ? location.state : fromCopy;
-  var arrayBenchmarks = [];
+  const { selectedTestRunFromDashboard } = location.state ? location.state : selectedTestRunFromDashboardCopy;
 
   const handleClickOpenSnackBar = (Transition, message, messageDuration) => () => {
     dispatch({
@@ -126,12 +133,12 @@ export default function Report() {
   };
 
   const getBenchmarks = () => {
-    dispatch({ type: 'setClassesAndBenchmarksState', payload: builChartsData(from) });
+    dispatch({ type: 'setClassesAndBenchmarksState', payload: buildChartsData(selectedTestRunFromDashboard) });
   };
 
   useEffect(() => {
     getBenchmarks();
-    dispatch({ type: 'setFromCopy', payload: from });
+    dispatch({ type: 'setSelectedTestRunFromDashboardCopy', payload: selectedTestRunFromDashboard });
     // eslint-disable-next-line
   }, []);
 
@@ -190,7 +197,6 @@ export default function Report() {
               marginRight: '3.5%',
               marginTop: '1.1%',
               float: 'right',
-              color: '#e535ab',
               textDecoration: 'none',
               color: 'gray',
               fontWeight: '720',
@@ -204,7 +210,7 @@ export default function Report() {
             classes={{
               paper: classes.dialog,
             }}
-            open={open}
+            open={openDialog}
             onClose={() => handleCloseDialog()}
           >
             <AppBar sx={{ position: 'relative', bgcolor: 'transparent' }}>
@@ -246,7 +252,12 @@ export default function Report() {
           {/* Test Runs info */}
           <Box sx={{ width: '97%', marginBottom: '2%', marginLeft: '2%' }}>
             <Typography variant="h4">
-              <b>Test run {from?.id ? from?.id : fromCopy?.id}</b>
+              <b>
+                Test run{' '}
+                {selectedTestRunFromDashboard?.id
+                  ? selectedTestRunFromDashboard?.id
+                  : selectedTestRunFromDashboardCopy?.id}
+              </b>
             </Typography>
             <Button
               sx={{
@@ -263,37 +274,50 @@ export default function Report() {
             >
               Download
             </Button>
-            <Typography style={{ color: 'grey' }}>Time of Run: {from?.date ? from?.date : fromCopy?.date}</Typography>
             <Typography style={{ color: 'grey' }}>
-              Git Commit Hash: {from?.commitHash ? from?.commitHash : fromCopy?.commitHash}
+              Time of Run:{' '}
+              {selectedTestRunFromDashboard?.date
+                ? selectedTestRunFromDashboard?.date
+                : selectedTestRunFromDashboardCopy?.date}
             </Typography>
-            <Typography style={{ color: 'grey' }}>Branch: {from?.branch ? from?.branch : fromCopy?.branch}</Typography>
+            <Typography style={{ color: 'grey' }}>
+              Git Commit Hash:{' '}
+              {selectedTestRunFromDashboard?.commitHash
+                ? selectedTestRunFromDashboard?.commitHash
+                : selectedTestRunFromDashboardCopy?.commitHash}
+            </Typography>
+            <Typography style={{ color: 'grey' }}>
+              Branch:{' '}
+              {selectedTestRunFromDashboard?.branch
+                ? selectedTestRunFromDashboard?.branch
+                : selectedTestRunFromDashboardCopy?.branch}
+            </Typography>
           </Box>
 
           {/* Father BOX */}
           <Box sx={{ marginLeft: '2%', width: '98%', display: 'flex', flexDirection: 'row' }}>
             {/* Lateral menu BOX */}
             <Box sx={{ display: 'flex', flexDirection: 'column', position: 'fixed' }}>
-                <Typography variant="h6" sx={{ marginBottom: '3%' }}>
-                  <b>Classes</b>
-                </Typography>
+              <Typography variant="h6" sx={{ marginBottom: '3%' }}>
+                <b>Classes</b>
+              </Typography>
 
-              {Object.keys(classesAndBenchmarksState).map((item, i) => (
-                
-                  <Typography
-                    key={i} 
-                    variant="h7"
-                    style={{
-                      maxWidth: '63%',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      display: 'block',
-                    }}
-                  >
-                    <HashLink smooth to={`/report/#${item}`} style={{ textDecoration: 'none', color: 'black' }}>{item}</HashLink>
-                  </Typography>
-                
+              {classesAndBenchmarksState.map((item, i) => (
+                <Typography
+                  key={i}
+                  variant="h7"
+                  style={{
+                    maxWidth: '63%',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    display: 'block',
+                  }}
+                >
+                  <HashLink smooth to={`/report/#${item[0]}`} style={{ textDecoration: 'none', color: 'black' }}>
+                    {item[0]}
+                  </HashLink>
+                </Typography>
               ))}
             </Box>
 
@@ -302,13 +326,9 @@ export default function Report() {
               {/* Bar columns BOX */}
 
               <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-                {Object.entries(classesAndBenchmarksState).map((benchmarkData, i) => {
-                  arrayBenchmarks.push(benchmarkData);
-                  return null;
-                })}
-                {arrayBenchmarks.map((benchmarkData, i) => {
+                {classesAndBenchmarksState.map((benchmarkData, i) => {
                   var currentChart = benchmarkData;
-                  var nextChart = i <= arrayBenchmarks.length ? arrayBenchmarks[i + 1] : null;
+                  var nextChart = i <= classesAndBenchmarksState.length ? classesAndBenchmarksState[i + 1] : null;
                   if (i % 2 === 0 || i === 0) {
                     return (
                       <Box key={i} sx={{ width: '100%', display: 'flex', flexDirection: 'row' }}>

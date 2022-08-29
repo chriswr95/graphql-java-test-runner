@@ -47,7 +47,7 @@ export default function IdCell({ value, hasCheckbox, onChange, status, row }) {
             <IconComponent sx={{ color: iconColor }} />
             <Link
               to={routingReference}
-              state={{ from: row }}
+              state={{ selectedTestRunFromDashboard: row }}
               style={{ textDecoration: NONE, color: BLACK, pointerEvents: pointerEvent }}
             >
               <div style={{ textDecoration: textDecoration }}>{value}</div>
@@ -59,7 +59,7 @@ export default function IdCell({ value, hasCheckbox, onChange, status, row }) {
           <IconComponent sx={{ color: iconColor }} />
           <Link
             to={routingReference}
-            state={{ from: row }}
+            state={{ selectedTestRunFromDashboard: row }}
             style={{ textDecoration: NONE, color: BLACK, pointerEvents: pointerEvent }}
           >
             <div style={{ textDecoration: textDecoration }}>{value}</div>

@@ -1,14 +1,15 @@
 import html2canvas from 'html2canvas';
 import jsPdf from 'jspdf';
 
-export const builChartsData = (from) => {
+export const buildChartsData = (selectedTestRunFromDashboard) => {
   const classesAndBenchmarks = {};
-  from?.statistics?.map((testRun, index) => {
+  selectedTestRunFromDashboard?.statistics?.forEach((testRun, index) => {
+    // Benchmark example string: "benchmark": "benchmark.ListBenchmark.benchmarkArrayList"
     var benchmarkCassAndMethod = testRun.benchmark.split('.');
     var benchmarkClass = benchmarkCassAndMethod[1] + '-' + testRun.mode;
     var benchmarkMethod = benchmarkCassAndMethod[2];
     var benchmarkData = {
-      jobId: from?.id,
+      jobId: selectedTestRunFromDashboard?.id,
       benchmarkClass: benchmarkClass,
       benchmarkMethod: benchmarkMethod,
       benchmarkScore: testRun.primaryMetric.score,
@@ -18,7 +19,6 @@ export const builChartsData = (from) => {
     };
     classesAndBenchmarks[benchmarkClass] ??= [];
     classesAndBenchmarks[benchmarkClass]?.push(benchmarkData);
-    return classesAndBenchmarks;
   });
 
   var allClassesAndBenchmarks = [];
@@ -35,25 +35,19 @@ export const builChartsData = (from) => {
     });
     allClassesAndBenchmarks[key] = unique;
   });
-  var sortedByClassNameClassesAndBenchmarks = Object.keys(allClassesAndBenchmarks)
-    ?.sort()
-    ?.reduce(
-      (acc, key) => ({
-        ...acc,
-        [key]: allClassesAndBenchmarks[key],
-      }),
-      {}
-    );
 
+  var sortedByClassNameClassesAndBenchmarks = Object.entries(allClassesAndBenchmarks).sort();
   return sortedByClassNameClassesAndBenchmarks;
 };
 
 export const buildJsonResults = (benchmarks) => {
+  console.log('benchmarks');
+  console.log(benchmarks);
   const jobId = benchmarks[0].jobId;
   const className = benchmarks[0].benchmarkClass;
-  const jsonResults = [];
-  benchmarks.map((benchmark) => jsonResults.push(benchmark.json));
-
+  const jsonResults = benchmarks.map((benchmark) => benchmark.json);
+  console.log('result');
+  console.log({ jobId, className, jsonResults });
   return {
     jobId,
     className,
@@ -77,10 +71,11 @@ export const printPDF = () => {
 
 export const downloadJSON = (jsonBnechmark, jobId, jsonData) => {
   const fileData = JSON.stringify(jsonData);
-  const blob = new Blob([fileData], { type: 'text/plain' });
+  const blob = new Blob([fileData], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.download = `${jsonBnechmark}-${jobId}.json`;
   link.href = url;
   link.click();
+  return link.download;
 };
