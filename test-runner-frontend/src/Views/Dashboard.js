@@ -5,9 +5,7 @@ import Stack from '@mui/material/Stack';
 //import Button from '@mui/material/Button';
 import GraphQL_Logo from '../Assets/GraphQL_Java_Logo_v2.png';
 import Alert from '@mui/material/Alert';
-import { useEffect, useReducer } from 'react';
-import { onSnapshot, collection } from '@firebase/firestore';
-import db from './firebase';
+import { useEffect, useReducer, useContext } from 'react';
 import TestRunsTable from '../Components/TestRunsTable';
 //import { useNavigate } from 'react-router-dom';
 import InputLabel from '@mui/material/InputLabel';
@@ -15,19 +13,13 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import CircularProgress from '@mui/material/CircularProgress';
-import { getMachineNames, sortTestRunsByMachine, getBenchmarksByMachine, getAllBenchmarks } from './DashboardUtils';
-import { Link } from 'react-router-dom';
+import { FirestoreContext } from '../Components/FirestoreProvider';
 
-const FIRESTORE_COLLECTION_NAME = 'test-runs';
 const GRAPHQL_JAVA_GITHUB = 'https://github.com/graphql-java/graphql-java';
 
 const initialState = {
   isCheckBoxActive: false,
   //cancelButtonState: false,
-  // The original data from Firebase
-  testResults: [],
-  // Whether we are loading the original data
-  loadingState: true,
   // The test run results displayed on screen
   testRunResults: [],
   // All unfiltered test run results
@@ -44,18 +36,11 @@ const reducer = (state, action) => {
   let filteredResults;
   switch (action.type) {
     case 'saveFirestore':
-      const machines = getMachineNames(action.payload);
-      const sortedTestRuns = sortTestRunsByMachine(machines, action.payload);
-      const benchmarksByMachine = getBenchmarksByMachine(sortedTestRuns);
-      const testRunResults = getAllBenchmarks(benchmarksByMachine);
-
       return {
         ...state,
-        testResults: action.payload,
-        testRunResults,
-        testRunResultsCopy: testRunResults,
-        loadingState: false,
-        machineNames: machines,
+        testRunResults: action.payload.firestoreData,
+        testRunResultsCopy: action.payload.firestoreData,
+        machineNames: action.payload.machines,
       };
     case 'isCheckBoxActive':
       return { ...state, isCheckBoxActive: action.payload };
@@ -90,7 +75,6 @@ const reducer = (state, action) => {
         ...state,
         testRunResultsCopy: action.payload,
         testRunResults: action.payload,
-        loadingState: action.payload,
       };
     case 'sortResults':
       const sortingMode = action.payload.key;
@@ -115,10 +99,13 @@ const reducer = (state, action) => {
 export default function Dashboard() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  console.log(useContext(FirestoreContext));
+
+  const { loading, firestoreData, machines } = useContext(FirestoreContext);
+
   const {
     isCheckBoxActive,
     //cancelButtonState,
-    loadingState,
     testRunResults,
     testRunSelection,
     machineSelection,
@@ -147,10 +134,8 @@ export default function Dashboard() {
     */
 
   useEffect(() => {
-    onSnapshot(collection(db, FIRESTORE_COLLECTION_NAME), (snapshot) =>
-      dispatch({ type: 'saveFirestore', payload: snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })) })
-    );
-  }, []);
+    if (firestoreData !== undefined) dispatch({ type: 'saveFirestore', payload: { firestoreData, machines } });
+  }, [firestoreData, machines]);
 
   const handleChangeTestRunSelection = (event) => {
     dispatch({ type: 'filterBranch', payload: event.target.value });
@@ -180,15 +165,18 @@ export default function Dashboard() {
 
   return (
     <div>
-      {loadingState === true ? (
-        <CircularProgress
-          color="secondary"
+      {loading ? (
+        <Box
           sx={{
             position: 'absolute',
             top: '45%',
             left: '50%',
+            marginTop: 0,
+            marginLeft: 0,
           }}
-        />
+        >
+          <CircularProgress style={{ width: '7vh' }} color="secondary" />
+        </Box>
       ) : (
         <div>
           <img
@@ -207,7 +195,6 @@ export default function Dashboard() {
               marginRight: '3.5%',
               marginTop: '1.1%',
               float: 'right',
-              color: '#e535ab',
               textDecoration: 'none',
               color: 'gray',
               fontWeight: '720',

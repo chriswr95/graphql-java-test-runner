@@ -1,29 +1,17 @@
 import * as React from 'react';
-import {
-  Box,
-  Button,
-  Typography,
-  ListItem,
-  List,
-  Divider,
-  AppBar,
-  Toolbar,
-  IconButton,
-  Snackbar,
-  CircularProgress,
-  Slide,
-} from '@mui/material';
+import { Box, Button, Typography, AppBar, Toolbar, IconButton, Snackbar, CircularProgress, Slide } from '@mui/material';
 import GraphQL_Logo from '../Assets/GraphQL_Java_Logo_v2.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { HashLink } from 'react-router-hash-link';
 import BarCharts from '../Components/BarChart';
-import { useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useEffect, useReducer } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { makeStyles, Dialog } from '@material-ui/core';
 import { Stack } from '@mui/system';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { buildChartsData, buildJsonResults, downloadJSON, printPDF } from './ReportUtils';
+import { FirestoreContext } from '../Components/FirestoreProvider';
 
 const GRAPHQL_JAVA_GITHUB = 'https://github.com/graphql-java/graphql-java';
 
@@ -55,12 +43,8 @@ const initialState = {
   classesAndBenchmarksState: [],
   // Test results with JSON format.
   jsonResult: {},
-  // Copy of the selected test run from Dashboard
-  selectedTestRunFromDashboardCopy: {},
   // State of the snackbar that appears after clicking on downloading and copy buttons.
   openSnackBar: false,
-  // Whether we are loading data.
-  loadingState: true,
   // Snackbar message according to type of button clicked.
   snackBarMessage: '',
   // Snackbar duration according to type of button clicked.
@@ -81,12 +65,6 @@ const reducer = (state, action) => {
       return {
         ...state,
         classesAndBenchmarksState: action.payload,
-        loadingState: false,
-      };
-    case 'setSelectedTestRunFromDashboardCopy':
-      return {
-        ...state,
-        selectedTestRunFromDashboardCopy: action.payload,
       };
     case 'handleSnackBar':
       return {
@@ -104,21 +82,30 @@ const reducer = (state, action) => {
 export default function Report() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const { loading, firestoreData } = React.useContext(FirestoreContext);
+
+  const { jobId } = useParams();
+
   const {
     openDialog,
     classesAndBenchmarksState,
     jsonResult,
-    selectedTestRunFromDashboardCopy,
     openSnackBar,
-    loadingState,
     snackBarMessage,
     snackBarMessageDuration,
     transitionSnackBar,
   } = state;
 
-  const location = useLocation();
   const classes = useStyles();
-  const { selectedTestRunFromDashboard } = location.state ? location.state : selectedTestRunFromDashboardCopy;
+  // const { selectedTestRunFromDashboard } = location.state ? location.state : selectedTestRunFromDashboardCopy;
+
+  const selectedTestRunFromDashboard = React.useMemo(() => {
+    if (firestoreData !== undefined) {
+      return firestoreData.find((job) => {
+        return jobId === job.id;
+      });
+    }
+  }, [firestoreData, jobId]);
 
   const handleClickOpenSnackBar = (Transition, message, messageDuration) => () => {
     dispatch({
@@ -132,15 +119,10 @@ export default function Report() {
     dispatch({ type: 'handleSnackBar', payload: { transition: undefined, message: '', isOpen: false } });
   };
 
-  const getBenchmarks = () => {
-    dispatch({ type: 'setClassesAndBenchmarksState', payload: buildChartsData(selectedTestRunFromDashboard) });
-  };
-
   useEffect(() => {
-    getBenchmarks();
-    dispatch({ type: 'setSelectedTestRunFromDashboardCopy', payload: selectedTestRunFromDashboard });
-    // eslint-disable-next-line
-  }, []);
+    if (selectedTestRunFromDashboard !== undefined)
+      dispatch({ type: 'setClassesAndBenchmarksState', payload: buildChartsData(selectedTestRunFromDashboard) });
+  }, [selectedTestRunFromDashboard]);
 
   const handleClickOpenDialog = (benchmarks) => {
     dispatch({ type: 'handleDialog', payload: { isOpen: true, jsonResults: buildJsonResults(benchmarks) } });
@@ -168,7 +150,7 @@ export default function Report() {
 
   return (
     <div>
-      {loadingState === true ? (
+      {loading ? (
         <Box
           sx={{
             position: 'absolute',
@@ -178,7 +160,7 @@ export default function Report() {
             marginLeft: 0,
           }}
         >
-          <CircularProgress style={{ width: '10vh' }} color="secondary" />
+          <CircularProgress style={{ width: '7vh' }} color="secondary" />
         </Box>
       ) : (
         <div>
@@ -241,23 +223,15 @@ export default function Report() {
               </Stack>
             </AppBar>
 
-            <List>
-              <ListItem>
-                <pre>{JSON.stringify(jsonResult.jsonResults, undefined, 2)}</pre>
-              </ListItem>
-              <Divider />
-            </List>
+            <Box sx={{ margin: '6%' }}>
+              <pre>{JSON.stringify(jsonResult.jsonResults, undefined, 2)}</pre>
+            </Box>
           </Dialog>
 
           {/* Test Runs info */}
           <Box sx={{ width: '97%', marginBottom: '2%', marginLeft: '2%' }}>
             <Typography variant="h4">
-              <b>
-                Test run{' '}
-                {selectedTestRunFromDashboard?.id
-                  ? selectedTestRunFromDashboard?.id
-                  : selectedTestRunFromDashboardCopy?.id}
-              </b>
+              <b>Test run {selectedTestRunFromDashboard?.id}</b>
             </Typography>
             <Button
               sx={{
@@ -274,24 +248,11 @@ export default function Report() {
             >
               Download
             </Button>
+            <Typography style={{ color: 'grey' }}>Time of Run: {selectedTestRunFromDashboard?.date}</Typography>
             <Typography style={{ color: 'grey' }}>
-              Time of Run:{' '}
-              {selectedTestRunFromDashboard?.date
-                ? selectedTestRunFromDashboard?.date
-                : selectedTestRunFromDashboardCopy?.date}
+              Git Commit Hash: {selectedTestRunFromDashboard?.commitHash}
             </Typography>
-            <Typography style={{ color: 'grey' }}>
-              Git Commit Hash:{' '}
-              {selectedTestRunFromDashboard?.commitHash
-                ? selectedTestRunFromDashboard?.commitHash
-                : selectedTestRunFromDashboardCopy?.commitHash}
-            </Typography>
-            <Typography style={{ color: 'grey' }}>
-              Branch:{' '}
-              {selectedTestRunFromDashboard?.branch
-                ? selectedTestRunFromDashboard?.branch
-                : selectedTestRunFromDashboardCopy?.branch}
-            </Typography>
+            <Typography style={{ color: 'grey' }}>Branch: {selectedTestRunFromDashboard.branch}</Typography>
           </Box>
 
           {/* Father BOX */}

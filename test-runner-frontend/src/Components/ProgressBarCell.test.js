@@ -10,7 +10,9 @@ describe('ProgressBarCell', () => {
   });
 
   test('Renders improved vs regressed progress bar', () => {
-    const { debug, getAllByRole } = render(<ProgressBarCell improvedValue={12} regressedValue={10} totalBenchmarks={30}/>);
+    const { debug, getAllByRole } = render(
+      <ProgressBarCell improvedValue={12} regressedValue={10} totalBenchmarks={30} />
+    );
     expect(getAllByRole('progressbar')[0]).toHaveAttribute('aria-valuenow', '40');
     expect(getAllByRole('progressbar')[1]).toHaveAttribute('aria-valuenow', '33.333333333333336');
   });

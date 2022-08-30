@@ -23,7 +23,7 @@ export default function IdCell({ value, hasCheckbox, onChange, status, row }) {
     iconColor = 'green';
     IconComponent = CheckCircleOutlinedIcon;
     textDecoration = 'underline';
-    routingReference = '/report';
+    routingReference = `/report/${row.id}`;
     pointerEvent = 'auto';
     dataTestid = 'enabledCheckbox';
     isDisabled = false;
@@ -47,7 +47,6 @@ export default function IdCell({ value, hasCheckbox, onChange, status, row }) {
             <IconComponent sx={{ color: iconColor }} />
             <Link
               to={routingReference}
-              state={{ selectedTestRunFromDashboard: row }}
               style={{ textDecoration: NONE, color: BLACK, pointerEvents: pointerEvent }}
             >
               <div style={{ textDecoration: textDecoration }}>{value}</div>
@@ -59,7 +58,6 @@ export default function IdCell({ value, hasCheckbox, onChange, status, row }) {
           <IconComponent sx={{ color: iconColor }} />
           <Link
             to={routingReference}
-            state={{ selectedTestRunFromDashboard: row }}
             style={{ textDecoration: NONE, color: BLACK, pointerEvents: pointerEvent }}
           >
             <div style={{ textDecoration: textDecoration }}>{value}</div>

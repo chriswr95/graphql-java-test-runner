@@ -74,5 +74,5 @@ export const downloadJSON = (jsonBnechmark, jobId, jsonData) => {
   link.download = `${jsonBnechmark}-${jobId}.json`;
   link.href = url;
   link.click();
-  return link.download;
+  return link;
 };

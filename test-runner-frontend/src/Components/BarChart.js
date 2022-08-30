@@ -18,10 +18,14 @@ export default function BarCharts(props) {
     var currentBenchmarkData = {
       name: currentBenchmark.benchmarkMethod,
       score: currentBenchmark.benchmarkScore,
-      error: [currentBenchmark.benchmarkScore-currentBenchmark.json.primaryMetric.scorePercentiles["0.0"], currentBenchmark.json.primaryMetric.scorePercentiles["100.0"]-currentBenchmark.benchmarkScore]
+      error: [
+        currentBenchmark.benchmarkScore - currentBenchmark.json.primaryMetric.scorePercentiles['0.0'],
+        currentBenchmark.json.primaryMetric.scorePercentiles['100.0'] - currentBenchmark.benchmarkScore,
+      ],
     };
+    mode = currentBenchmark.mode;
     return currentBenchmarkData;
-  })
+  });
 
   return (
     <Box sx={{ width: '62vh' }}>
@@ -33,8 +37,8 @@ export default function BarCharts(props) {
           <CartesianGrid strokeDasharray="2 2" />
           <Tooltip />
           <Legend />
-          <Bar dataKey={"score"} fill="#337ab7">
-            <ErrorBar dataKey="error" width={4} strokeWidth={2} stroke="black" /> 
+          <Bar dataKey={'score'} fill="#337ab7">
+            <ErrorBar dataKey="error" width={4} strokeWidth={2} stroke="black" />
           </Bar>
         </BarChart>
       </ResponsiveContainer>
