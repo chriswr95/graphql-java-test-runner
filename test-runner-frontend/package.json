@@ -17,6 +17,8 @@
     "buffer": "^6.0.3",
     "firebase": "^9.9.1",
     "firebase-admin": "^11.0.1",
+    "jest-fetch-mock": "^3.0.3",
+    "jspdf-html2canvas": "^1.4.9",
     "react": "^18.2.0",
     "react-bootstrap": "^2.4.0",
     "react-dom": "^18.2.0",
@@ -25,8 +27,7 @@
     "react-scripts": "5.0.1",
     "recharts": "^2.1.12",
     "util": "^0.12.4",
-    "web-vitals": "^2.1.4",
-    "jspdf-html2canvas": "^1.4.9"
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",

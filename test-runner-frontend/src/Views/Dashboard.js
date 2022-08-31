@@ -99,8 +99,6 @@ const reducer = (state, action) => {
 export default function Dashboard() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  console.log(useContext(FirestoreContext));
-
   const { loading, firestoreData, machines } = useContext(FirestoreContext);
 
   const {

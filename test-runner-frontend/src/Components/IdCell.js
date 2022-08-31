@@ -5,7 +5,7 @@ import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
-import { Link } from 'react-router-dom';
+import { generatePath, Link } from 'react-router-dom';
 
 export default function IdCell({ value, hasCheckbox, onChange, status, row }) {
   const NONE = 'none';
@@ -23,7 +23,7 @@ export default function IdCell({ value, hasCheckbox, onChange, status, row }) {
     iconColor = 'green';
     IconComponent = CheckCircleOutlinedIcon;
     textDecoration = 'underline';
-    routingReference = `/report/${row.id}`;
+    routingReference = generatePath('/report/:jobId', { jobId: row.id });
     pointerEvent = 'auto';
     dataTestid = 'enabledCheckbox';
     isDisabled = false;
@@ -45,10 +45,7 @@ export default function IdCell({ value, hasCheckbox, onChange, status, row }) {
           <Checkbox data-testid={dataTestid} disabled={isDisabled} value={value} onChange={() => onChange(value)} />
           <Stack direction="row" spacing={2} style={{ marginTop: '1.8%' }}>
             <IconComponent sx={{ color: iconColor }} />
-            <Link
-              to={routingReference}
-              style={{ textDecoration: NONE, color: BLACK, pointerEvents: pointerEvent }}
-            >
+            <Link to={routingReference} style={{ textDecoration: NONE, color: BLACK, pointerEvents: pointerEvent }}>
               <div style={{ textDecoration: textDecoration }}>{value}</div>
             </Link>
           </Stack>
@@ -56,10 +53,7 @@ export default function IdCell({ value, hasCheckbox, onChange, status, row }) {
       ) : (
         <Stack direction="row" spacing={2}>
           <IconComponent sx={{ color: iconColor }} />
-          <Link
-            to={routingReference}
-            style={{ textDecoration: NONE, color: BLACK, pointerEvents: pointerEvent }}
-          >
+          <Link to={routingReference} style={{ textDecoration: NONE, color: BLACK, pointerEvents: pointerEvent }}>
             <div style={{ textDecoration: textDecoration }}>{value}</div>
           </Link>
         </Stack>

@@ -11,10 +11,10 @@ const benchmarkModes = {
   all: 'All',
 };
 
-export default function BarCharts(props) {
+export default function BarCharts({ classesAndBenchmarksState }) {
   let mode;
 
-  var benchmarksData = props.classesAndBenchmarksState.map((currentBenchmark) => {
+  var benchmarksData = classesAndBenchmarksState.map((currentBenchmark) => {
     var currentBenchmarkData = {
       name: currentBenchmark.benchmarkMethod,
       score: currentBenchmark.benchmarkScore,
@@ -31,7 +31,7 @@ export default function BarCharts(props) {
     <Box sx={{ width: '62vh' }}>
       <Chip sx={{ marginTop: '1.6%', marginBottom: '3.4%', backgroundColor: 'F1F1F1' }} label={benchmarkModes[mode]} />
       <ResponsiveContainer minWidth="100%" height={270}>
-        <BarChart data={benchmarksData} layout="vertical">
+        <BarChart data-testid="chart" data={benchmarksData} layout="vertical">
           <XAxis type="number" />
           <YAxis type="category" dataKey="name" />
           <CartesianGrid strokeDasharray="2 2" />

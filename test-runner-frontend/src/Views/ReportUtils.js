@@ -1,6 +1,3 @@
-import html2canvas from 'html2canvas';
-import jsPdf from 'jspdf';
-
 export const buildChartsData = (selectedTestRunFromDashboard) => {
   const classesAndBenchmarks = {};
   selectedTestRunFromDashboard?.statistics?.forEach((testRun, index) => {
@@ -40,7 +37,7 @@ export const buildChartsData = (selectedTestRunFromDashboard) => {
   return sortedByClassNameClassesAndBenchmarks;
 };
 
-export const buildJsonResults = (benchmarks) => {
+export const buildIndividualJsonResults = (benchmarks) => {
   const jobId = benchmarks[0].jobId;
   const className = benchmarks[0].benchmarkClass;
   const jsonResults = benchmarks.map((benchmark) => benchmark.json);
@@ -52,18 +49,17 @@ export const buildJsonResults = (benchmarks) => {
   };
 };
 
-export const printPDF = () => {
-  const domElement = document.getElementById('root');
-  html2canvas(domElement, {
-    onclone: (document) => {
-      document.getElementById('print').style.visibility = 'hidden';
-    },
-  }).then((canvas) => {
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPdf();
-    pdf.addImage(imgData, 'PNG', 0, 0, 200, 200);
-    pdf.save(`${new Date().toISOString()}.pdf`);
+export const buildJsonResults = (benchmarks) => {
+  const jobId = benchmarks[0][1][0].jobId;
+  const jsonResults = benchmarks.map((benchmark) => {
+    return benchmark[1].map((jsonRes) => jsonRes.json);
   });
+
+  return {
+    jobId,
+    className: '',
+    jsonResults,
+  };
 };
 
 export const downloadJSON = (jsonBnechmark, jobId, jsonData) => {
@@ -71,7 +67,7 @@ export const downloadJSON = (jsonBnechmark, jobId, jsonData) => {
   const blob = new Blob([fileData], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
-  link.download = `${jsonBnechmark}-${jobId}.json`;
+  link.download = jsonBnechmark ? `${jsonBnechmark}-${jobId}.json` : `Test-run-${jobId}.json`;
   link.href = url;
   link.click();
   return link;

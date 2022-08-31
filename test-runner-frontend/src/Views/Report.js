@@ -10,7 +10,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { makeStyles, Dialog } from '@material-ui/core';
 import { Stack } from '@mui/system';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { buildChartsData, buildJsonResults, downloadJSON, printPDF } from './ReportUtils';
+import { buildChartsData, buildIndividualJsonResults, buildJsonResults, downloadJSON } from './ReportUtils';
 import { FirestoreContext } from '../Components/FirestoreProvider';
 
 const GRAPHQL_JAVA_GITHUB = 'https://github.com/graphql-java/graphql-java';
@@ -49,8 +49,6 @@ const initialState = {
   snackBarMessage: '',
   // Snackbar duration according to type of button clicked.
   snackBarMessageDuration: null,
-  // Snackbar transition state.
-  transitionSnackBar: undefined,
 };
 
 const reducer = (state, action) => {
@@ -69,7 +67,6 @@ const reducer = (state, action) => {
     case 'handleSnackBar':
       return {
         ...state,
-        transitionSnackBar: action.payload.transition,
         snackBarMessage: action.payload.message,
         snackBarMessageDuration: action.payload.messageDuration,
         openSnackBar: action.payload.isOpen,
@@ -86,18 +83,10 @@ export default function Report() {
 
   const { jobId } = useParams();
 
-  const {
-    openDialog,
-    classesAndBenchmarksState,
-    jsonResult,
-    openSnackBar,
-    snackBarMessage,
-    snackBarMessageDuration,
-    transitionSnackBar,
-  } = state;
+  const { openDialog, classesAndBenchmarksState, jsonResult, openSnackBar, snackBarMessage, snackBarMessageDuration } =
+    state;
 
   const classes = useStyles();
-  // const { selectedTestRunFromDashboard } = location.state ? location.state : selectedTestRunFromDashboardCopy;
 
   const selectedTestRunFromDashboard = React.useMemo(() => {
     if (firestoreData !== undefined) {
@@ -107,16 +96,16 @@ export default function Report() {
     }
   }, [firestoreData, jobId]);
 
-  const handleClickOpenSnackBar = (Transition, message, messageDuration) => () => {
+  const handleClickOpenSnackBar = (message, messageDuration) => () => {
     dispatch({
       type: 'handleSnackBar',
-      payload: { transition: Transition, message: message, isOpen: true, messageDuration: messageDuration },
+      payload: { message: message, isOpen: true, messageDuration: messageDuration },
     });
     navigator.clipboard.writeText(JSON.stringify(jsonResult.jsonResults, undefined, 2));
   };
 
   const handleCloseSnackBar = () => {
-    dispatch({ type: 'handleSnackBar', payload: { transition: undefined, message: '', isOpen: false } });
+    dispatch({ type: 'handleSnackBar', payload: { message: '', isOpen: false } });
   };
 
   useEffect(() => {
@@ -124,28 +113,25 @@ export default function Report() {
       dispatch({ type: 'setClassesAndBenchmarksState', payload: buildChartsData(selectedTestRunFromDashboard) });
   }, [selectedTestRunFromDashboard]);
 
-  const handleClickOpenDialog = (benchmarks) => {
-    dispatch({ type: 'handleDialog', payload: { isOpen: true, jsonResults: buildJsonResults(benchmarks) } });
+  const handleClickOpenDialog = (benchmarks, isIndividualBenchmark) => {
+    if (isIndividualBenchmark)
+      dispatch({
+        type: 'handleDialog',
+        payload: { isOpen: true, jsonResults: buildIndividualJsonResults(benchmarks) },
+      });
+    else dispatch({ type: 'handleDialog', payload: { isOpen: true, jsonResults: buildJsonResults(benchmarks) } });
   };
 
   const handleCloseDialog = () => {
     dispatch({ type: 'handleDialog', payload: { isOpen: false, jsonResults: {} } });
   };
 
-  const downloadJSONReport = (Transition, message, messageDuration) => {
+  const downloadJSONReport = (message, messageDuration) => {
     dispatch({
       type: 'handleSnackBar',
-      payload: { transition: Transition, message: message, isOpen: true, messageDuration: messageDuration },
+      payload: { message: message, isOpen: true, messageDuration: messageDuration },
     });
     downloadJSON(jsonResult.className, jsonResult.jobId, jsonResult.jsonResults);
-  };
-
-  const downloadPDF = (Transition, message, messageDuration) => {
-    dispatch({
-      type: 'handleSnackBar',
-      payload: { transition: Transition, message: message, isOpen: true, messageDuration: messageDuration },
-    });
-    printPDF();
   };
 
   return (
@@ -198,7 +184,7 @@ export default function Report() {
             <AppBar sx={{ position: 'relative', bgcolor: 'transparent' }}>
               <Toolbar>
                 <Typography sx={{ ml: 2, flex: 1, color: 'black' }} variant="h6" component="div">
-                  <b>{jsonResult.className}</b>
+                  <b>{jsonResult.className ? jsonResult.className : jsonResult.jobId}</b>
                 </Typography>
                 <IconButton color="inherit" onClick={() => handleCloseDialog()} sx={{ color: 'gray' }}>
                   <CloseIcon />
@@ -209,14 +195,14 @@ export default function Report() {
                 <Button
                   variant="outlined"
                   sx={{ color: '#e535ab', borderColor: '#e535ab' }}
-                  onClick={() => downloadJSONReport(TransitionSnackBar, 'JSON file downloaded', null)}
+                  onClick={() => downloadJSONReport('JSON file downloaded', null)}
                 >
                   Download
                 </Button>
                 <Button
                   variant="outlined"
                   sx={{ color: 'gray', borderColor: 'gray' }}
-                  onClick={handleClickOpenSnackBar(TransitionSnackBar, 'JSON results saved into clipboard', null)}
+                  onClick={handleClickOpenSnackBar('JSON results saved into clipboard', null)}
                 >
                   Copy
                 </Button>
@@ -242,8 +228,7 @@ export default function Report() {
                 color: '#e535ab',
                 borderColor: '#e535ab',
               }}
-              id="print"
-              onClick={() => downloadPDF(TransitionSnackBar, 'Your PDF has started downloading', 2500)}
+              onClick={() => handleClickOpenDialog(classesAndBenchmarksState, false)}
               variant="outlined"
             >
               Download
@@ -275,7 +260,11 @@ export default function Report() {
                     display: 'block',
                   }}
                 >
-                  <HashLink smooth to={`/report/#${item[0]}`} style={{ textDecoration: 'none', color: 'black' }}>
+                  <HashLink
+                    smooth
+                    to={`/report/${jobId}/#${item[0]}`}
+                    style={{ textDecoration: 'none', color: 'black' }}
+                  >
                     {item[0]}
                   </HashLink>
                 </Typography>
@@ -301,7 +290,7 @@ export default function Report() {
                             style={{ float: 'right' }}
                             edge="start"
                             color="inherit"
-                            onClick={() => handleClickOpenDialog(currentChart[1])}
+                            onClick={() => handleClickOpenDialog(currentChart[1], true)}
                             aria-label="open"
                           >
                             <MoreHorizIcon />
@@ -319,7 +308,7 @@ export default function Report() {
                               style={{ float: 'right' }}
                               edge="start"
                               color="inherit"
-                              onClick={() => handleClickOpenDialog(nextChart[1])}
+                              onClick={() => handleClickOpenDialog(nextChart[1], true)}
                               aria-label="open"
                             >
                               <MoreHorizIcon />
@@ -339,9 +328,9 @@ export default function Report() {
               open={openSnackBar}
               onClose={handleCloseSnackBar}
               autoHideDuration={snackBarMessageDuration}
-              TransitionComponent={transitionSnackBar}
+              TransitionComponent={TransitionSnackBar}
               message={snackBarMessage}
-              key={transitionSnackBar ? transitionSnackBar.name : ''}
+              key={snackBarMessage}
             />
           </Box>
         </div>
