@@ -116,7 +116,13 @@ export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, test
                     let cell = null;
 
                     if (column.id === 'improvedVsRegressed') {
-                      cell = <ProgressBarCell improvedValue={value.improved} regressedValue={value.regressed} />;
+                      cell = (
+                        <ProgressBarCell
+                          improvedValue={value.improved}
+                          regressedValue={value.regressed}
+                          totalBenchmarks={row.benchmarks}
+                        />
+                      );
                     } else if (column.id !== 'id') {
                       cell = value;
                     } else {

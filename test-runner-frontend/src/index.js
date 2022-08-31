@@ -4,16 +4,21 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { Route, BrowserRouter, Routes } from 'react-router-dom';
 import Dashboard from './Views/Dashboard';
+import Report from './Views/Report';
+import FirestoreProvider from './Components/FirestoreProvider';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <React.StrictMode>
-    <BrowserRouter basename="/graphql-java-test-runner">
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-      </Routes>
-    </BrowserRouter>
+    <FirestoreProvider>
+      <BrowserRouter basename="/graphql-java-test-runner">
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/report/:jobId" element={<Report />} />
+        </Routes>
+      </BrowserRouter>
+    </FirestoreProvider>
   </React.StrictMode>
 );
 
