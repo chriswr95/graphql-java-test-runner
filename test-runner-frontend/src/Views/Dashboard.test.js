@@ -1,7 +1,6 @@
 import Dashboard from './Dashboard';
 import { render, fireEvent, waitFor, screen, getByRole, queryHelpers, getByTestId } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import fetchMock from 'jest-fetch-mock';
 import React from 'react';
 import { FirestoreContext } from '../Components/FirestoreProvider';
 import { firestoreDataArray } from '../Assets/testRunnerTestUtils';
