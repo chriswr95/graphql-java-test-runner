@@ -14,14 +14,11 @@ const benchmarkModes = {
 export default function BarCharts({ classesAndBenchmarksState }) {
   let mode;
 
-  var benchmarksData = classesAndBenchmarksState?.map((currentBenchmark) => {
-    var currentBenchmarkData = {
+  const benchmarksData = classesAndBenchmarksState?.map((currentBenchmark) => {
+    const currentBenchmarkData = {
       name: currentBenchmark.benchmarkMethod,
       score: currentBenchmark.benchmarkScore,
-      error: [
-        currentBenchmark.benchmarkScore - currentBenchmark.json.primaryMetric.scorePercentiles['0.0'],
-        currentBenchmark.json.primaryMetric.scorePercentiles['100.0'] - currentBenchmark.benchmarkScore,
-      ],
+      error: currentBenchmark.json.primaryMetric.scoreError,
     };
     mode = currentBenchmark.mode;
     return currentBenchmarkData;

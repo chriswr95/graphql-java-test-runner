@@ -10,6 +10,7 @@ import TableRow from '@mui/material/TableRow';
 import { IconButton, Stack } from '@mui/material';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ProgressBarCell from './ProgressBarCell';
 import IdCell from './IdCell';
 
@@ -51,6 +52,7 @@ const columns = [
 export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, testRunResults, sortTests }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [isDateSortedOnAscendingOrder, setIsDateSortedOnAscendingOrder] = React.useState(false);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -63,6 +65,11 @@ export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, test
 
   const onChange = (value) => {
     onCheckboxChange(value);
+  };
+
+  const handleDateSorting = (timestamp, mode, isAscending) => {
+    sortTests(timestamp, mode);
+    setIsDateSortedOnAscendingOrder(isAscending);
   };
 
   return (
@@ -80,13 +87,23 @@ export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, test
                       <div>
                         <b>{column.label}</b>
                       </div>
-                      <IconButton
-                        data-testid="iconButton"
-                        sx={{ top: '13%', position: 'absolute' }}
-                        onClick={() => sortTests('date', 'ascending')}
-                      >
-                        <ArrowDownwardIcon />
-                      </IconButton>
+                      {isDateSortedOnAscendingOrder ? (
+                        <IconButton
+                          data-testid="iconButton"
+                          sx={{ top: '13%', position: 'absolute' }}
+                          onClick={() => handleDateSorting('timestamp', 'descending', false)}
+                        >
+                          <ArrowDownwardIcon />
+                        </IconButton>
+                      ) : (
+                        <IconButton
+                          data-testid="iconButton"
+                          sx={{ top: '13%', position: 'absolute' }}
+                          onClick={() => handleDateSorting('timestamp', 'ascending', true)}
+                        >
+                          <ArrowUpwardIcon />
+                        </IconButton>
+                      )}
                     </Stack>
                   );
                 } else {

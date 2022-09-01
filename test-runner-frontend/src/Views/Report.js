@@ -4,7 +4,7 @@ import GraphQL_Logo from '../Assets/GraphQL_Java_Logo_v2.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { HashLink } from 'react-router-hash-link';
 import BarCharts from '../Components/BarChart';
-import { useParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useEffect, useReducer } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { makeStyles, Dialog } from '@material-ui/core';
@@ -12,6 +12,8 @@ import { Stack } from '@mui/system';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { buildChartsData, buildIndividualJsonResults, buildJsonResults, downloadJSON } from './ReportUtils';
 import { FirestoreContext } from '../Components/FirestoreProvider';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Link } from 'react-router-dom';
 
 const GRAPHQL_JAVA_GITHUB = 'https://github.com/graphql-java/graphql-java';
 
@@ -81,7 +83,9 @@ export default function Report() {
 
   const { loading, firestoreData } = React.useContext(FirestoreContext);
 
-  const { jobId } = useParams();
+  const [searchParam] = useSearchParams();
+
+  const jobId = searchParam.get('report');
 
   const { openDialog, classesAndBenchmarksState, jsonResult, openSnackBar, snackBarMessage, snackBarMessageDuration } =
     state;
@@ -216,7 +220,12 @@ export default function Report() {
 
           {/* Test Runs info */}
           <Box sx={{ width: '97%', marginBottom: '2%', marginLeft: '2%' }}>
-            <Typography variant="h4">
+            <Link to="/" style={{ textDecoration: 'none', color: 'gray' }}>
+              <IconButton>
+                <ArrowBackIcon />
+              </IconButton>
+            </Link>
+            <Typography variant="h4" style={{ marginTop: '1%' }}>
               <b>Test run {selectedTestRunFromDashboard?.id}</b>
             </Typography>
             <Button
@@ -237,7 +246,7 @@ export default function Report() {
             <Typography style={{ color: 'grey' }}>
               Git Commit Hash: {selectedTestRunFromDashboard?.commitHash}
             </Typography>
-            <Typography style={{ color: 'grey' }}>Branch: {selectedTestRunFromDashboard.branch}</Typography>
+            <Typography style={{ color: 'grey' }}>Branch: {selectedTestRunFromDashboard?.branch}</Typography>
           </Box>
 
           {/* Father BOX */}
@@ -284,7 +293,7 @@ export default function Report() {
                       <Box key={i} sx={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
                         <Box key={i} sx={{ marginBottom: '3.6%', marginRight: '10%' }}>
                           <Typography variant="h5" id={`${currentChart[0]}`} sx={{ display: 'block' }}>
-                            <b>{currentChart[0]}</b>
+                            <b>{currentChart[1][0].benchmarkClass}</b>
                           </Typography>
                           <IconButton
                             style={{ float: 'right' }}
@@ -302,7 +311,7 @@ export default function Report() {
                         {nextChart ? (
                           <Box key={i + 1} sx={{ marginBottom: '3%' }}>
                             <Typography variant="h5" id={`${nextChart[0]}`} sx={{ display: 'block' }}>
-                              <b>{nextChart[0]}</b>
+                              <b>{nextChart[1][0].benchmarkClass}</b>
                             </Typography>
                             <IconButton
                               style={{ float: 'right' }}

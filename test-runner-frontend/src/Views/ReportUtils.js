@@ -3,7 +3,8 @@ export const buildChartsData = (selectedTestRunFromDashboard) => {
   selectedTestRunFromDashboard?.statistics?.forEach((testRun, index) => {
     // Benchmark example string: "benchmark": "benchmark.ListBenchmark.benchmarkArrayList"
     var benchmarkCassAndMethod = testRun.benchmark.split('.');
-    var benchmarkClass = benchmarkCassAndMethod[1] + '-' + testRun.mode;
+    var benchmarkClassWithMode = benchmarkCassAndMethod[1] + '-' + testRun.mode;
+    var benchmarkClass = benchmarkCassAndMethod[1];
     var benchmarkMethod = benchmarkCassAndMethod[2];
     var benchmarkData = {
       jobId: selectedTestRunFromDashboard?.id,
@@ -14,8 +15,8 @@ export const buildChartsData = (selectedTestRunFromDashboard) => {
       mode: testRun.mode,
       json: testRun,
     };
-    classesAndBenchmarks[benchmarkClass] ??= [];
-    classesAndBenchmarks[benchmarkClass]?.push(benchmarkData);
+    classesAndBenchmarks[benchmarkClassWithMode] ??= [];
+    classesAndBenchmarks[benchmarkClassWithMode]?.push(benchmarkData);
   });
 
   var allClassesAndBenchmarks = [];

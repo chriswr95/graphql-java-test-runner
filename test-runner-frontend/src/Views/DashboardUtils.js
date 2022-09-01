@@ -51,14 +51,13 @@ export const sortTestRunsByMachine = (machines, testRunResults) => {
       const branch = testRunResult.branch;
       const status = testRunResult.status[machineName];
       const machine = machineName;
+      const timestamp = testRunResult.testRunnerResults[machineName]?.startTime;
       if (testRunResult.testRunnerResults) {
         const benchmarks = testRunResult.testRunnerResults[machineName]?.testStatistics?.length;
-        const timestamp = testRunResult.testRunnerResults[machineName]?.startTime;
-        const dateTimestamp = new Date(timestamp * 26);
+        const dateTimestamp = new Date(timestamp.seconds * 1000);
         const improvedVsRegressed = { improved: 0, regressed: 0 };
         const date = dateTimestamp?.toLocaleString();
         const statistics = testRunResult.testRunnerResults[machineName]?.testStatistics;
-
         return {
           id,
           commitHash,
@@ -68,6 +67,7 @@ export const sortTestRunsByMachine = (machines, testRunResults) => {
           improvedVsRegressed,
           machine,
           date,
+          timestamp,
           statistics,
         };
       } else {
@@ -80,6 +80,7 @@ export const sortTestRunsByMachine = (machines, testRunResults) => {
           improvedVsRegressed: {},
           machine,
           date: 'Test run on progress',
+          timestamp,
           statistics: [],
         };
       }
@@ -158,6 +159,7 @@ export const getBenchmarksByMachine = (flattenedTestRuns) => {
           benchmarks: testRun.benchmarks,
           machine: testRun.machine,
           date: testRun.date,
+          timestamp: testRun.timestamp,
           statistics: testRun.statistics,
           improvedVsRegressed: testRun.improvedVsRegressed,
         };

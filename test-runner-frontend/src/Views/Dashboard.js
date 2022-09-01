@@ -69,16 +69,19 @@ const reducer = (state, action) => {
         machineSelection: action.payload,
       };
     case 'handleCheckBoxSelection':
-      if(action.payload.action === "add"){
+      if (action.payload.action === 'add') {
         return { ...state, checkBoxSelection: [...state.checkBoxSelection, action.payload.selectedElement] };
-      }else if(action.payload.action === "remove"){
-        return { ...state, 
-          checkBoxSelection: [...state.checkBoxSelection.filter((checkBoxSelection) => checkBoxSelection !== action.payload.selectedElement)]
+      } else if (action.payload.action === 'remove') {
+        return {
+          ...state,
+          checkBoxSelection: [
+            ...state.checkBoxSelection.filter(
+              (checkBoxSelection) => checkBoxSelection !== action.payload.selectedElement
+            ),
+          ],
         };
-      }else{
-        return { ...state, 
-          checkBoxSelection: []
-        };
+      } else {
+        return { ...state, checkBoxSelection: [] };
       }
     case 'compare':
       return {
@@ -94,7 +97,7 @@ const reducer = (state, action) => {
           ...state,
           testRunResults: [].concat(state.testRunResultsCopy).sort((a, b) => a[sortingMode] - b[sortingMode]),
         };
-      } else if (sortingBy === 'decreasing') {
+      } else if (sortingBy === 'descending') {
         return {
           ...state,
           testRunResults: [].concat(state.testRunResultsCopy).sort((a, b) => b[sortingMode] - a[sortingMode]),
@@ -125,20 +128,19 @@ export default function Dashboard() {
 
   function manageCompareAction() {
     if (checkBoxSelection.length >= 2) {
-      dispatch({ type: "handleCheckBoxSelection", payload: "empty" })
-      console.log(checkBoxSelection);
-      navigate(`/compare/${checkBoxSelection[0].id}/${checkBoxSelection[1].id}`)
+      dispatch({ type: 'handleCheckBoxSelection', payload: 'empty' });
+      navigate(`?compareA=${checkBoxSelection[0].id}&compareB=${checkBoxSelection[1].id}`);
     }
-    dispatch({ type: "handleCheckBoxSelection", payload: "empty" })
-    dispatch({ type: "isCheckBoxActive", payload: !isCheckBoxActive })
-    dispatch({ type: "cancelButtonState", payload: !cancelButtonState })
+    dispatch({ type: 'handleCheckBoxSelection', payload: 'empty' });
+    dispatch({ type: 'isCheckBoxActive', payload: !isCheckBoxActive });
+    dispatch({ type: 'cancelButtonState', payload: !cancelButtonState });
   }
 
   const handleCancel = () => {
-    dispatch({ type: "handleCheckBoxSelection", payload: "empty" })
-    dispatch({ type: "isCheckBoxActive", payload: false })
-    dispatch({ type: "cancelButtonState", payload: false })
-  }
+    dispatch({ type: 'handleCheckBoxSelection', payload: 'empty' });
+    dispatch({ type: 'isCheckBoxActive', payload: false });
+    dispatch({ type: 'cancelButtonState', payload: false });
+  };
 
   useEffect(() => {
     if (firestoreData !== undefined) dispatch({ type: 'saveFirestore', payload: { firestoreData, machines } });
@@ -157,10 +159,10 @@ export default function Dashboard() {
   }
 
   const onCheckboxChange = (childToParentData) => {
-    if (checkBoxSelection.find((checkBoxSelection) => checkBoxSelection === childToParentData)){
-      dispatch({ type: "handleCheckBoxSelection", payload: {selectedElement: childToParentData, action: "remove"} })
-    }else{
-      dispatch({ type: "handleCheckBoxSelection", payload: {selectedElement: childToParentData, action: "add"} })
+    if (checkBoxSelection.find((checkBoxSelection) => checkBoxSelection === childToParentData)) {
+      dispatch({ type: 'handleCheckBoxSelection', payload: { selectedElement: childToParentData, action: 'remove' } });
+    } else {
+      dispatch({ type: 'handleCheckBoxSelection', payload: { selectedElement: childToParentData, action: 'add' } });
     }
   };
 
@@ -222,42 +224,37 @@ export default function Dashboard() {
                 <Typography variant="h5">
                   <b>Test Run</b>
                 </Typography>
-                
-         
-            {
-              cancelButtonState
-                ?
-                <Button sx={{
-                  color: "gray",
-                  borderColor: "gray",
-                  position: "absolute",
-                  right: "10.2%",
-                  size: "small"
-                }}
-                  variant="outlined"
-                  onClick={() => handleCancel()}
-                >
-                  Cancel
-                </Button>
-                :
-                null
-            }
-            <Button sx={{
-              color: !isCheckBoxActive ? "gray" : "#e535ab",
-              borderColor: !isCheckBoxActive ? "gray" : "#e535ab",
-              borderWidth: "2px",
-              position: "absolute",
-              right: "2%",
-              size: "small"
-            }}
-              variant="outlined"
-              disabled={isCheckBoxActive && checkBoxSelection.length !== 2 ? true : false}
-              onClick={() => manageCompareAction()}
-            >
-              Compare
-            </Button>
 
-          
+                {cancelButtonState ? (
+                  <Button
+                    sx={{
+                      color: 'gray',
+                      borderColor: 'gray',
+                      position: 'absolute',
+                      right: '10.2%',
+                      size: 'small',
+                    }}
+                    variant="outlined"
+                    onClick={() => handleCancel()}
+                  >
+                    Cancel
+                  </Button>
+                ) : null}
+                <Button
+                  sx={{
+                    color: !isCheckBoxActive ? 'gray' : '#e535ab',
+                    borderColor: !isCheckBoxActive ? 'gray' : '#e535ab',
+                    borderWidth: '2px',
+                    position: 'absolute',
+                    right: '2%',
+                    size: 'small',
+                  }}
+                  variant="outlined"
+                  disabled={isCheckBoxActive && checkBoxSelection.length !== 2 ? true : false}
+                  onClick={() => manageCompareAction()}
+                >
+                  Compare
+                </Button>
               </Stack>
 
               <Box sx={{ marginTop: '0.8%', marginBottom: '0.8%' }}>
