@@ -2,12 +2,12 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-//import Button from '@mui/material/Button';
+import Button from '@mui/material/Button';
 import GraphQL_Logo from '../Assets/GraphQL_Java_Logo_v2.png';
 import Alert from '@mui/material/Alert';
 import { useEffect, useReducer, useContext } from 'react';
 import TestRunsTable from '../Components/TestRunsTable';
-//import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -19,7 +19,7 @@ const GRAPHQL_JAVA_GITHUB = 'https://github.com/graphql-java/graphql-java';
 
 const initialState = {
   isCheckBoxActive: false,
-  //cancelButtonState: false,
+  cancelButtonState: false,
   // The test run results displayed on screen
   testRunResults: [],
   // All unfiltered test run results
@@ -68,8 +68,18 @@ const reducer = (state, action) => {
         testRunResults: filteredResults,
         machineSelection: action.payload,
       };
-    case 'checkBoxSelection':
-      return { ...state, checkBoxSelection: action.payload };
+    case 'handleCheckBoxSelection':
+      if(action.payload.action === "add"){
+        return { ...state, checkBoxSelection: [...state.checkBoxSelection, action.payload.selectedElement] };
+      }else if(action.payload.action === "remove"){
+        return { ...state, 
+          checkBoxSelection: [...state.checkBoxSelection.filter((checkBoxSelection) => checkBoxSelection !== action.payload.selectedElement)]
+        };
+      }else{
+        return { ...state, 
+          checkBoxSelection: []
+        };
+      }
     case 'compare':
       return {
         ...state,
@@ -103,7 +113,7 @@ export default function Dashboard() {
 
   const {
     isCheckBoxActive,
-    //cancelButtonState,
+    cancelButtonState,
     testRunResults,
     testRunSelection,
     machineSelection,
@@ -111,25 +121,24 @@ export default function Dashboard() {
     machineNames,
   } = state;
 
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  /*
-    function manageCompareAction() {
-      if (checkBoxSelection.length >= 2) {
-        dispatch({ type: "checkBoxSelection", payload: [] })
-        //navigate("/report")
-      }
-      dispatch({ type: "checkBoxSelection", payload: [] })
-      dispatch({ type: "isCheckBoxActive", payload: !isCheckBoxActive })
-      dispatch({ type: "cancelButtonState", payload: !cancelButtonState })
+  function manageCompareAction() {
+    if (checkBoxSelection.length >= 2) {
+      dispatch({ type: "handleCheckBoxSelection", payload: "empty" })
+      console.log(checkBoxSelection);
+      navigate(`/compare/${checkBoxSelection[0].id}/${checkBoxSelection[1].id}`)
     }
+    dispatch({ type: "handleCheckBoxSelection", payload: "empty" })
+    dispatch({ type: "isCheckBoxActive", payload: !isCheckBoxActive })
+    dispatch({ type: "cancelButtonState", payload: !cancelButtonState })
+  }
 
-    const handleCancel = () => {
-      dispatch({ type: "checkBoxSelection", payload: [] })
-      dispatch({ type: "isCheckBoxActive", payload: false })
-      dispatch({ type: "cancelButtonState", payload: false })
-    }
-    */
+  const handleCancel = () => {
+    dispatch({ type: "handleCheckBoxSelection", payload: "empty" })
+    dispatch({ type: "isCheckBoxActive", payload: false })
+    dispatch({ type: "cancelButtonState", payload: false })
+  }
 
   useEffect(() => {
     if (firestoreData !== undefined) dispatch({ type: 'saveFirestore', payload: { firestoreData, machines } });
@@ -148,17 +157,11 @@ export default function Dashboard() {
   }
 
   const onCheckboxChange = (childToParentData) => {
-    if (checkBoxSelection.find((checkBoxSelection) => checkBoxSelection === childToParentData))
-      dispatch({
-        type: 'checkBoxSelection',
-        payload: checkBoxSelection.filter((checkBoxSelection) => checkBoxSelection !== childToParentData),
-      });
-    else
-      dispatch({
-        type: 'checkBoxSelection',
-        payload: (checkBoxSelection) => [...checkBoxSelection, childToParentData],
-      });
-    dispatch({ type: 'isCheckBoxActive', payload: false });
+    if (checkBoxSelection.find((checkBoxSelection) => checkBoxSelection === childToParentData)){
+      dispatch({ type: "handleCheckBoxSelection", payload: {selectedElement: childToParentData, action: "remove"} })
+    }else{
+      dispatch({ type: "handleCheckBoxSelection", payload: {selectedElement: childToParentData, action: "add"} })
+    }
   };
 
   return (
@@ -219,7 +222,7 @@ export default function Dashboard() {
                 <Typography variant="h5">
                   <b>Test Run</b>
                 </Typography>
-                {/*
+                
          
             {
               cancelButtonState
@@ -227,7 +230,6 @@ export default function Dashboard() {
                 <Button sx={{
                   color: "gray",
                   borderColor: "gray",
-                  borderRadius: "9%",
                   position: "absolute",
                   right: "10.2%",
                   size: "small"
@@ -244,7 +246,6 @@ export default function Dashboard() {
               color: !isCheckBoxActive ? "gray" : "#e535ab",
               borderColor: !isCheckBoxActive ? "gray" : "#e535ab",
               borderWidth: "2px",
-              borderRadius: "9%",
               position: "absolute",
               right: "2%",
               size: "small"
@@ -256,7 +257,7 @@ export default function Dashboard() {
               Compare
             </Button>
 
-          */}
+          
               </Stack>
 
               <Box sx={{ marginTop: '0.8%', marginBottom: '0.8%' }}>

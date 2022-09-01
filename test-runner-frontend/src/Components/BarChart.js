@@ -14,7 +14,7 @@ const benchmarkModes = {
 export default function BarCharts({ classesAndBenchmarksState }) {
   let mode;
 
-  var benchmarksData = classesAndBenchmarksState.map((currentBenchmark) => {
+  var benchmarksData = classesAndBenchmarksState?.map((currentBenchmark) => {
     var currentBenchmarkData = {
       name: currentBenchmark.benchmarkMethod,
       score: currentBenchmark.benchmarkScore,

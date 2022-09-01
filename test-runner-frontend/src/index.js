@@ -6,6 +6,7 @@ import { Route, BrowserRouter, Routes } from 'react-router-dom';
 import Dashboard from './Views/Dashboard';
 import Report from './Views/Report';
 import FirestoreProvider from './Components/FirestoreProvider';
+import Compare from './Views/Compare';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -16,6 +17,7 @@ root.render(
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/report/:jobId" element={<Report />} />
+          <Route path="/compare/:jobIdA/:jobIdB" element={<Compare />} />
         </Routes>
       </BrowserRouter>
     </FirestoreProvider>
