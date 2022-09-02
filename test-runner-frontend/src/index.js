@@ -14,10 +14,6 @@ root.render(
       <BrowserRouter basename="/graphql-java-test-runner">
         <Routes>
           <Route path="/" element={<View />} />
-          {/* 
-          <Route path="/report/:jobId" element={<Report />} />
-          <Route path="/compare/:jobIdA/:jobIdB" element={<Compare />} />
-*/}
         </Routes>
       </BrowserRouter>
     </FirestoreProvider>
