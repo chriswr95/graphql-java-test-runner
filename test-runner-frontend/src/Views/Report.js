@@ -10,7 +10,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { makeStyles, Dialog } from '@material-ui/core';
 import { Stack } from '@mui/system';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { buildChartsData, buildIndividualJsonResults, buildJsonResults, downloadJSON } from './ReportUtils';
+import { buildChartsData, buildIndividualJsonResults, buildJsonResults, downloadJSON } from './ReportAndCompareUtils';
 import { FirestoreContext } from '../Components/FirestoreProvider';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from 'react-router-dom';
@@ -271,7 +271,7 @@ export default function Report() {
                 >
                   <HashLink
                     smooth
-                    to={`/report/${jobId}/#${item[0]}`}
+                    to={`?report=${jobId}?#${item[0]}`}
                     style={{ textDecoration: 'none', color: 'black' }}
                   >
                     {item[0]}
@@ -285,6 +285,7 @@ export default function Report() {
               {/* Bar columns BOX */}
 
               <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+                
                 {classesAndBenchmarksState.map((benchmarkData, i) => {
                   var currentChart = benchmarkData;
                   var nextChart = i <= classesAndBenchmarksState.length ? classesAndBenchmarksState[i + 1] : null;
@@ -305,7 +306,7 @@ export default function Report() {
                             <MoreHorizIcon />
                           </IconButton>
 
-                          <BarCharts classesAndBenchmarksState={currentChart[1]} />
+                          <BarCharts classesAndBenchmarksState={currentChart[1]} mediumCharts={true}/>
                         </Box>
 
                         {nextChart ? (
@@ -322,7 +323,7 @@ export default function Report() {
                             >
                               <MoreHorizIcon />
                             </IconButton>
-                            <BarCharts classesAndBenchmarksState={nextChart[1]} />
+                            <BarCharts classesAndBenchmarksState={nextChart[1]}  mediumCharts={true}/>
                           </Box>
                         ) : null}
                       </Box>
