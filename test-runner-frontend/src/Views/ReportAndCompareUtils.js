@@ -2,22 +2,20 @@ import { connectFirestoreEmulator } from '@firebase/firestore';
 
 export const combineChartsData = (testRunA, testRunB) => {
   var classesArray = [];
-
   testRunA.forEach((testRun) => {
     testRun[1].forEach((test) => {
-      test.benchmarkMethod = test.benchmarkMethod+' - '+test.jobId;
-    })
+      test.benchmarkMethod = test.benchmarkMethod + ' - ' + test.jobId;
+    });
     classesArray[testRun[0]] ??= [];
     classesArray[testRun[0]]?.push(testRun[1]);
   });
-
   testRunB.forEach((testRun) => {
     testRun[1].forEach((test) => {
-      test.benchmarkMethod = test.benchmarkMethod+' - '+test.jobId;
-    })
+      test.benchmarkMethod = test.benchmarkMethod + ' - ' + test.jobId;
+    });
     classesArray[testRun[0]] ??= [];
     if (!classesArray[testRun[0]][0]?.length) classesArray[testRun[0]]?.push(testRun[1]);
-    else{
+    else {
       classesArray[testRun[0]]?.push(
         (classesArray[testRun[0]][0].length > testRun[1].length ? classesArray[testRun[0]][0] : testRun[1])
           .map((_, i) => [classesArray[testRun[0]][0][i], testRun[1][i]])
@@ -26,8 +24,9 @@ export const combineChartsData = (testRunA, testRunB) => {
       );
     }
   });
+  const mappedClasses = Object.entries(classesArray).filter((currentClass) => currentClass[1][1]?.length > 1);
 
-  return Object.entries(classesArray);
+  return mappedClasses;
 };
 
 export const buildChartsData = (selectedTestRunFromDashboard) => {

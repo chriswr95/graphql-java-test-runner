@@ -58,9 +58,11 @@ const initialState = {
   // Data that will be used to build charts.
   classesAndBenchmarksStateB: [],
   combinedClassesAndBenchmarksState: [],
-  // Test results with JSON format.
+  // Combined test results with JSON format.
   jsonResult: {},
+  // Test A results with JSON format.
   jsonResultTestRunA: {},
+  // Test B results with JSON format.
   jsonResultTestRunB: {},
   // State of the snackbar that appears after clicking on downloading and copy buttons.
   openSnackBar: false,
@@ -68,7 +70,8 @@ const initialState = {
   snackBarMessage: '',
   // Snackbar duration according to type of button clicked.
   snackBarMessageDuration: null,
-  selectedTab: '1'
+  // Current tab selected on Dialog.
+  selectedTab: '1',
 };
 
 const reducer = (state, action) => {
@@ -79,16 +82,16 @@ const reducer = (state, action) => {
         openDialog: action.payload.isOpen,
         jsonResult: action.payload.jsonResults,
         jsonResultTestRunA: {
-            className: action.payload.jsonResults?.className,
-            jobId: action.payload.jsonResults?.jobId,
-            jsonResults: action.payload.jsonResults?.jsonResults?.filter((_, index) => index % 2 === 0)
+          className: action.payload.jsonResults?.className,
+          jobId: action.payload.jsonResults?.jobId,
+          jsonResults: action.payload.jsonResults?.jsonResults?.filter((_, index) => index % 2 === 0),
         },
         jsonResultTestRunB: {
-            className: action.payload.jsonResults?.className,
-            jobId: action.payload.jsonResults?.jobId,
-            jsonResults: action.payload.jsonResults?.jsonResults?.filter((_, index) => index % 2 !== 0)
+          className: action.payload.jsonResults?.className,
+          jobId: action.payload.jsonResults?.jobId,
+          jsonResults: action.payload.jsonResults?.jsonResults?.filter((_, index) => index % 2 !== 0),
         },
-        selectedTab: '1'
+        selectedTab: '1',
       };
     case 'setClassesAndBenchmarksState':
       return {
@@ -110,8 +113,8 @@ const reducer = (state, action) => {
     case 'handleTabsChange':
       return {
         ...state,
-        selectedTab: action.payload
-      }
+        selectedTab: action.payload,
+      };
     default:
       return state;
   }
@@ -129,7 +132,6 @@ export default function Compare() {
 
   const handleChangeOnTabs = (event, newValue) => {
     dispatch({ type: 'handleTabsChange', payload: newValue });
-
   };
 
   const {
@@ -141,7 +143,7 @@ export default function Compare() {
     openSnackBar,
     snackBarMessage,
     snackBarMessageDuration,
-    selectedTab
+    selectedTab,
   } = state;
 
   const classes = useStyles();
@@ -318,8 +320,12 @@ export default function Compare() {
         */}
               </AppBar>
 
-              <TabPanel value="1"><pre>{JSON.stringify(jsonResultTestRunA?.jsonResults, undefined, 2)}</pre></TabPanel>
-              <TabPanel value="2"><pre>{JSON.stringify(jsonResultTestRunB?.jsonResults, undefined, 2)}</pre></TabPanel>
+              <TabPanel value="1">
+                <pre>{JSON.stringify(jsonResultTestRunA?.jsonResults, undefined, 2)}</pre>
+              </TabPanel>
+              <TabPanel value="2">
+                <pre>{JSON.stringify(jsonResultTestRunB?.jsonResults, undefined, 2)}</pre>
+              </TabPanel>
             </TabContext>
           </Dialog>
 
