@@ -4,7 +4,7 @@ import GraphQL_Logo from '../Assets/GraphQL_Java_Logo_v2.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { HashLink } from 'react-router-hash-link';
 import BarCharts from '../Components/BarChart';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useReducer } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { makeStyles, Dialog } from '@material-ui/core';
@@ -81,7 +81,9 @@ export default function Report() {
 
   const { loading, firestoreData } = React.useContext(FirestoreContext);
 
-  const { jobId } = useParams();
+  const [searchParam] = useSearchParams();
+
+  const jobId = searchParam.get('report');
 
   const { openDialog, classesAndBenchmarksState, jsonResult, openSnackBar, snackBarMessage, snackBarMessageDuration } =
     state;
