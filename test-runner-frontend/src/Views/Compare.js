@@ -60,12 +60,15 @@ const initialState = {
   combinedClassesAndBenchmarksState: [],
   // Test results with JSON format.
   jsonResult: {},
+  jsonResultTestRunA: {},
+  jsonResultTestRunB: {},
   // State of the snackbar that appears after clicking on downloading and copy buttons.
   openSnackBar: false,
   // Snackbar message according to type of button clicked.
   snackBarMessage: '',
   // Snackbar duration according to type of button clicked.
   snackBarMessageDuration: null,
+  selectedTab: '1'
 };
 
 const reducer = (state, action) => {
@@ -75,6 +78,17 @@ const reducer = (state, action) => {
         ...state,
         openDialog: action.payload.isOpen,
         jsonResult: action.payload.jsonResults,
+        jsonResultTestRunA: {
+            className: action.payload.jsonResults?.className,
+            jobId: action.payload.jsonResults?.jobId,
+            jsonResults: action.payload.jsonResults?.jsonResults?.filter((_, index) => index % 2 === 0)
+        },
+        jsonResultTestRunB: {
+            className: action.payload.jsonResults?.className,
+            jobId: action.payload.jsonResults?.jobId,
+            jsonResults: action.payload.jsonResults?.jsonResults?.filter((_, index) => index % 2 !== 0)
+        },
+        selectedTab: '1'
       };
     case 'setClassesAndBenchmarksState':
       return {
@@ -93,6 +107,11 @@ const reducer = (state, action) => {
         snackBarMessageDuration: action.payload.messageDuration,
         openSnackBar: action.payload.isOpen,
       };
+    case 'handleTabsChange':
+      return {
+        ...state,
+        selectedTab: action.payload
+      }
     default:
       return state;
   }
@@ -108,21 +127,21 @@ export default function Compare() {
   const jobIdA = searchParam.get('compareA');
   const jobIdB = searchParam.get('compareB');
 
-  const [value, setValue] = React.useState('1');
+  const handleChangeOnTabs = (event, newValue) => {
+    dispatch({ type: 'handleTabsChange', payload: newValue });
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
   };
 
   const {
     openDialog,
-    classesAndBenchmarksStateA,
-    classesAndBenchmarksStateB,
     combinedClassesAndBenchmarksState,
     jsonResult,
+    jsonResultTestRunA,
+    jsonResultTestRunB,
     openSnackBar,
     snackBarMessage,
     snackBarMessageDuration,
+    selectedTab
   } = state;
 
   const classes = useStyles();
@@ -232,7 +251,7 @@ export default function Compare() {
             open={openDialog}
             onClose={() => handleCloseDialog()}
           >
-            <TabContext value={value}>
+            <TabContext value={selectedTab}>
               <AppBar sx={{ position: 'relative', bgcolor: 'transparent' }}>
                 <Toolbar>
                   <Box
@@ -249,7 +268,7 @@ export default function Compare() {
                   >
                     <TabList
                       style={{ color: 'gray' }}
-                      onChange={handleChange}
+                      onChange={handleChangeOnTabs}
                       TabIndicatorProps={{ style: { background: 'darkgray' } }}
                     >
                       <Tab label="Test Run 1 results" value="1" />
@@ -267,7 +286,7 @@ export default function Compare() {
                 </Toolbar>
 
                 <Typography sx={{ ml: '6%', mb: '3%', mt: '3%', flex: 1, color: 'black' }} variant="h6">
-                  <b>{jsonResult.className ? jsonResult.className : 'Hi'}</b>
+                  <b>{jsonResult.className ? jsonResult.className : jsonResult.id}</b>
                 </Typography>
 
                 <Stack direction="row" spacing={2} style={{ marginLeft: '6%', marginBottom: '3%' }}>
@@ -281,7 +300,7 @@ export default function Compare() {
                   <Button
                     variant="outlined"
                     sx={{ color: 'gray', borderColor: 'gray' }}
-                    onClick={handleClickOpenSnackBar('JSON results saved into clipboard', null)}
+                    onClick={() => handleClickOpenSnackBar('JSON results saved into clipboard', null)}
                   >
                     Copy
                   </Button>
@@ -299,9 +318,8 @@ export default function Compare() {
         */}
               </AppBar>
 
-              <TabPanel value="1">Item One Item One Item One</TabPanel>
-              <TabPanel value="2">Item Two</TabPanel>
-              <TabPanel value="3">Item Three</TabPanel>
+              <TabPanel value="1"><pre>{JSON.stringify(jsonResultTestRunA?.jsonResults, undefined, 2)}</pre></TabPanel>
+              <TabPanel value="2"><pre>{JSON.stringify(jsonResultTestRunB?.jsonResults, undefined, 2)}</pre></TabPanel>
             </TabContext>
           </Dialog>
 
@@ -576,7 +594,7 @@ export default function Compare() {
                       style={{ float: 'right' }}
                       edge="start"
                       color="inherit"
-                      onClick={() => handleClickOpenDialog(currentChart[1], true)}
+                      onClick={() => handleClickOpenDialog(currentChart[1][1], true)}
                       aria-label="open"
                     >
                       <MoreHorizIcon />

@@ -3,21 +3,28 @@ import { connectFirestoreEmulator } from '@firebase/firestore';
 export const combineChartsData = (testRunA, testRunB) => {
   var classesArray = [];
 
-  testRunA.forEach((test) => {
-    classesArray[test[0]] ??= [];
-    classesArray[test[0]]?.push(test[1]);
+  testRunA.forEach((testRun) => {
+    testRun[1].forEach((test) => {
+      test.benchmarkMethod = test.benchmarkMethod+' - '+test.jobId;
+    })
+    classesArray[testRun[0]] ??= [];
+    classesArray[testRun[0]]?.push(testRun[1]);
   });
 
-  testRunB.forEach((test) => {
-    classesArray[test[0]] ??= [];
-    if (!classesArray[test[0]][0]?.length) classesArray[test[0]]?.push(test[1]);
-    else
-      classesArray[test[0]]?.push(
-        (classesArray[test[0]][0].length > test[1].length ? classesArray[test[0]][0] : test[1])
-          .map((_, i) => [classesArray[test[0]][0][i], test[1][i]])
+  testRunB.forEach((testRun) => {
+    testRun[1].forEach((test) => {
+      test.benchmarkMethod = test.benchmarkMethod+' - '+test.jobId;
+    })
+    classesArray[testRun[0]] ??= [];
+    if (!classesArray[testRun[0]][0]?.length) classesArray[testRun[0]]?.push(testRun[1]);
+    else{
+      classesArray[testRun[0]]?.push(
+        (classesArray[testRun[0]][0].length > testRun[1].length ? classesArray[testRun[0]][0] : testRun[1])
+          .map((_, i) => [classesArray[testRun[0]][0][i], testRun[1][i]])
           .flat()
           .filter(Boolean)
       );
+    }
   });
 
   return Object.entries(classesArray);
