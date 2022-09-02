@@ -212,7 +212,7 @@ export default function Report() {
                 <Button
                   variant="outlined"
                   sx={{ color: 'gray', borderColor: 'gray' }}
-                  onClick={handleClickOpenSnackBar('JSON results saved into clipboard', null)}
+                  onClick={() => handleClickOpenSnackBar('JSON results saved into clipboard', null)}
                 >
                   Copy
                 </Button>
