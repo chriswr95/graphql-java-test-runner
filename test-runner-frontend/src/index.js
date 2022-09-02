@@ -3,9 +3,8 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { Route, BrowserRouter, Routes } from 'react-router-dom';
-import Dashboard from './Views/Dashboard';
-import Report from './Views/Report';
 import FirestoreProvider from './Components/FirestoreProvider';
+import View from './View';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -14,8 +13,7 @@ root.render(
     <FirestoreProvider>
       <BrowserRouter basename="/graphql-java-test-runner">
         <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/report/:jobId" element={<Report />} />
+          <Route path="/" element={<View />} />
         </Routes>
       </BrowserRouter>
     </FirestoreProvider>
