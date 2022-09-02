@@ -1,7 +1,18 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import Chip from '@mui/material/Chip';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ErrorBar, ResponsiveContainer, Cell } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ErrorBar,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts';
 
 const benchmarkModes = {
   thrpt: 'Throughput',
@@ -11,14 +22,13 @@ const benchmarkModes = {
   all: 'All',
 };
 
-const barColors = ['#337ab7', '#ff7f0e']
+const barColors = ['#337ab7', '#ff7f0e'];
 
 export default function BarCharts({ classesAndBenchmarksState, mediumCharts }) {
   let mode;
-  let size = mediumCharts ? '62vh' : '130vh';
+  let size = mediumCharts ? '62vh' : '138vh';
 
   const benchmarksData = classesAndBenchmarksState?.map((currentBenchmark) => {
-    
     const currentBenchmarkData = {
       name: currentBenchmark.benchmarkMethod,
       score: currentBenchmark.benchmarkScore,
@@ -29,8 +39,8 @@ export default function BarCharts({ classesAndBenchmarksState, mediumCharts }) {
   });
 
   return (
-    <Box sx={{ width: size}}>
-    <Chip sx={{ marginTop: '1.6%', marginBottom: '2.1%', backgroundColor: 'F1F1F1' }} label={benchmarkModes[mode]} />
+    <Box sx={{ width: size }}>
+      <Chip sx={{ marginTop: '1.6%', marginBottom: '2.1%', backgroundColor: 'F1F1F1' }} label={benchmarkModes[mode]} />
       <ResponsiveContainer minWidth="100%" height={270}>
         <BarChart data-testid="chart" data={benchmarksData} layout="vertical">
           <XAxis type="number" />
@@ -40,14 +50,11 @@ export default function BarCharts({ classesAndBenchmarksState, mediumCharts }) {
           <Legend />
           <Bar dataKey={'score'} fill="#337ab7">
             <ErrorBar dataKey="error" width={4} strokeWidth={2} stroke="black" />
-                    {
-                      !mediumCharts ?
-                        classesAndBenchmarksState?.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={barColors[index % 2]} />
-                        ))
-                        :
-                        null
-                    }
+            {!mediumCharts
+              ? classesAndBenchmarksState?.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={barColors[index % 2]} />
+                ))
+              : null}
           </Bar>
         </BarChart>
       </ResponsiveContainer>

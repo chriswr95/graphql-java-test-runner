@@ -262,7 +262,7 @@ export default function Report() {
                   key={i}
                   variant="h7"
                   style={{
-                    maxWidth: '63%',
+                    maxWidth: '54%',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
@@ -271,7 +271,7 @@ export default function Report() {
                 >
                   <HashLink
                     smooth
-                    to={`?report=${jobId}?#${item[0]}`}
+                    to={`?report=${jobId}#${item[0]}`}
                     style={{ textDecoration: 'none', color: 'black' }}
                   >
                     {item[0]}
@@ -285,7 +285,6 @@ export default function Report() {
               {/* Bar columns BOX */}
 
               <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-                
                 {classesAndBenchmarksState.map((benchmarkData, i) => {
                   var currentChart = benchmarkData;
                   var nextChart = i <= classesAndBenchmarksState.length ? classesAndBenchmarksState[i + 1] : null;
@@ -306,7 +305,7 @@ export default function Report() {
                             <MoreHorizIcon />
                           </IconButton>
 
-                          <BarCharts classesAndBenchmarksState={currentChart[1]} mediumCharts={true}/>
+                          <BarCharts classesAndBenchmarksState={currentChart[1]} mediumCharts={true} />
                         </Box>
 
                         {nextChart ? (
@@ -323,7 +322,7 @@ export default function Report() {
                             >
                               <MoreHorizIcon />
                             </IconButton>
-                            <BarCharts classesAndBenchmarksState={nextChart[1]}  mediumCharts={true}/>
+                            <BarCharts classesAndBenchmarksState={nextChart[1]} mediumCharts={true} />
                           </Box>
                         ) : null}
                       </Box>
