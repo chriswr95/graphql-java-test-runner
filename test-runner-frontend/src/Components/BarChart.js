@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import Chip from '@mui/material/Chip';
+<<<<<<< HEAD
 import {
   BarChart,
   Bar,
@@ -20,6 +21,9 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+=======
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ErrorBar, ResponsiveContainer, Cell } from 'recharts';
+>>>>>>> 33958f0 (Updated Compare view, renamed Utils file)
 
 const benchmarkModes = {
   thrpt: 'Throughput',
@@ -29,13 +33,22 @@ const benchmarkModes = {
   all: 'All',
 };
 
+<<<<<<< HEAD
 const barColors = ['#313846', '#E535AB'];
 
 export default function BarCharts({ classesAndBenchmarksState, mediumCharts }) {
   let mode;
   let size = mediumCharts ? '62vh' : '138vh';
+=======
+const barColors = ['#337ab7', '#ff7f0e']
+
+export default function BarCharts({ classesAndBenchmarksState, mediumCharts }) {
+  let mode;
+  let size = mediumCharts ? '62vh' : '130vh';
+>>>>>>> 33958f0 (Updated Compare view, renamed Utils file)
 
   const benchmarksData = classesAndBenchmarksState?.map((currentBenchmark) => {
+    
     const currentBenchmarkData = {
       name: currentBenchmark.benchmarkMethod,
       score: currentBenchmark.benchmarkScore,
@@ -99,9 +112,15 @@ export default function BarCharts({ classesAndBenchmarksState, mediumCharts }) {
   };
 
   return (
+<<<<<<< HEAD
     <Box sx={{ width: size }}>
       <Chip sx={{ marginTop: '1%', marginBottom: '1.6%', backgroundColor: '#F1F1F1' }} label={benchmarkModes[mode]} />
       <ResponsiveContainer width="100%" height={277}>
+=======
+    <Box sx={{ width: size}}>
+    <Chip sx={{ marginTop: '1.6%', marginBottom: '2.1%', backgroundColor: 'F1F1F1' }} label={benchmarkModes[mode]} />
+      <ResponsiveContainer minWidth="100%" height={270}>
+>>>>>>> 33958f0 (Updated Compare view, renamed Utils file)
         <BarChart data-testid="chart" data={benchmarksData} layout="vertical">
           <XAxis type="number" />
           <YAxis
@@ -115,6 +134,7 @@ export default function BarCharts({ classesAndBenchmarksState, mediumCharts }) {
           <CartesianGrid strokeDasharray="2 2" />
           <Tooltip content={<CustomTooltip />} />
           <Legend />
+<<<<<<< HEAD
           <Bar dataKey={'score'} fill={mediumCharts ? '#337ab7' : '#313846'}>
             <ErrorBar dataKey="error" width={4} strokeWidth={2.7} stroke={mediumCharts ? '#313846' : '#ACB2B2'} />
             {!mediumCharts
@@ -122,6 +142,18 @@ export default function BarCharts({ classesAndBenchmarksState, mediumCharts }) {
                   <Cell key={`cell-${index}`} fill={barColors[index % 2]} />
                 ))
               : null}
+=======
+          <Bar dataKey={'score'} fill="#337ab7">
+            <ErrorBar dataKey="error" width={4} strokeWidth={2} stroke="black" />
+                    {
+                      !mediumCharts ?
+                        classesAndBenchmarksState?.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={barColors[index % 2]} />
+                        ))
+                        :
+                        null
+                    }
+>>>>>>> 33958f0 (Updated Compare view, renamed Utils file)
           </Bar>
         </BarChart>
       </ResponsiveContainer>
