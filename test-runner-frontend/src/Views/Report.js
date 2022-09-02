@@ -237,7 +237,7 @@ export default function Report() {
             <Typography style={{ color: 'grey' }}>
               Git Commit Hash: {selectedTestRunFromDashboard?.commitHash}
             </Typography>
-            <Typography style={{ color: 'grey' }}>Branch: {selectedTestRunFromDashboard.branch}</Typography>
+            <Typography style={{ color: 'grey' }}>Branch: {selectedTestRunFromDashboard?.branch}</Typography>
           </Box>
 
           {/* Father BOX */}
