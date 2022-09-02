@@ -262,7 +262,7 @@ export default function Report() {
                 >
                   <HashLink
                     smooth
-                    to={`/report/${jobId}/#${item[0]}`}
+                    to={`?report=${jobId}#${item[0]}`}
                     style={{ textDecoration: 'none', color: 'black' }}
                   >
                     {item[0]}
