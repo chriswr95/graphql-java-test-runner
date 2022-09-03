@@ -331,33 +331,44 @@ export default function Compare() {
           {/* Father BOX */}
           <Box sx={{ marginLeft: '2%', width: '98%', display: 'flex', flexDirection: 'row' }}>
             {/* Lateral menu BOX */}
-
             <Box sx={{ display: 'flex', flexDirection: 'column', position: 'fixed' }}>
-              <Typography variant="h6" sx={{ marginBottom: '3%' }}>
+              <Typography variant="h6">
                 <b>Classes</b>
               </Typography>
 
-              {combinedClassesAndBenchmarksState?.map((item, i) => (
-                <Typography
-                  key={i}
-                  variant="h7"
-                  style={{
-                    maxWidth: '54%',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    display: 'block',
-                  }}
-                >
-                  <HashLink
-                    smooth
-                    to={`?compareA=${jobIdA}&compareB=${jobIdB}#${item[0]}`}
-                    style={{ textDecoration: 'none', color: 'black' }}
+              <Box
+                sx={{
+                  minWidth: '21vh',
+                  width: '61%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  backgroundColor: '#F1F1F1',
+                  borderRadius: '12px 12px 12px 12px',
+                  padding: '4%',
+                }}
+              >
+                {combinedClassesAndBenchmarksState?.map((item, i) => (
+                  <Typography
+                    key={i}
+                    variant="h7"
+                    style={{
+                      maxWidth: '100%',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      display: 'block',
+                    }}
                   >
-                    {item[0]}
-                  </HashLink>
-                </Typography>
-              ))}
+                    <HashLink
+                      smooth
+                      to={`?compareA=${jobIdA}&compareB=${jobIdB}#${item[0]}`}
+                      style={{ textDecoration: 'none', color: 'black' }}
+                    >
+                      {item[0]}
+                    </HashLink>
+                  </Typography>
+                ))}
+              </Box>
             </Box>
 
             {/* Charts BOX */}
@@ -371,23 +382,20 @@ export default function Compare() {
               <Box
                 sx={{
                   width: '95%',
-                  minHeight: '30vh',
-                  height: `${
-                    Math.max(
-                      improvedAndRegressedResults?.improvedClasses?.length,
-                      improvedAndRegressedResults.regressedClasses?.length
-                    ) * 4.5
-                  }vh`,
                   marginBottom: '3%',
                   backgroundColor: '#F1F1F1',
                   display: 'flex',
                   flexDirection: 'row',
                   borderRadius: '12px 12px 12px 12px',
+                  paddingTop: '2%',
+                  paddingBottom: '3%',
+                  paddingLeft: '1.8%',
+                  paddingRight: '1.8%',
                 }}
               >
                 {/* Left info */}
 
-                <Grid sx={{ marginTop: '1%' }} container spacing={1}>
+                <Grid container spacing={1}>
                   <Grid item xs={5}>
                     <Box sx={{ marginLeft: '6%', marginTop: '3%', display: 'flex', flexDirection: 'column' }}>
                       <Typography variant="h6" sx={{ marginLeft: '70%', marginBottom: '5%' }}>

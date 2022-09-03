@@ -253,31 +253,43 @@ export default function Report() {
           <Box sx={{ marginLeft: '2%', width: '98%', display: 'flex', flexDirection: 'row' }}>
             {/* Lateral menu BOX */}
             <Box sx={{ display: 'flex', flexDirection: 'column', position: 'fixed' }}>
-              <Typography variant="h6" sx={{ marginBottom: '3%' }}>
+              <Typography variant="h6">
                 <b>Classes</b>
               </Typography>
 
-              {classesAndBenchmarksState.map((item, i) => (
-                <Typography
-                  key={i}
-                  variant="h7"
-                  style={{
-                    maxWidth: '54%',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    display: 'block',
-                  }}
-                >
-                  <HashLink
-                    smooth
-                    to={`?report=${jobId}#${item[0]}`}
-                    style={{ textDecoration: 'none', color: 'black' }}
+              <Box
+                sx={{
+                  minWidth: '21vh',
+                  width: '61%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  backgroundColor: '#F1F1F1',
+                  borderRadius: '12px 12px 12px 12px',
+                  padding: '4%',
+                }}
+              >
+                {classesAndBenchmarksState.map((item, i) => (
+                  <Typography
+                    key={i}
+                    variant="h7"
+                    style={{
+                      maxWidth: '100%',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      display: 'block',
+                    }}
                   >
-                    {item[0]}
-                  </HashLink>
-                </Typography>
-              ))}
+                    <HashLink
+                      smooth
+                      to={`?report=${jobId}#${item[0]}`}
+                      style={{ textDecoration: 'none', color: 'black' }}
+                    >
+                      {item[0]}
+                    </HashLink>
+                  </Typography>
+                ))}
+              </Box>
             </Box>
 
             {/* Charts BOX */}

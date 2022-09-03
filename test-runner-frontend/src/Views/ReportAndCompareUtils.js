@@ -74,16 +74,8 @@ export const getImprovedVsRegressedValues = (testRunA, testRunB) => {
     return !metric[1].didImprove && metric[1].isClassOnBothTestRuns;
   });
 
-  let totalImprovedPercentage = 0;
-  let totalRegressedPercentage = 0;
-
-  improvedClasses.forEach((currentClass) => {
-    totalImprovedPercentage += currentClass[1].improvementOrRegressionPercentage;
-  });
-
-  regressedClasses.forEach((currentClass) => {
-    totalRegressedPercentage += currentClass[1].improvementOrRegressionPercentage;
-  });
+  let totalImprovedPercentage = improvedClasses.length;
+  let totalRegressedPercentage = regressedClasses.length;
 
   return {
     improvedClasses,
