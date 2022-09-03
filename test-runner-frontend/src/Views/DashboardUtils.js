@@ -51,9 +51,9 @@ export const sortTestRunsByMachine = (machines, testRunResults) => {
       const branch = testRunResult.branch;
       const status = testRunResult.status[machineName];
       const machine = machineName;
-      const timestamp = testRunResult.testRunnerResults[machineName]?.startTime;
       if (testRunResult.testRunnerResults) {
         const benchmarks = testRunResult.testRunnerResults[machineName]?.testStatistics?.length;
+        const timestamp = testRunResult?.testRunnerResults[machineName]?.startTime;
         const dateTimestamp = new Date(timestamp.seconds * 1000);
         const improvedVsRegressed = { improved: 0, regressed: 0 };
         const date = dateTimestamp?.toLocaleString();
@@ -80,7 +80,7 @@ export const sortTestRunsByMachine = (machines, testRunResults) => {
           improvedVsRegressed: {},
           machine,
           date: 'Test run on progress',
-          timestamp,
+          timestamp: null,
           statistics: [],
         };
       }
@@ -91,7 +91,6 @@ export const sortTestRunsByMachine = (machines, testRunResults) => {
 };
 
 export const convertToMap = (testRun) => {
-  if (!testRun) return null;
   return testRun?.statistics.reduce((map, testMethod) => {
     map[testMethod.benchmark] = {
       score: testMethod.primaryMetric.score,
@@ -140,10 +139,7 @@ export const getBenchmarksByMachine = (flattenedTestRuns) => {
     return testRunsSortedByMachine
       .map((testRun, index) => {
         if (testRunsSortedByMachine[index + 1] && testRunsSortedByMachine[index + 1]?.statistics) {
-          const getImprovedVsRegressedValues = generateComparisonBetween(
-            testRun,
-            testRunsSortedByMachine[index + 1] ? testRunsSortedByMachine[index + 1] : {}
-          );
+          const getImprovedVsRegressedValues = generateComparisonBetween( testRun, testRunsSortedByMachine[index + 1]);
           testRun.improvedVsRegressed.improved = getImprovedVsRegressedValues?.improved
             ? getImprovedVsRegressedValues.improved
             : 0;

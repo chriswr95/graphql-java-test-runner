@@ -23,7 +23,7 @@ export default function IdCell({ value, hasCheckbox, onChange, status, row }) {
     iconColor = 'green';
     IconComponent = CheckCircleOutlinedIcon;
     textDecoration = 'underline';
-    routingReference = `?report=${row.id}`;
+    routingReference = `?report=${row?.id}`;
     pointerEvent = 'auto';
     dataTestid = 'enabledCheckbox';
     isDisabled = false;

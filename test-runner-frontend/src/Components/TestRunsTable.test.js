@@ -49,7 +49,7 @@ describe('Test Runs Table', () => {
     expect(getAllByRole('cell', { name: testRunResults[0].branch })).toBeDefined();
     expect(getAllByRole('cell', { name: testRunResults[0].id })).toBeDefined();
     expect(getAllByRole('columnheader', { name: /Date/i })).toBeDefined();
-    expect(getByTestId('ArrowDownwardIcon')).toBeDefined();
+    expect(getByTestId('ArrowUpwardIcon')).toBeDefined();
   });
 
   test('Renders row per page', async () => {
