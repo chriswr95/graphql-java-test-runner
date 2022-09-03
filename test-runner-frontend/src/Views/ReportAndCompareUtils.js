@@ -1,59 +1,97 @@
+const HIGHER_IS_BETTER = 'higherIsBetter';
+const LOWER_IS_BETTER = 'lowerIsBetter';
+
+const modeData = {
+  thrpt: HIGHER_IS_BETTER,
+  avgt: LOWER_IS_BETTER,
+  sample: LOWER_IS_BETTER,
+  ss: LOWER_IS_BETTER,
+  all: LOWER_IS_BETTER,
+};
+
 const calculateImprovementOrRegressionPercentage = (scoreA, scoreB) => {
-  const percentage = ((scoreB - scoreA) / Math.abs(scoreA)) * 100 ;
+  const percentage = ((scoreB - scoreA) / Math.abs(scoreA)) * 100;
 
   return percentage;
-}
-export const getImprovedVsRegressedValues = (testRunA, testRunB) => {
-  var metrics = {};
+};
 
-  testRunA.forEach((classAndResults) => {  
+export const filterModesByHighersIsBetterOrLowerIsBetter = (modeData, isHigherBetter) => {
+  const valueToFilter = isHigherBetter ? HIGHER_IS_BETTER : LOWER_IS_BETTER;
+  return Object.entries(modeData)
+    .filter(([key, value]) => value === valueToFilter)
+    .map(([modeDataName]) => modeDataName);
+};
+
+export const getImprovedVsRegressedValues = (testRunA, testRunB) => {
+  let metrics = {};
+
+  testRunA.forEach((classAndResults) => {
     let counter = 0;
-     classAndResults[1].forEach((test) => {
-      counter+=test.benchmarkScore
-    })
+    classAndResults[1].forEach((test) => {
+      counter += test.benchmarkScore;
+    });
     metrics[classAndResults[0]] = {
       firstResult: counter,
       secondResult: 0,
       mode: classAndResults[1][0].mode,
       improvementOrRegressionPercentage: null,
       didImprove: undefined,
-      benchmarks: classAndResults[1].length
-    }
-  })
+      benchmarks: classAndResults[1].length,
+      isClassOnBothTestRuns: false,
+    };
+  });
 
-  testRunB.forEach((classAndResults) => {  
+  testRunB.forEach((classAndResults) => {
     let counter = 0;
-     classAndResults[1].forEach((test) => {
-      counter+=test.benchmarkScore
-    })
-    metrics[classAndResults[0]].secondResult = counter;
-    const results = calculateImprovementOrRegressionPercentage(metrics[classAndResults[0]].firstResult, metrics[classAndResults[0]].secondResult);
-    metrics[classAndResults[0]].improvementOrRegressionPercentage = results;
-    metrics[classAndResults[0]].didImprove = results > 0;
+    classAndResults[1].forEach((test) => {
+      counter += test.benchmarkScore;
+    });
+    if (metrics[classAndResults[0]]) {
+      metrics[classAndResults[0]].isClassOnBothTestRuns = true;
+      metrics[classAndResults[0]].secondResult = counter;
+      const results = calculateImprovementOrRegressionPercentage(
+        metrics[classAndResults[0]].firstResult,
+        metrics[classAndResults[0]].secondResult
+      );
+      metrics[classAndResults[0]].improvementOrRegressionPercentage = results;
 
-  })  
-  
-  const improvedClasses = Object.entries(metrics).filter(metric => metric[1].didImprove );
-  const regressedClasses = Object.entries(metrics).filter(metric => !metric[1].didImprove );
+      const modesWhereLowerIsBetter = filterModesByHighersIsBetterOrLowerIsBetter(modeData, false);
+      const modesWhereHigherIsBetter = filterModesByHighersIsBetterOrLowerIsBetter(modeData, true);
 
-  let totalImprovedScore = 0;
-  let totalRegressedScore = 0;
-  
-  improvedClasses.forEach(currentClass => {
-    totalImprovedScore += currentClass[1].firstResult
-  })
+      if (modesWhereHigherIsBetter.includes(metrics[classAndResults[0]].mode))
+        metrics[classAndResults[0]].didImprove = results > 0;
+      else if (modesWhereLowerIsBetter.includes(metrics[classAndResults[0]].mode))
+        metrics[classAndResults[0]].didImprove = results < 0;
+    }
+  });
 
-  regressedClasses.forEach(currentClass => {
-    totalRegressedScore += currentClass[1].firstResult
-  })
+  const improvedClasses = Object.entries(metrics).filter((metric) => {
+    metric[1].improvementOrRegressionPercentage = Math.abs(metric[1].improvementOrRegressionPercentage);
+    return metric[1].didImprove && metric[1].isClassOnBothTestRuns;
+  });
+  const regressedClasses = Object.entries(metrics).filter((metric) => {
+    metric[1].improvementOrRegressionPercentage = Math.abs(metric[1].improvementOrRegressionPercentage);
+    return !metric[1].didImprove && metric[1].isClassOnBothTestRuns;
+  });
+
+  let totalImprovedPercentage = 0;
+  let totalRegressedPercentage = 0;
+
+  improvedClasses.forEach((currentClass) => {
+    totalImprovedPercentage += currentClass[1].improvementOrRegressionPercentage;
+  });
+
+  regressedClasses.forEach((currentClass) => {
+    totalRegressedPercentage += currentClass[1].improvementOrRegressionPercentage;
+  });
 
   return {
     improvedClasses,
     regressedClasses,
-    totalImprovedScore,
-    totalRegressedScore
-  }
-}
+    totalImprovedPercentage,
+    totalRegressedPercentage,
+  };
+};
 
 export const combineChartsData = (testRunA, testRunB) => {
   var classesArray = [];

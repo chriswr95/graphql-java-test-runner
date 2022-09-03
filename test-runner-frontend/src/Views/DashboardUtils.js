@@ -139,7 +139,7 @@ export const getBenchmarksByMachine = (flattenedTestRuns) => {
     return testRunsSortedByMachine
       .map((testRun, index) => {
         if (testRunsSortedByMachine[index + 1] && testRunsSortedByMachine[index + 1]?.statistics) {
-          const getImprovedVsRegressedValues = generateComparisonBetween( testRun, testRunsSortedByMachine[index + 1]);
+          const getImprovedVsRegressedValues = generateComparisonBetween(testRun, testRunsSortedByMachine[index + 1]);
           testRun.improvedVsRegressed.improved = getImprovedVsRegressedValues?.improved
             ? getImprovedVsRegressedValues.improved
             : 0;

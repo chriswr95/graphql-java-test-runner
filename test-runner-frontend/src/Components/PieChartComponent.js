@@ -1,8 +1,5 @@
-import { Box } from '@mui/system';
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-
-const COLORS = ['red', 'green'];
 
 const RADIAN = Math.PI / 180;
 const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
@@ -17,11 +14,11 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
   );
 };
 
-export default function PieChartComponent({ totalImprovedScore, totalRegressedScore }) {
-  console.log(totalImprovedScore, totalRegressedScore);
+export default function PieChartComponent({ totalImprovedPercentage, totalRegressedPercentage }) {
+  const COLORS = ['green', 'red'];
   const data = [
-    { name: 'Group A', value: totalImprovedScore },
-    { name: 'Group B', value: totalRegressedScore },
+    { name: 'Improved', value: totalImprovedPercentage },
+    { name: 'Regressed', value: totalRegressedPercentage },
   ];
   return (
     <ResponsiveContainer minWidth={100} height={200}>
