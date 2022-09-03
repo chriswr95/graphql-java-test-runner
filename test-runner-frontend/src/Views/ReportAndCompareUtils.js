@@ -1,4 +1,59 @@
-import { connectFirestoreEmulator } from '@firebase/firestore';
+const calculateImprovementOrRegressionPercentage = (scoreA, scoreB) => {
+  const percentage = ((scoreB - scoreA) / Math.abs(scoreA)) * 100 ;
+
+  return percentage;
+}
+export const getImprovedVsRegressedValues = (testRunA, testRunB) => {
+  var metrics = {};
+
+  testRunA.forEach((classAndResults) => {  
+    let counter = 0;
+     classAndResults[1].forEach((test) => {
+      counter+=test.benchmarkScore
+    })
+    metrics[classAndResults[0]] = {
+      firstResult: counter,
+      secondResult: 0,
+      mode: classAndResults[1][0].mode,
+      improvementOrRegressionPercentage: null,
+      didImprove: undefined,
+      benchmarks: classAndResults[1].length
+    }
+  })
+
+  testRunB.forEach((classAndResults) => {  
+    let counter = 0;
+     classAndResults[1].forEach((test) => {
+      counter+=test.benchmarkScore
+    })
+    metrics[classAndResults[0]].secondResult = counter;
+    const results = calculateImprovementOrRegressionPercentage(metrics[classAndResults[0]].firstResult, metrics[classAndResults[0]].secondResult);
+    metrics[classAndResults[0]].improvementOrRegressionPercentage = results;
+    metrics[classAndResults[0]].didImprove = results > 0;
+
+  })  
+  
+  const improvedClasses = Object.entries(metrics).filter(metric => metric[1].didImprove );
+  const regressedClasses = Object.entries(metrics).filter(metric => !metric[1].didImprove );
+
+  let totalImprovedScore = 0;
+  let totalRegressedScore = 0;
+  
+  improvedClasses.forEach(currentClass => {
+    totalImprovedScore += currentClass[1].firstResult
+  })
+
+  regressedClasses.forEach(currentClass => {
+    totalRegressedScore += currentClass[1].firstResult
+  })
+
+  return {
+    improvedClasses,
+    regressedClasses,
+    totalImprovedScore,
+    totalRegressedScore
+  }
+}
 
 export const combineChartsData = (testRunA, testRunB) => {
   var classesArray = [];

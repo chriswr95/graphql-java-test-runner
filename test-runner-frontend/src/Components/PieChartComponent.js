@@ -1,10 +1,6 @@
+import { Box } from '@mui/system';
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-
-const data = [
-  { name: 'Group A', value: 400 },
-  { name: 'Group B', value: 300 },
-];
 
 const COLORS = ['red', 'green'];
 
@@ -21,10 +17,15 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
   );
 };
 
-export default function PieChartComponent() {
+export default function PieChartComponent({ totalImprovedScore, totalRegressedScore }) {
+  console.log(totalImprovedScore, totalRegressedScore);
+  const data = [
+    { name: 'Group A', value: totalImprovedScore },
+    { name: 'Group B', value: totalRegressedScore },
+  ];
   return (
-    <ResponsiveContainer width="100%" height="81%">
-      <PieChart width="100%" height="50%">
+    <ResponsiveContainer minWidth={100} height={200}>
+      <PieChart>
         <Pie
           data={data}
           cx="50%"
