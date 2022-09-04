@@ -29,13 +29,11 @@ const useStyles = makeStyles({
 });
 
 function TransitionSnackBar(props) {
-  return (
-    <Slide
-      {...props}
-      direction="up"
-      style={{ color: 'white', backgroundColor: '#e535ab', fontWeight: '600', textShadow: '1px 3px black' }}
-    />
-  );
+  return <Slide {...props} direction="up" style={{ color: 'white', backgroundColor: '#E535AB', fontWeight: 600 }} />;
+}
+
+function TransitionDialog(props) {
+  return <Slide {...props} direction="left" style={{ backgroundColor: 'transparent' }} />;
 }
 
 const initialState = {
@@ -182,15 +180,23 @@ export default function Report() {
             classes={{
               paper: classes.dialog,
             }}
+            TransitionComponent={TransitionDialog}
             open={openDialog}
             onClose={() => handleCloseDialog()}
           >
             <AppBar sx={{ position: 'sticky', bgcolor: 'white' }}>
               <Toolbar>
-                <Typography sx={{ ml: 2, mt: '3%', flex: 1, color: 'black' }} variant={jsonResult.className ? 'h5' : 'h6'}>
+                <Typography
+                  sx={{ ml: 2, mt: '3%', flex: 1, color: 'black' }}
+                  variant={jsonResult.className ? 'h5' : 'h6'}
+                >
                   <b>{jsonResult.className ? jsonResult.className : jsonResult.jobId}</b>
                 </Typography>
-                <IconButton color="inherit" onClick={() => handleCloseDialog()} sx={{ color: 'gray', position: 'absolute', right: 0 }}>
+                <IconButton
+                  color="inherit"
+                  onClick={() => handleCloseDialog()}
+                  sx={{ color: 'gray', position: 'absolute', right: 0, marginRight: '3%' }}
+                >
                   <CloseIcon />
                 </IconButton>
               </Toolbar>
@@ -206,7 +212,7 @@ export default function Report() {
                 <Button
                   variant="outlined"
                   sx={{ color: 'gray', borderColor: 'gray' }}
-                  onClick={() => handleClickOpenSnackBar('JSON results saved into clipboard', null)}
+                  onClick={handleClickOpenSnackBar('JSON results saved into clipboard', null)}
                 >
                   Copy
                 </Button>

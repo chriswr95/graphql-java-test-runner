@@ -19,33 +19,39 @@ const columns = [
     id: 'id',
     label: 'JobId',
     minWidth: 350,
+    align: 'center',
   },
   {
     id: 'improvedVsRegressed',
     label: 'Improved vs Regressed',
     type: 'number',
     minWidth: 270,
+    align: 'center',
   },
   {
     id: 'benchmarks',
     label: 'Benchmarks',
     minWidth: 160,
+    align: 'center',
   },
   {
     id: 'branch',
     label: 'Branch',
     minWidth: 170,
+    align: 'center',
   },
   {
     id: 'machine',
     label: 'Machine',
     minWidth: 160,
+    align: 'center',
   },
   {
     id: 'date',
     label: 'Date',
     description: 'This column has a value getter and is not sortable.',
     minWidth: 210,
+    align: 'center',
   },
 ];
 
@@ -83,7 +89,7 @@ export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, test
 
                 if (column.label === 'Date') {
                   cell = (
-                    <Stack direction="row" spacing={4}>
+                    <Stack direction="row" spacing={4} style={{ marginLeft: '35%' }}>
                       <div>
                         <b>{column.label}</b>
                       </div>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Button, Typography, AppBar, Toolbar, IconButton, Snackbar, CircularProgress, Slide } from '@mui/material';
+import { Box, Typography, AppBar, Toolbar, IconButton, Snackbar, CircularProgress, Slide } from '@mui/material';
 import GraphQL_Logo from '../Assets/GraphQL_Java_Logo_v2.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { HashLink } from 'react-router-hash-link';
@@ -12,7 +12,7 @@ import { Stack } from '@mui/system';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import {
   buildChartsData,
-  buildIndividualJsonResults,
+  buildIndividualJsonResultsCompare,
   buildJsonResults,
   combineChartsData,
   downloadJSON,
@@ -29,6 +29,8 @@ import TabList from '@material-ui/lab/TabList';
 import TabPanel from '@material-ui/lab/TabPanel';
 import Grid from '@mui/material/Grid';
 import Marquee from 'react-fast-marquee';
+import DownloadForOfflineOutlinedIcon from '@mui/icons-material/DownloadForOfflineOutlined';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 const GRAPHQL_JAVA_GITHUB = 'https://github.com/graphql-java/graphql-java';
 
@@ -44,18 +46,17 @@ const useStyles = makeStyles({
 });
 
 function TransitionSnackBar(props) {
-  return (
-    <Slide
-      {...props}
-      direction="up"
-      style={{ color: 'white', backgroundColor: '#e535ab', fontWeight: '600', textShadow: '1px 3px black' }}
-    />
-  );
+  return <Slide {...props} direction="up" style={{ color: 'white', backgroundColor: '#E535AB', fontWeight: 600 }} />;
+}
+
+function TransitionDialog(props) {
+  return <Slide {...props} direction="left" style={{ backgroundColor: 'transparent' }} />;
 }
 
 const initialState = {
   // State of the dialog that shows test results with JSON format.
   openDialog: false,
+  // Combined test runs in order to display one single chart.
   combinedClassesAndBenchmarksState: [],
   // Combined test results with JSON format.
   jsonResult: {},
@@ -71,7 +72,10 @@ const initialState = {
   snackBarMessageDuration: null,
   // Current tab selected on Dialog.
   selectedTab: '1',
+  // Results obtained from getImprovedVsRegressedValues().
   improvedAndRegressedResults: {},
+  // Selected test run results (either jsonReslTestRunA or jsonReslTestRunB).
+  selectedJsonResult: undefined,
 };
 
 const reducer = (state, action) => {
@@ -83,15 +87,20 @@ const reducer = (state, action) => {
         jsonResult: action.payload.jsonResults,
         jsonResultTestRunA: {
           className: action.payload.jsonResults?.className,
-          jobId: action.payload.jsonResults?.jobId,
+          jobId: action.payload.jsonResults?.jobIdA,
           jsonResults: action.payload.jsonResults?.jsonResults?.filter((_, index) => index % 2 === 0),
         },
         jsonResultTestRunB: {
           className: action.payload.jsonResults?.className,
-          jobId: action.payload.jsonResults?.jobId,
+          jobId: action.payload.jsonResults?.jobIdB,
           jsonResults: action.payload.jsonResults?.jsonResults?.filter((_, index) => index % 2 !== 0),
         },
         selectedTab: '1',
+        selectedJsonResult: {
+          className: action.payload.jsonResults?.className,
+          jobId: action.payload.jsonResults?.jobIdA,
+          jsonResults: action.payload.jsonResults?.jsonResults?.filter((_, index) => index % 2 === 0),
+        },
       };
     case 'setClassesAndBenchmarksState':
       const classesAndBenchmarksA = buildChartsData(action.payload.testRunA);
@@ -112,6 +121,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         selectedTab: action.payload,
+        selectedJsonResult: action.payload === '1' ? state.jsonResultTestRunA : state.jsonResultTestRunB,
       };
     default:
       return state;
@@ -143,6 +153,7 @@ export default function Compare() {
     snackBarMessage,
     snackBarMessageDuration,
     selectedTab,
+    selectedJsonResult,
   } = state;
 
   const classes = useStyles();
@@ -168,7 +179,7 @@ export default function Compare() {
       type: 'handleSnackBar',
       payload: { message: message, isOpen: true, messageDuration: messageDuration },
     });
-    navigator.clipboard.writeText(JSON.stringify(jsonResult.jsonResults, undefined, 2));
+    navigator.clipboard.writeText(JSON.stringify(selectedJsonResult.jsonResults, undefined, 2));
   };
 
   const handleCloseSnackBar = () => {
@@ -188,7 +199,7 @@ export default function Compare() {
     if (isIndividualBenchmark)
       dispatch({
         type: 'handleDialog',
-        payload: { isOpen: true, jsonResults: buildIndividualJsonResults(benchmarks) },
+        payload: { isOpen: true, jsonResults: buildIndividualJsonResultsCompare(benchmarks) },
       });
     else dispatch({ type: 'handleDialog', payload: { isOpen: true, jsonResults: buildJsonResults(benchmarks) } });
   };
@@ -202,7 +213,7 @@ export default function Compare() {
       type: 'handleSnackBar',
       payload: { message: message, isOpen: true, messageDuration: messageDuration },
     });
-    downloadJSON(jsonResult.className, jsonResult.jobId, jsonResult.jsonResults);
+    downloadJSON(selectedJsonResult.className, selectedJsonResult.jobId, selectedJsonResult.jsonResults);
   };
 
   return (
@@ -251,60 +262,52 @@ export default function Compare() {
             }}
             open={openDialog}
             onClose={() => handleCloseDialog()}
+            TransitionComponent={TransitionDialog}
           >
             <TabContext value={selectedTab}>
               <AppBar sx={{ position: 'sticky', bgcolor: 'white' }}>
                 <Toolbar>
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      left: 0,
-                      widht: '57%',
-                      borderRadius: '0 0 12px 0',
-                      borderRight: '1.5px solid #e535ab',
-                      borderBottom: '1.5px solid #e535ab',
-                      pb: '1.5%',
-                      pt: '1.5%',
-                    }}
+                  <TabList
+                    style={{ color: 'gray', position: 'absolute', left: 0 }}
+                    onChange={handleChangeOnTabs}
+                    TabIndicatorProps={{ style: { background: 'darkgray' } }}
                   >
-                    <TabList
-                      style={{ color: 'gray' }}
-                      onChange={handleChangeOnTabs}
-                      TabIndicatorProps={{ style: { background: 'darkgray' } }}
-                    >
-                      <Tab label="Test Run 1 results" value="1" />
-                      <Tab label="Test Run 2 results" value="2" />
-                    </TabList>
-                  </Box>
+                    <Tab label="Test Run 1 results" value="1" />
+                    <Tab label="Test Run 2 results" value="2" />
+                  </TabList>
 
                   <IconButton
                     color="inherit"
                     onClick={() => handleCloseDialog()}
-                    style={{ color: 'gray', position: 'absolute', right: 0 }}
+                    style={{ color: 'gray', position: 'absolute', right: 0, marginRight: '3%' }}
                   >
                     <CloseIcon />
                   </IconButton>
                 </Toolbar>
 
-                <Typography sx={{ ml: '6%', mb: '3%', mt: '3%', flex: 1, color: 'black' }} variant={jsonResult.className ? 'h5' : 'h6'}>
-                  <b>{jsonResult.className ? jsonResult.className : jsonResult.id}</b>
-                </Typography>
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  style={{ paddingBottom: '3%', paddingLeft: '5%', paddingTop: '3.6%', paddingRight: '6%' }}
+                >
+                  <Typography sx={{ color: 'black', flex: '1' }} variant={jsonResult.className ? 'h5' : 'h6'}>
+                    <b>{jsonResult.className ? jsonResult.className : jsonResult.id}</b>
+                  </Typography>
 
-                <Stack direction="row" spacing={2} style={{ marginLeft: '6%', marginBottom: '3%', marginTop: '1.2%' }}>
-                  <Button
+                  <IconButton
                     variant="outlined"
                     sx={{ color: '#e535ab', borderColor: '#e535ab' }}
                     onClick={() => downloadJSONReport('JSON file downloaded', null)}
                   >
-                    Download
-                  </Button>
-                  <Button
+                    <DownloadForOfflineOutlinedIcon sx={{ color: '#E535AB', fontSize: '4.3vh' }} />
+                  </IconButton>
+                  <IconButton
                     variant="outlined"
                     sx={{ color: 'gray', borderColor: 'gray' }}
-                    onClick={() => handleClickOpenSnackBar('JSON results saved into clipboard', null)}
+                    onClick={handleClickOpenSnackBar('JSON results saved into clipboard', null)}
                   >
-                    Copy
-                  </Button>
+                    <ContentCopyIcon sx={{ color: '#313846', fontSize: '4.3vh' }} />
+                  </IconButton>
                 </Stack>
               </AppBar>
 
@@ -328,36 +331,46 @@ export default function Compare() {
             </Typography>
           </Box>
 
-         {/* Father BOX */}
-         <Box sx={{ marginLeft: '2%', width: '98%', display: 'flex', flexDirection: 'row' }}>
+          {/* Father BOX */}
+          <Box sx={{ marginLeft: '2%', width: '98%', display: 'flex', flexDirection: 'row' }}>
             {/* Lateral menu BOX */}
             <Box sx={{ display: 'flex', flexDirection: 'column', position: 'fixed' }}>
               <Typography variant="h6">
                 <b>Classes</b>
               </Typography>
 
-              <Box sx={{ minWidth: '21vh', width: '61%', display: 'flex', flexDirection: 'column', backgroundColor: '#F1F1F1',borderRadius: '12px 12px 12px 12px', padding: '4%'}}>
-              {combinedClassesAndBenchmarksState?.map((item, i) => (
-                <Typography
-                  key={i}
-                  variant="h7"
-                  style={{
-                    maxWidth: '100%',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    display: 'block',
-                  }}
-                >
-                  <HashLink
-                    smooth
-                    to={`?compareA=${jobIdA}&compareB=${jobIdB}#${item[0]}`}
-                    style={{ textDecoration: 'none', color: 'black' }}
+              <Box
+                sx={{
+                  minWidth: '21vh',
+                  width: '61%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  backgroundColor: '#F1F1F1',
+                  borderRadius: '12px 12px 12px 12px',
+                  padding: '4%',
+                }}
+              >
+                {combinedClassesAndBenchmarksState?.map((item, i) => (
+                  <Typography
+                    key={i}
+                    variant="h7"
+                    style={{
+                      maxWidth: '100%',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      display: 'block',
+                    }}
                   >
-                    {item[0]}
-                  </HashLink>
-                </Typography>
-              ))}
+                    <HashLink
+                      smooth
+                      to={`?compareA=${jobIdA}&compareB=${jobIdB}#${item[0]}`}
+                      style={{ textDecoration: 'none', color: 'black' }}
+                    >
+                      {item[0]}
+                    </HashLink>
+                  </Typography>
+                ))}
               </Box>
             </Box>
 
@@ -377,10 +390,10 @@ export default function Compare() {
                   display: 'flex',
                   flexDirection: 'row',
                   borderRadius: '12px 12px 12px 12px',
-                  paddingTop: "2%",
-                  paddingBottom: "3%",
-                  paddingLeft: "1.8%",
-                  paddingRight: "1.8%"
+                  paddingTop: '2%',
+                  paddingBottom: '3%',
+                  paddingLeft: '1.8%',
+                  paddingRight: '1.8%',
                 }}
               >
                 {/* Left info */}
@@ -449,7 +462,9 @@ export default function Compare() {
                       {improvedAndRegressedResults.improvedClasses?.map((improvedClass, i) => {
                         return (
                           <Stack key={i} direction="row" spacing={2} sx={{ width: '100%' }}>
-                            <Typography>{improvedClass[1].improvementOrRegressionPercentage.toFixed(2)}%</Typography>
+                            <Typography sx={{ maxWidth: '12%', width: '12%' }}>
+                              {improvedClass[1].improvementOrRegressionPercentage.toFixed(2)}%
+                            </Typography>
                             <ProgressBar style={{ width: '34%', height: '1vh', marginTop: '2%', direction: 'ltr' }}>
                               <ProgressBar variant="success" now={improvedClass[1].improvementOrRegressionPercentage} />
                             </ProgressBar>
@@ -479,13 +494,13 @@ export default function Compare() {
 
               {/* Bar columns BOX */}
 
-              <Box sx={{ widht: '100%',  marginTop: '3%', marginBottom: '1.6%', display: 'flex', flexDirection: 'row' }}>
+              <Box sx={{ widht: '100%', marginTop: '3%', marginBottom: '1.6%', display: 'flex', flexDirection: 'row' }}>
                 <Box
                   sx={{
                     width: '45%',
                     marginBottom: '2%',
-                    borderLeft: '4.3px solid black',
-                    borderBottom: '4.3px solid black',
+                    borderLeft: '4.3px solid #313846',
+                    borderBottom: '4.3px solid #313846',
                     borderRadius: '0 0 0 12px',
                     paddingLeft: '1%',
                     paddingBottom: '1%',
@@ -515,7 +530,7 @@ export default function Compare() {
                   }}
                 >
                   <Typography variant="h6">
-                    <b>Test run {selectedTestRunFromDashboardA?.id}</b>
+                    <b>Test run {selectedTestRunFromDashboardB?.id}</b>
                   </Typography>
 
                   <Typography style={{ color: 'grey' }}>Time of Run: {selectedTestRunFromDashboardB?.date}</Typography>

@@ -29,7 +29,7 @@ const benchmarkModes = {
   all: 'All',
 };
 
-const barColors = ['black', '#E535AB'];
+const barColors = ['#313846', '#E535AB'];
 
 export default function BarCharts({ classesAndBenchmarksState, mediumCharts }) {
   let mode;
@@ -45,53 +45,58 @@ export default function BarCharts({ classesAndBenchmarksState, mediumCharts }) {
     return currentBenchmarkData;
   });
 
-  function createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein };
-  }
-
-  const rows = [
-    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData('Eclair', 262, 16.0, 24, 6.0),
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-    createData('Gingerbread', 356, 16.0, 49, 3.9),
-  ];
-
   const CustomTooltip = ({ active, payload, label }) => {
-    console.log(payload[0]);
     if (active) {
       return (
         <div className="custom-tooltip">
-          <Paper style={{padding: '4%', backgroundColor: 'transparent', width: '100%', minWidth: mediumCharts ? '48vh' : '57vh' }}elevation={8}>
-          <Paper style={{paddingLeft: '2%', paddingTop: '2%', paddingRight: '1%', paddingBottom: '0.5%', fontWeight: 500}} elevation={4}><p>{label}</p></Paper>
-      <TableContainer component={Paper} elevation={24} sx={{marginTop: '2.5%'}}>
-      <Table size="medium" aria-label="a dense table">
-        <TableHead>
-          <TableRow >
-            <TableCell align="center">Score</TableCell>
-            <TableCell align="center">Score Error</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-            <TableRow >
-              <TableCell component="th" scope="row" align="center" sx={{color: 'blue'}}>
-              {payload[0].value}
-              </TableCell>
+          <Paper
+            style={{
+              padding: '4%',
+              backgroundColor: 'transparent',
+              width: '100%',
+              minWidth: mediumCharts ? '48vh' : '61vh',
+            }}
+            elevation={8}
+          >
+            <Paper
+              style={{
+                paddingLeft: '2%',
+                paddingTop: '3.2%',
+                paddingRight: '2%',
+                paddingBottom: '0.5%',
+                fontWeight: 600,
+              }}
+              elevation={4}
+              align="center"
+            >
+              <p>{label}</p>
+            </Paper>
+            <TableContainer component={Paper} elevation={24} sx={{ marginTop: '2.5%' }}>
+              <Table size="medium" aria-label="a dense table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="center">Score</TableCell>
+                    <TableCell align="center">Score Error</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <TableCell component="th" scope="row" align="center" sx={{ color: '#337ab7' }}>
+                      {payload[0].value}
+                    </TableCell>
 
-              <TableCell component="th" scope="row" align="center" sx={{color: 'red'}}>
-              {payload[0].payload.error}
-              </TableCell>
-            </TableRow>
-        </TableBody>
-      </Table>
-    </TableContainer>
-
+                    <TableCell component="th" scope="row" align="center" sx={{ color: '#ff5757' }}>
+                      {payload[0].payload.error}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Paper>
         </div>
       );
     }
-  }
-  
+  };
 
   return (
     <Box sx={{ width: size }}>
@@ -99,12 +104,19 @@ export default function BarCharts({ classesAndBenchmarksState, mediumCharts }) {
       <ResponsiveContainer width="100%" height={277}>
         <BarChart data-testid="chart" data={benchmarksData} layout="vertical">
           <XAxis type="number" />
-          <YAxis type="category" dataKey="name" />
+          <YAxis
+            type="category"
+            dataKey="name"
+            width={mediumCharts ? 61 : 79}
+            tick={{ fontSize: 11 }}
+            tickLine={true}
+            tickMargin={9}
+          />
           <CartesianGrid strokeDasharray="2 2" />
-          <Tooltip content={<CustomTooltip />}/>
+          <Tooltip content={<CustomTooltip />} />
           <Legend />
-          <Bar dataKey={'score'} fill= {mediumCharts ? "#337ab7" : "black"}>
-            <ErrorBar dataKey="error" width={4} strokeWidth={2.7} stroke={mediumCharts ? 'black' : "#ACB2B2"} />
+          <Bar dataKey={'score'} fill={mediumCharts ? '#337ab7' : '#313846'}>
+            <ErrorBar dataKey="error" width={4} strokeWidth={2.7} stroke={mediumCharts ? '#313846' : '#ACB2B2'} />
             {!mediumCharts
               ? classesAndBenchmarksState?.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={barColors[index % 2]} />

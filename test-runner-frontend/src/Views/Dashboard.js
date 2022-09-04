@@ -95,11 +95,13 @@ const reducer = (state, action) => {
       if (sortingBy === 'ascending') {
         return {
           ...state,
+          checkBoxSelection: [],
           testRunResults: [].concat(state.testRunResultsCopy).sort((a, b) => a[sortingMode] - b[sortingMode]),
         };
       } else if (sortingBy === 'descending') {
         return {
           ...state,
+          checkBoxSelection: [],
           testRunResults: [].concat(state.testRunResultsCopy).sort((a, b) => b[sortingMode] - a[sortingMode]),
         };
       }

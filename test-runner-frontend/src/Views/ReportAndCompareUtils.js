@@ -166,6 +166,21 @@ export const buildIndividualJsonResults = (benchmarks) => {
   };
 };
 
+export const buildIndividualJsonResultsCompare = (benchmarks) => {
+  console.log(benchmarks);
+  const jobIdA = benchmarks[0].jobId;
+  const jobIdB = benchmarks[1].jobId;
+  const className = benchmarks[0].benchmarkClass;
+  const jsonResults = benchmarks.map((benchmark) => benchmark.json);
+
+  return {
+    jobIdA,
+    jobIdB,
+    className,
+    jsonResults,
+  };
+};
+
 export const buildJsonResults = (benchmarks) => {
   const jobId = benchmarks[0][1][0].jobId;
   const jsonResults = benchmarks.map((benchmark) => {
