@@ -89,14 +89,14 @@ export const combineChartsData = (testRunA, testRunB) => {
   var classesArray = [];
   testRunA.forEach((testRun) => {
     testRun[1].forEach((test) => {
-      test.benchmarkMethod = test.benchmarkMethod + ' - ' + test.jobId;
+      test.benchmarkMethod = test.benchmarkMethod + ' - Test Run 1';
     });
     classesArray[testRun[0]] ??= [];
     classesArray[testRun[0]]?.push(testRun[1]);
   });
   testRunB.forEach((testRun) => {
     testRun[1].forEach((test) => {
-      test.benchmarkMethod = test.benchmarkMethod + ' - ' + test.jobId;
+      test.benchmarkMethod = test.benchmarkMethod + ' - Test Run 2';
     });
     classesArray[testRun[0]] ??= [];
     if (!classesArray[testRun[0]][0]?.length) classesArray[testRun[0]]?.push(testRun[1]);

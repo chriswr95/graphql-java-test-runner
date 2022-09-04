@@ -185,17 +185,17 @@ export default function Report() {
             open={openDialog}
             onClose={() => handleCloseDialog()}
           >
-            <AppBar sx={{ position: 'relative', bgcolor: 'transparent' }}>
+            <AppBar sx={{ position: 'sticky', bgcolor: 'white' }}>
               <Toolbar>
-                <Typography sx={{ ml: 2, flex: 1, color: 'black' }} variant="h6" component="div">
+                <Typography sx={{ ml: 2, mt: '3%', flex: 1, color: 'black' }} variant={jsonResult.className ? 'h5' : 'h6'}>
                   <b>{jsonResult.className ? jsonResult.className : jsonResult.jobId}</b>
                 </Typography>
-                <IconButton color="inherit" onClick={() => handleCloseDialog()} sx={{ color: 'gray' }}>
+                <IconButton color="inherit" onClick={() => handleCloseDialog()} sx={{ color: 'gray', position: 'absolute', right: 0 }}>
                   <CloseIcon />
                 </IconButton>
               </Toolbar>
 
-              <Stack direction="row" spacing={2} style={{ marginLeft: '6%', marginBottom: '3%' }}>
+              <Stack direction="row" spacing={2} style={{ marginLeft: '6%', marginBottom: '3%', marginTop: '2%' }}>
                 <Button
                   variant="outlined"
                   sx={{ color: '#e535ab', borderColor: '#e535ab' }}

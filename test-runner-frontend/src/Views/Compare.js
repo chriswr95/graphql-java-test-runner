@@ -253,7 +253,7 @@ export default function Compare() {
             onClose={() => handleCloseDialog()}
           >
             <TabContext value={selectedTab}>
-              <AppBar sx={{ position: 'relative', bgcolor: 'transparent' }}>
+              <AppBar sx={{ position: 'sticky', bgcolor: 'white' }}>
                 <Toolbar>
                   <Box
                     sx={{
@@ -280,17 +280,17 @@ export default function Compare() {
                   <IconButton
                     color="inherit"
                     onClick={() => handleCloseDialog()}
-                    style={{ color: 'gray', position: 'absolute', right: '3%' }}
+                    style={{ color: 'gray', position: 'absolute', right: 0 }}
                   >
                     <CloseIcon />
                   </IconButton>
                 </Toolbar>
 
-                <Typography sx={{ ml: '6%', mb: '3%', mt: '3%', flex: 1, color: 'black' }} variant="h6">
+                <Typography sx={{ ml: '6%', mb: '3%', mt: '3%', flex: 1, color: 'black' }} variant={jsonResult.className ? 'h5' : 'h6'}>
                   <b>{jsonResult.className ? jsonResult.className : jsonResult.id}</b>
                 </Typography>
 
-                <Stack direction="row" spacing={2} style={{ marginLeft: '6%', marginBottom: '3%' }}>
+                <Stack direction="row" spacing={2} style={{ marginLeft: '6%', marginBottom: '3%', marginTop: '1.2%' }}>
                   <Button
                     variant="outlined"
                     sx={{ color: '#e535ab', borderColor: '#e535ab' }}
@@ -328,46 +328,36 @@ export default function Compare() {
             </Typography>
           </Box>
 
-          {/* Father BOX */}
-          <Box sx={{ marginLeft: '2%', width: '98%', display: 'flex', flexDirection: 'row' }}>
+         {/* Father BOX */}
+         <Box sx={{ marginLeft: '2%', width: '98%', display: 'flex', flexDirection: 'row' }}>
             {/* Lateral menu BOX */}
             <Box sx={{ display: 'flex', flexDirection: 'column', position: 'fixed' }}>
               <Typography variant="h6">
                 <b>Classes</b>
               </Typography>
 
-              <Box
-                sx={{
-                  minWidth: '21vh',
-                  width: '61%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  backgroundColor: '#F1F1F1',
-                  borderRadius: '12px 12px 12px 12px',
-                  padding: '4%',
-                }}
-              >
-                {combinedClassesAndBenchmarksState?.map((item, i) => (
-                  <Typography
-                    key={i}
-                    variant="h7"
-                    style={{
-                      maxWidth: '100%',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      display: 'block',
-                    }}
+              <Box sx={{ minWidth: '21vh', width: '61%', display: 'flex', flexDirection: 'column', backgroundColor: '#F1F1F1',borderRadius: '12px 12px 12px 12px', padding: '4%'}}>
+              {combinedClassesAndBenchmarksState?.map((item, i) => (
+                <Typography
+                  key={i}
+                  variant="h7"
+                  style={{
+                    maxWidth: '100%',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    display: 'block',
+                  }}
+                >
+                  <HashLink
+                    smooth
+                    to={`?compareA=${jobIdA}&compareB=${jobIdB}#${item[0]}`}
+                    style={{ textDecoration: 'none', color: 'black' }}
                   >
-                    <HashLink
-                      smooth
-                      to={`?compareA=${jobIdA}&compareB=${jobIdB}#${item[0]}`}
-                      style={{ textDecoration: 'none', color: 'black' }}
-                    >
-                      {item[0]}
-                    </HashLink>
-                  </Typography>
-                ))}
+                    {item[0]}
+                  </HashLink>
+                </Typography>
+              ))}
               </Box>
             </Box>
 
@@ -382,15 +372,15 @@ export default function Compare() {
               <Box
                 sx={{
                   width: '95%',
-                  marginBottom: '3%',
+                  marginBottom: '2.5%',
                   backgroundColor: '#F1F1F1',
                   display: 'flex',
                   flexDirection: 'row',
                   borderRadius: '12px 12px 12px 12px',
-                  paddingTop: '2%',
-                  paddingBottom: '3%',
-                  paddingLeft: '1.8%',
-                  paddingRight: '1.8%',
+                  paddingTop: "2%",
+                  paddingBottom: "3%",
+                  paddingLeft: "1.8%",
+                  paddingRight: "1.8%"
                 }}
               >
                 {/* Left info */}
@@ -407,7 +397,8 @@ export default function Compare() {
                           <Stack key={i} direction="row" spacing={2} sx={{ width: '100%' }}>
                             <Typography
                               style={{
-                                maxWidth: '25%',
+                                maxWidth: '40%',
+                                width: '40%',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
                                 overflow: 'hidden',
@@ -415,11 +406,11 @@ export default function Compare() {
                               }}
                             >
                               {' '}
-                              <Marquee gradientColor={0} play={true} pauseOnHover={true}>
+                              <Marquee gradientColor={0} play={true} pauseOnHover={true} speed={9} delay={3} loop={2}>
                                 {regressedClasses[0]}
                               </Marquee>
                             </Typography>
-                            <ProgressBar style={{ width: '50%', height: '1vh', marginTop: '4%', direction: 'rtl' }}>
+                            <ProgressBar style={{ width: '34%', height: '1vh', marginTop: '2%', direction: 'rtl' }}>
                               <ProgressBar
                                 variant="danger"
                                 now={regressedClasses[1].improvementOrRegressionPercentage}
@@ -459,19 +450,20 @@ export default function Compare() {
                         return (
                           <Stack key={i} direction="row" spacing={2} sx={{ width: '100%' }}>
                             <Typography>{improvedClass[1].improvementOrRegressionPercentage.toFixed(2)}%</Typography>
-                            <ProgressBar style={{ width: '50%', height: '1vh', marginTop: '4%', direction: 'ltr' }}>
+                            <ProgressBar style={{ width: '34%', height: '1vh', marginTop: '2%', direction: 'ltr' }}>
                               <ProgressBar variant="success" now={improvedClass[1].improvementOrRegressionPercentage} />
                             </ProgressBar>
                             <Typography
                               style={{
-                                maxWidth: '25%',
+                                maxWidth: '40%',
+                                width: '40%',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
                                 overflow: 'hidden',
                                 display: 'block',
                               }}
                             >
-                              <Marquee gradientColor={0} play={true} pauseOnHover={true}>
+                              <Marquee gradientColor={0} play={true} pauseOnHover={true} speed={9} delay={3} loop={2}>
                                 {improvedClass[0]}
                               </Marquee>
                             </Typography>
@@ -487,13 +479,13 @@ export default function Compare() {
 
               {/* Bar columns BOX */}
 
-              <Box sx={{ widht: '95%', marginLeft: '0%', marginTop: '3%', display: 'flex', flexDirection: 'row' }}>
+              <Box sx={{ widht: '100%',  marginTop: '3%', marginBottom: '1.6%', display: 'flex', flexDirection: 'row' }}>
                 <Box
                   sx={{
                     width: '45%',
                     marginBottom: '2%',
-                    borderLeft: '3px solid #337ab7',
-                    borderBottom: '3.6px solid #337ab7',
+                    borderLeft: '4.3px solid black',
+                    borderBottom: '4.3px solid black',
                     borderRadius: '0 0 0 12px',
                     paddingLeft: '1%',
                     paddingBottom: '1%',
@@ -514,9 +506,9 @@ export default function Compare() {
                   sx={{
                     width: '45%',
                     marginBottom: '2%',
-                    marginLeft: '2%',
-                    borderLeft: '3.6px solid #ff7f0e',
-                    borderBottom: '3px solid #ff7f0e',
+                    marginLeft: '5%',
+                    borderLeft: '4.3px solid #E535AB',
+                    borderBottom: '4.3px solid #E535AB',
                     borderRadius: '0 0 0 12px',
                     paddingLeft: '1%',
                     paddingBottom: '1%',
