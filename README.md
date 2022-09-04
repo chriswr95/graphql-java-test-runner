@@ -53,7 +53,7 @@ FYI: Firestore can be enabled only once per project and it can never be destroye
 
 * In your terminal cd to test-runner-frontend folder.
 * Run ```npm run deploy```, then open this URL on your browser: https://adarsh-jaiswal.github.io/graphql-java-test-runner/
-NOTE: Changes might take up to 10 minuts to reflect.
+* NOTE: Changes might take up to 10 minuts to reflect.
 
 ### Code of Conduct
 
