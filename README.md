@@ -35,19 +35,19 @@ FYI: Firestore can be enabled only once per project and it can never be destroye
 #### Installation
 
 * In your terminal cd to test-runner-frontend folder.
-* Type ```npm install``` to install all dependencies.
+* Run ```npm install``` to install all dependencies.
 
 #### Run the app locally
 
 * In your terminal cd to test-runner-frontend folder.
-* Type ```npm start``` to run the app locally, then go to http://localhost:3000/graphql-java-test-runner.
+* Run ```npm start``` to run the app locally, then paste on your browser this URL: http://localhost:3000/graphql-java-test-runner.
 * To look at the code, just open up the project in your favorite code editor.
 
 #### Run tests
 
 * In your terminal cd to test-runner-frontend folder.
-* To run all tests type ```npm tests```.
-* To run all tests with coverage precentage type ```npm test -- --coverage```.
+* To run all tests run ```npm tests```.
+* To run all tests with coverage precentage run ```npm test -- --coverage```.
 
 ### Code of Conduct
 

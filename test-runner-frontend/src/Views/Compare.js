@@ -430,7 +430,7 @@ export default function Compare() {
                               />
                             </ProgressBar>
                             <Typography>
-                              -{regressedClasses[1].improvementOrRegressionPercentage.toFixed(2)}%
+                              - {regressedClasses[1].improvementOrRegressionPercentage.toFixed(2)}%
                             </Typography>
                           </Stack>
                         );
@@ -462,16 +462,16 @@ export default function Compare() {
                       {improvedAndRegressedResults.improvedClasses?.map((improvedClass, i) => {
                         return (
                           <Stack key={i} direction="row" spacing={2} sx={{ width: '100%' }}>
-                            <Typography sx={{ maxWidth: '12%', width: '12%' }}>
-                              {improvedClass[1].improvementOrRegressionPercentage.toFixed(2)}%
+                            <Typography sx={{ maxWidth: '18%', width: '18%' }}>
+                              + {improvedClass[1].improvementOrRegressionPercentage.toFixed(2)}%
                             </Typography>
                             <ProgressBar style={{ width: '34%', height: '1vh', marginTop: '2%', direction: 'ltr' }}>
                               <ProgressBar variant="success" now={improvedClass[1].improvementOrRegressionPercentage} />
                             </ProgressBar>
                             <Typography
                               style={{
-                                maxWidth: '40%',
-                                width: '40%',
+                                maxWidth: '34%',
+                                width: '34%',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
                                 overflow: 'hidden',
