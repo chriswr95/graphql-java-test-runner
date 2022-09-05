@@ -89,6 +89,11 @@ const reducer = (state, action) => {
         testRunResultsCopy: action.payload,
         testRunResults: action.payload,
       };
+    case 'cancelButtonState':
+      return {
+        ...state,
+        cancelButtonState: action.payload,
+      };
     case 'sortResults':
       const sortingMode = action.payload.key;
       const sortingBy = action.payload.sortBy;
@@ -227,36 +232,34 @@ export default function Dashboard() {
                   <b>Test Run</b>
                 </Typography>
 
-                {cancelButtonState ? (
+                <Stack direction="row" spacing={2} sx={{ position: 'absolute', right: '2%' }}>
+                  {cancelButtonState ? (
+                    <Button
+                      sx={{
+                        color: 'gray',
+                        borderColor: 'gray',
+                        size: 'small',
+                      }}
+                      variant="outlined"
+                      onClick={() => handleCancel()}
+                    >
+                      Cancel
+                    </Button>
+                  ) : null}
                   <Button
                     sx={{
-                      color: 'gray',
-                      borderColor: 'gray',
-                      position: 'absolute',
-                      right: '10.2%',
+                      color: !isCheckBoxActive ? 'gray' : '#e535ab',
+                      borderColor: !isCheckBoxActive ? 'gray' : '#e535ab',
+                      borderWidth: '2px',
                       size: 'small',
                     }}
                     variant="outlined"
-                    onClick={() => handleCancel()}
+                    disabled={isCheckBoxActive && checkBoxSelection.length !== 2 ? true : false}
+                    onClick={() => manageCompareAction()}
                   >
-                    Cancel
+                    Compare
                   </Button>
-                ) : null}
-                <Button
-                  sx={{
-                    color: !isCheckBoxActive ? 'gray' : '#e535ab',
-                    borderColor: !isCheckBoxActive ? 'gray' : '#e535ab',
-                    borderWidth: '2px',
-                    position: 'absolute',
-                    right: '2%',
-                    size: 'small',
-                  }}
-                  variant="outlined"
-                  disabled={isCheckBoxActive && checkBoxSelection.length !== 2 ? true : false}
-                  onClick={() => manageCompareAction()}
-                >
-                  Compare
-                </Button>
+                </Stack>
               </Stack>
 
               <Box sx={{ marginTop: '0.8%', marginBottom: '0.8%' }}>
