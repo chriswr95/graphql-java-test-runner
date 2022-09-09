@@ -19,46 +19,46 @@ const columns = [
     id: 'id',
     label: 'JobId',
     minWidth: 350,
-    align: 'center',
+    align: 'left',
   },
   {
     id: 'improvedVsRegressed',
     label: 'Improved vs Regressed',
     type: 'number',
     minWidth: 270,
-    align: 'center',
+    align: 'left',
   },
   {
     id: 'benchmarks',
     label: 'Benchmarks',
     minWidth: 160,
-    align: 'center',
+    align: 'left',
   },
   {
     id: 'branch',
     label: 'Branch',
     minWidth: 170,
-    align: 'center',
+    align: 'left',
   },
   {
     id: 'machine',
     label: 'Machine',
     minWidth: 160,
-    align: 'center',
+    align: 'left',
   },
   {
     id: 'date',
     label: 'Date',
     description: 'This column has a value getter and is not sortable.',
     minWidth: 210,
-    align: 'center',
+    align: 'left',
   },
 ];
 
 export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, testRunResults, sortTests }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [isDateSortedOnAscendingOrder, setIsDateSortedOnAscendingOrder] = React.useState(false);
+  const [sortingOrder, setSortingOrder] = React.useState('descending');
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -73,9 +73,9 @@ export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, test
     onCheckboxChange(value);
   };
 
-  const handleDateSorting = (timestamp, mode, isAscending) => {
-    sortTests(timestamp, mode);
-    setIsDateSortedOnAscendingOrder(isAscending);
+  const handleDateSorting = (mode) => {
+    sortTests('timestamp', mode);
+    setSortingOrder(mode);
   };
 
   return (
@@ -89,27 +89,17 @@ export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, test
 
                 if (column.label === 'Date') {
                   cell = (
-                    <Stack direction="row" spacing={4} style={{ marginLeft: '35%' }}>
+                    <Stack direction="row" spacing={4}>
                       <div>
                         <b>{column.label}</b>
                       </div>
-                      {isDateSortedOnAscendingOrder ? (
-                        <IconButton
-                          data-testid="iconButton"
-                          sx={{ top: '13%', position: 'absolute' }}
-                          onClick={() => handleDateSorting('timestamp', 'descending', false)}
-                        >
-                          <ArrowDownwardIcon />
-                        </IconButton>
-                      ) : (
-                        <IconButton
-                          data-testid="iconButton"
-                          sx={{ top: '13%', position: 'absolute' }}
-                          onClick={() => handleDateSorting('timestamp', 'ascending', true)}
-                        >
-                          <ArrowUpwardIcon />
-                        </IconButton>
-                      )}
+                      <IconButton
+                        data-testid="iconButton"
+                        sx={{ top: '13%', position: 'absolute' }}
+                        onClick={() => handleDateSorting(sortingOrder === 'ascending' ? 'descending' : 'ascending')}
+                      >
+                        {sortingOrder === 'ascending' ? <ArrowDownwardIcon /> : <ArrowUpwardIcon />}
+                      </IconButton>
                     </Stack>
                   );
                 } else {

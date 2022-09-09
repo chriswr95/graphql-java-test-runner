@@ -28,7 +28,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         loading: false,
-        firestoreData: testRunResults.sort((a, b) => b.timestamp - a.timestamp),
+        firestoreData: testRunResults.sort((a, b) => b.timestamp?.toDate() - a.timestamp?.toDate()),
         machines: machines,
       };
     default:

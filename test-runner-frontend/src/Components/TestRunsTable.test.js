@@ -38,7 +38,7 @@ const generateMockDataCaller = (times) => {
 };
 
 describe('Test Runs Table', () => {
-  test('Renders tests', () => {
+  test('Renders table', () => {
     var testRunResults = generateMockDataCaller(25);
     const { debug, getByText, getAllByRole, getByTestId } = render(
       <BrowserRouter>
@@ -97,7 +97,7 @@ describe('Test Runs Table', () => {
         <TestRunsTable testRunResults={testRunResults} sortTests={sortTests} />
       </BrowserRouter>
     );
-    const SortButton = screen.getByTestId('iconButton');
+    const SortButton = getByTestId('iconButton');
     await userEvent.click(SortButton);
     expect(sortTests).toHaveBeenCalled();
   });
@@ -120,12 +120,24 @@ describe('Test Runs Table', () => {
     ];
     const { debug, getAllByRole } = render(
       <BrowserRouter>
-        {' '}
         <TestRunsTable onCheckboxChange={onCheckboxChange} testRunResults={testRunResults} isCheckBoxActive={true} />
       </BrowserRouter>
     );
     const checkbox1 = getAllByRole('checkbox')[1];
     await userEvent.click(checkbox1);
     expect(onCheckboxChange).toHaveBeenCalledWith(testRunResults[0]);
+  });
+
+  test('Check sorting', async () => {
+    var testRunResults = generateMockDataCaller(25);
+    var sortTests = jest.fn();
+    const { debug, getByText, getAllByRole, getByTestId } = render(
+      <BrowserRouter>
+        <TestRunsTable testRunResults={testRunResults} sortTests={sortTests} />
+      </BrowserRouter>
+    );
+    expect(getByTestId('iconButton')).toBeDefined();
+    await userEvent.click(getByTestId('iconButton'));
+    expect(sortTests).toHaveBeenCalled();
   });
 });

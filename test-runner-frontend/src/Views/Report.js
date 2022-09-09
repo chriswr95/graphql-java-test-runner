@@ -10,7 +10,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { makeStyles, Dialog } from '@material-ui/core';
 import { Stack } from '@mui/system';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { buildChartsData, buildIndividualJsonResults, buildJsonResults, downloadJSON } from './ReportAndCompareUtils';
+import { buildChartsData, buildIndividualJsonResults, buildJsonResults, downloadJSON } from './Utils';
 import { FirestoreContext } from '../Components/FirestoreProvider';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from 'react-router-dom';

@@ -17,7 +17,7 @@ import {
   combineChartsData,
   downloadJSON,
   getImprovedVsRegressedValues,
-} from './ReportAndCompareUtils';
+} from './Utils';
 import { FirestoreContext } from '../Components/FirestoreProvider';
 import PieChartComponent from '../Components/PieChartComponent';
 import ProgressBar from 'react-bootstrap/esm/ProgressBar';
@@ -28,7 +28,6 @@ import TabContext from '@material-ui/lab/TabContext';
 import TabList from '@material-ui/lab/TabList';
 import TabPanel from '@material-ui/lab/TabPanel';
 import Grid from '@mui/material/Grid';
-import Marquee from 'react-fast-marquee';
 import DownloadForOfflineOutlinedIcon from '@mui/icons-material/DownloadForOfflineOutlined';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
@@ -299,14 +298,14 @@ export default function Compare() {
                     sx={{ color: '#e535ab', borderColor: '#e535ab' }}
                     onClick={() => downloadJSONReport('JSON file downloaded', null)}
                   >
-                    <DownloadForOfflineOutlinedIcon sx={{ color: '#E535AB', fontSize: '4.3vh' }} />
+                    <DownloadForOfflineOutlinedIcon sx={{ color: '#E535AB', fontSize: '25px' }} />
                   </IconButton>
                   <IconButton
                     variant="outlined"
                     sx={{ color: 'gray', borderColor: 'gray' }}
                     onClick={handleClickOpenSnackBar('JSON results saved into clipboard', null)}
                   >
-                    <ContentCopyIcon sx={{ color: '#313846', fontSize: '4.3vh' }} />
+                    <ContentCopyIcon sx={{ color: '#313846', fontSize: '25px' }} />
                   </IconButton>
                 </Stack>
               </AppBar>
@@ -419,9 +418,9 @@ export default function Compare() {
                               }}
                             >
                               {' '}
-                              <Marquee gradientColor={0} play={true} pauseOnHover={true} speed={9} delay={3} loop={2}>
+                              <abbr style={{ textDecoration: 'none', cursor: 'default' }} title={regressedClasses[0]}>
                                 {regressedClasses[0]}
-                              </Marquee>
+                              </abbr>
                             </Typography>
                             <ProgressBar style={{ width: '34%', height: '1vh', marginTop: '2%', direction: 'rtl' }}>
                               <ProgressBar
@@ -441,7 +440,7 @@ export default function Compare() {
                   {/* Pie Chart BOX */}
 
                   <Grid item xs={2}>
-                    <Box sx={{ textAlign: 'center', marginTop: '3%' }}>
+                    <Box sx={{ textAlign: 'center', marginTop: '3%', alignItems: 'center' }}>
                       <Typography variant="h5" sx={{ alignItems: 'center' }}>
                         <b>Total</b>
                       </Typography>
@@ -478,9 +477,9 @@ export default function Compare() {
                                 display: 'block',
                               }}
                             >
-                              <Marquee gradientColor={0} play={true} pauseOnHover={true} speed={9} delay={3} loop={2}>
+                              <abbr style={{ textDecoration: 'none', cursor: 'default' }} title={improvedClass[0]}>
                                 {improvedClass[0]}
-                              </Marquee>
+                              </abbr>
                             </Typography>
                           </Stack>
                         );

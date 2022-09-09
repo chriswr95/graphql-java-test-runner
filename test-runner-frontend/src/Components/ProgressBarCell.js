@@ -6,7 +6,7 @@ import { Stack, Typography } from '@mui/material';
 export default function ProgressBarCell({ improvedValue, regressedValue, totalBenchmarks }) {
   return (
     <div>
-      <Stack direction="row" spacing={2} sx={{ marginLeft: '13.5%' }}>
+      <Stack direction="row" spacing={2}>
         <Typography sx={{ color: 'green', width: '7%' }}>{improvedValue}</Typography>
         <ProgressBar
           style={{ width: '57%', height: '0.9vh', marginTop: '4%', direction: improvedValue ? 'ltr' : 'rtl' }}

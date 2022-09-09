@@ -8,7 +8,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ErrorBar,
   ResponsiveContainer,
   Cell,
@@ -101,7 +100,7 @@ export default function BarCharts({ classesAndBenchmarksState, mediumCharts }) {
   return (
     <Box sx={{ width: size }}>
       <Chip sx={{ marginTop: '1%', marginBottom: '1.6%', backgroundColor: '#F1F1F1' }} label={benchmarkModes[mode]} />
-      <ResponsiveContainer width="100%" height={277}>
+      <ResponsiveContainer width="100%" height={261}>
         <BarChart data-testid="chart" data={benchmarksData} layout="vertical">
           <XAxis type="number" />
           <YAxis
@@ -113,8 +112,7 @@ export default function BarCharts({ classesAndBenchmarksState, mediumCharts }) {
             tickMargin={9}
           />
           <CartesianGrid strokeDasharray="2 2" />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend />
+          <Tooltip content={<CustomTooltip data-testid="bars-tooltip" />} />
           <Bar dataKey={'score'} fill={mediumCharts ? '#337ab7' : '#313846'}>
             <ErrorBar dataKey="error" width={4} strokeWidth={2.7} stroke={mediumCharts ? '#313846' : '#ACB2B2'} />
             {!mediumCharts

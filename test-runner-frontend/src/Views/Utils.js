@@ -167,7 +167,6 @@ export const buildIndividualJsonResults = (benchmarks) => {
 };
 
 export const buildIndividualJsonResultsCompare = (benchmarks) => {
-  console.log(benchmarks);
   const jobIdA = benchmarks[0].jobId;
   const jobIdB = benchmarks[1].jobId;
   const className = benchmarks[0].benchmarkClass;
