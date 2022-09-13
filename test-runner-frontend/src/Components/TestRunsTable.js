@@ -10,6 +10,7 @@ import TableRow from '@mui/material/TableRow';
 import { IconButton, Stack } from '@mui/material';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ProgressBarCell from './ProgressBarCell';
 import IdCell from './IdCell';
 
@@ -18,39 +19,46 @@ const columns = [
     id: 'id',
     label: 'JobId',
     minWidth: 350,
+    align: 'left',
   },
   {
     id: 'improvedVsRegressed',
     label: 'Improved vs Regressed',
     type: 'number',
     minWidth: 270,
+    align: 'left',
   },
   {
     id: 'benchmarks',
     label: 'Benchmarks',
     minWidth: 160,
+    align: 'left',
   },
   {
     id: 'branch',
     label: 'Branch',
     minWidth: 170,
+    align: 'left',
   },
   {
     id: 'machine',
     label: 'Machine',
     minWidth: 160,
+    align: 'left',
   },
   {
     id: 'date',
     label: 'Date',
     description: 'This column has a value getter and is not sortable.',
     minWidth: 210,
+    align: 'left',
   },
 ];
 
 export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, testRunResults, sortTests }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [sortingOrder, setSortingOrder] = React.useState('descending');
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -63,6 +71,11 @@ export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, test
 
   const onChange = (value) => {
     onCheckboxChange(value);
+  };
+
+  const handleDateSorting = (mode) => {
+    sortTests('timestamp', mode);
+    setSortingOrder(mode);
   };
 
   return (
@@ -83,9 +96,9 @@ export default function TestRunsTable({ onCheckboxChange, isCheckBoxActive, test
                       <IconButton
                         data-testid="iconButton"
                         sx={{ top: '13%', position: 'absolute' }}
-                        onClick={() => sortTests('date', 'ascending')}
+                        onClick={() => handleDateSorting(sortingOrder === 'ascending' ? 'descending' : 'ascending')}
                       >
-                        <ArrowDownwardIcon />
+                        {sortingOrder === 'ascending' ? <ArrowDownwardIcon /> : <ArrowUpwardIcon />}
                       </IconButton>
                     </Stack>
                   );

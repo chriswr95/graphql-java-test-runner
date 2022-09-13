@@ -4,14 +4,16 @@ import GraphQL_Logo from '../Assets/GraphQL_Java_Logo_v2.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { HashLink } from 'react-router-hash-link';
 import BarCharts from '../Components/BarChart';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useEffect, useReducer } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { makeStyles, Dialog } from '@material-ui/core';
 import { Stack } from '@mui/system';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { buildChartsData, buildIndividualJsonResults, buildJsonResults, downloadJSON } from './ReportUtils';
+import { buildChartsData, buildIndividualJsonResults, buildJsonResults, downloadJSON } from './Utils';
 import { FirestoreContext } from '../Components/FirestoreProvider';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Link } from 'react-router-dom';
 
 const GRAPHQL_JAVA_GITHUB = 'https://github.com/graphql-java/graphql-java';
 
@@ -27,13 +29,11 @@ const useStyles = makeStyles({
 });
 
 function TransitionSnackBar(props) {
-  return (
-    <Slide
-      {...props}
-      direction="up"
-      style={{ color: 'white', backgroundColor: '#e535ab', fontWeight: '600', textShadow: '1px 3px black' }}
-    />
-  );
+  return <Slide {...props} direction="up" style={{ color: 'white', backgroundColor: '#E535AB', fontWeight: 600 }} />;
+}
+
+function TransitionDialog(props) {
+  return <Slide {...props} direction="left" style={{ backgroundColor: 'transparent' }} />;
 }
 
 const initialState = {
@@ -180,20 +180,28 @@ export default function Report() {
             classes={{
               paper: classes.dialog,
             }}
+            TransitionComponent={TransitionDialog}
             open={openDialog}
             onClose={() => handleCloseDialog()}
           >
-            <AppBar sx={{ position: 'relative', bgcolor: 'transparent' }}>
+            <AppBar sx={{ position: 'sticky', bgcolor: 'white' }}>
               <Toolbar>
-                <Typography sx={{ ml: 2, flex: 1, color: 'black' }} variant="h6" component="div">
+                <Typography
+                  sx={{ ml: 2, mt: '3%', flex: 1, color: 'black' }}
+                  variant={jsonResult.className ? 'h5' : 'h6'}
+                >
                   <b>{jsonResult.className ? jsonResult.className : jsonResult.jobId}</b>
                 </Typography>
-                <IconButton color="inherit" onClick={() => handleCloseDialog()} sx={{ color: 'gray' }}>
+                <IconButton
+                  color="inherit"
+                  onClick={() => handleCloseDialog()}
+                  sx={{ color: 'gray', position: 'absolute', right: 0, marginRight: '3%' }}
+                >
                   <CloseIcon />
                 </IconButton>
               </Toolbar>
 
-              <Stack direction="row" spacing={2} style={{ marginLeft: '6%', marginBottom: '3%' }}>
+              <Stack direction="row" spacing={2} style={{ marginLeft: '6%', marginBottom: '3%', marginTop: '2%' }}>
                 <Button
                   variant="outlined"
                   sx={{ color: '#e535ab', borderColor: '#e535ab' }}
@@ -218,7 +226,12 @@ export default function Report() {
 
           {/* Test Runs info */}
           <Box sx={{ width: '97%', marginBottom: '2%', marginLeft: '2%' }}>
-            <Typography variant="h4">
+            <Link to="/" style={{ textDecoration: 'none', color: 'gray' }}>
+              <IconButton>
+                <ArrowBackIcon />
+              </IconButton>
+            </Link>
+            <Typography variant="h4" style={{ marginTop: '1%' }}>
               <b>Test run {selectedTestRunFromDashboard?.id}</b>
             </Typography>
             <Button
@@ -246,31 +259,43 @@ export default function Report() {
           <Box sx={{ marginLeft: '2%', width: '98%', display: 'flex', flexDirection: 'row' }}>
             {/* Lateral menu BOX */}
             <Box sx={{ display: 'flex', flexDirection: 'column', position: 'fixed' }}>
-              <Typography variant="h6" sx={{ marginBottom: '3%' }}>
+              <Typography variant="h6">
                 <b>Classes</b>
               </Typography>
 
-              {classesAndBenchmarksState.map((item, i) => (
-                <Typography
-                  key={i}
-                  variant="h7"
-                  style={{
-                    maxWidth: '63%',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    display: 'block',
-                  }}
-                >
-                  <HashLink
-                    smooth
-                    to={`?report=${jobId}#${item[0]}`}
-                    style={{ textDecoration: 'none', color: 'black' }}
+              <Box
+                sx={{
+                  minWidth: '21vh',
+                  width: '61%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  backgroundColor: '#F1F1F1',
+                  borderRadius: '12px 12px 12px 12px',
+                  padding: '4%',
+                }}
+              >
+                {classesAndBenchmarksState.map((item, i) => (
+                  <Typography
+                    key={i}
+                    variant="h7"
+                    style={{
+                      maxWidth: '100%',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      display: 'block',
+                    }}
                   >
-                    {item[0]}
-                  </HashLink>
-                </Typography>
-              ))}
+                    <HashLink
+                      smooth
+                      to={`?report=${jobId}#${item[0]}`}
+                      style={{ textDecoration: 'none', color: 'black' }}
+                    >
+                      {item[0]}
+                    </HashLink>
+                  </Typography>
+                ))}
+              </Box>
             </Box>
 
             {/* Charts BOX */}
@@ -286,7 +311,7 @@ export default function Report() {
                       <Box key={i} sx={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
                         <Box key={i} sx={{ marginBottom: '3.6%', marginRight: '10%' }}>
                           <Typography variant="h5" id={`${currentChart[0]}`} sx={{ display: 'block' }}>
-                            <b>{currentChart[0]}</b>
+                            <b>{currentChart[1][0].benchmarkClass}</b>
                           </Typography>
                           <IconButton
                             style={{ float: 'right' }}
@@ -298,13 +323,13 @@ export default function Report() {
                             <MoreHorizIcon />
                           </IconButton>
 
-                          <BarCharts classesAndBenchmarksState={currentChart[1]} />
+                          <BarCharts classesAndBenchmarksState={currentChart[1]} mediumCharts={true} />
                         </Box>
 
                         {nextChart ? (
                           <Box key={i + 1} sx={{ marginBottom: '3%' }}>
                             <Typography variant="h5" id={`${nextChart[0]}`} sx={{ display: 'block' }}>
-                              <b>{nextChart[0]}</b>
+                              <b>{nextChart[1][0].benchmarkClass}</b>
                             </Typography>
                             <IconButton
                               style={{ float: 'right' }}
@@ -315,7 +340,7 @@ export default function Report() {
                             >
                               <MoreHorizIcon />
                             </IconButton>
-                            <BarCharts classesAndBenchmarksState={nextChart[1]} />
+                            <BarCharts classesAndBenchmarksState={nextChart[1]} mediumCharts={true} />
                           </Box>
                         ) : null}
                       </Box>

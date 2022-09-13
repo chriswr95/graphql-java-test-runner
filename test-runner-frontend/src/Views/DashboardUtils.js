@@ -53,12 +53,11 @@ export const sortTestRunsByMachine = (machines, testRunResults) => {
       const machine = machineName;
       if (testRunResult.testRunnerResults) {
         const benchmarks = testRunResult.testRunnerResults[machineName]?.testStatistics?.length;
-        const timestamp = testRunResult.testRunnerResults[machineName]?.startTime;
-        const dateTimestamp = new Date(timestamp * 26);
+        const timestamp = testRunResult?.testRunnerResults[machineName]?.startTime;
+        const dateTimestamp = new Date(timestamp?.seconds * 1000);
         const improvedVsRegressed = { improved: 0, regressed: 0 };
         const date = dateTimestamp?.toLocaleString();
         const statistics = testRunResult.testRunnerResults[machineName]?.testStatistics;
-
         return {
           id,
           commitHash,
@@ -68,6 +67,7 @@ export const sortTestRunsByMachine = (machines, testRunResults) => {
           improvedVsRegressed,
           machine,
           date,
+          timestamp,
           statistics,
         };
       } else {
@@ -80,6 +80,7 @@ export const sortTestRunsByMachine = (machines, testRunResults) => {
           improvedVsRegressed: {},
           machine,
           date: 'Test run on progress',
+          timestamp: null,
           statistics: [],
         };
       }
@@ -90,7 +91,6 @@ export const sortTestRunsByMachine = (machines, testRunResults) => {
 };
 
 export const convertToMap = (testRun) => {
-  if (!testRun) return null;
   return testRun?.statistics.reduce((map, testMethod) => {
     map[testMethod.benchmark] = {
       score: testMethod.primaryMetric.score,
@@ -139,10 +139,7 @@ export const getBenchmarksByMachine = (flattenedTestRuns) => {
     return testRunsSortedByMachine
       .map((testRun, index) => {
         if (testRunsSortedByMachine[index + 1] && testRunsSortedByMachine[index + 1]?.statistics) {
-          const getImprovedVsRegressedValues = generateComparisonBetween(
-            testRun,
-            testRunsSortedByMachine[index + 1] ? testRunsSortedByMachine[index + 1] : {}
-          );
+          const getImprovedVsRegressedValues = generateComparisonBetween(testRun, testRunsSortedByMachine[index + 1]);
           testRun.improvedVsRegressed.improved = getImprovedVsRegressedValues?.improved
             ? getImprovedVsRegressedValues.improved
             : 0;
@@ -158,6 +155,7 @@ export const getBenchmarksByMachine = (flattenedTestRuns) => {
           benchmarks: testRun.benchmarks,
           machine: testRun.machine,
           date: testRun.date,
+          timestamp: testRun.timestamp,
           statistics: testRun.statistics,
           improvedVsRegressed: testRun.improvedVsRegressed,
         };

@@ -1,5 +1,5 @@
 import ProgressBarCell from './ProgressBarCell';
-import { render, fireEvent, waitFor, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 
 describe('ProgressBarCell', () => {
   test('Renders improved vs regressed value', () => {

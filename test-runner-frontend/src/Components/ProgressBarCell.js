@@ -7,7 +7,7 @@ export default function ProgressBarCell({ improvedValue, regressedValue, totalBe
   return (
     <div>
       <Stack direction="row" spacing={2}>
-        <Typography sx={{ color: 'green' }}>{improvedValue}</Typography>
+        <Typography sx={{ color: 'green', width: '7%' }}>{improvedValue}</Typography>
         <ProgressBar
           style={{ width: '57%', height: '0.9vh', marginTop: '4%', direction: improvedValue ? 'ltr' : 'rtl' }}
         >

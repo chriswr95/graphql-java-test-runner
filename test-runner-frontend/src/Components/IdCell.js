@@ -5,7 +5,7 @@ import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
-import { generatePath, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export default function IdCell({ value, hasCheckbox, onChange, status, row }) {
   const NONE = 'none';
@@ -23,7 +23,7 @@ export default function IdCell({ value, hasCheckbox, onChange, status, row }) {
     iconColor = 'green';
     IconComponent = CheckCircleOutlinedIcon;
     textDecoration = 'underline';
-    routingReference = `?report=${row.id}`;
+    routingReference = `?report=${row?.id}`;
     pointerEvent = 'auto';
     dataTestid = 'enabledCheckbox';
     isDisabled = false;

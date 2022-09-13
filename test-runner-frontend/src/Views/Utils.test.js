@@ -5,7 +5,7 @@ import {
   benchmarks,
   jsonData,
 } from '../Assets/testRunnerTestUtils';
-import { buildChartsData, buildJsonResults, downloadJSON } from './ReportUtils';
+import { buildChartsData, buildJsonResults } from './Utils';
 
 describe('ReportUtils', () => {
   test('Check buildChartsData()', async () => {
