@@ -11,15 +11,6 @@ export default function View() {
   const hasCompareParamsA = searchParams.get('compareA');
   const hasCompareParamsB = searchParams.get('compareB');
 
-  //Dashboard
-  //https://adarsh-jaiswal.github.io/graphql-java-test-runner/
-
-  //Report View
-  //https://adarsh-jaiswal.github.io/graphql-java-test-runner/?report=1234131413
-
-  //Compare View
-  //https://adarsh-jaiswal.github.io/graphql-java-test-runner/?compareA=123214&compareB=123467
-
   if (hasReportParams) return <Report />;
   else if (hasCompareParamsA && hasCompareParamsB) return <Compare />;
   else return <Dashboard />;
