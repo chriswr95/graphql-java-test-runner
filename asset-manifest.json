@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/graphql-java-test-runner/static/css/main.4de0fa12.css",
-    "main.js": "/graphql-java-test-runner/static/js/main.3047fb4c.js",
+    "main.css": "/graphql-java-test-runner/static/css/main.85768c17.css",
+    "main.js": "/graphql-java-test-runner/static/js/main.b35559c1.js",
     "static/js/787.cf2a641c.chunk.js": "/graphql-java-test-runner/static/js/787.cf2a641c.chunk.js",
     "static/media/GraphQL_Java_Logo_v2.png": "/graphql-java-test-runner/static/media/GraphQL_Java_Logo_v2.5e039db54fd0ea724343.png",
     "index.html": "/graphql-java-test-runner/index.html",
-    "main.4de0fa12.css.map": "/graphql-java-test-runner/static/css/main.4de0fa12.css.map",
-    "main.3047fb4c.js.map": "/graphql-java-test-runner/static/js/main.3047fb4c.js.map",
+    "main.85768c17.css.map": "/graphql-java-test-runner/static/css/main.85768c17.css.map",
+    "main.b35559c1.js.map": "/graphql-java-test-runner/static/js/main.b35559c1.js.map",
     "787.cf2a641c.chunk.js.map": "/graphql-java-test-runner/static/js/787.cf2a641c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.4de0fa12.css",
-    "static/js/main.3047fb4c.js"
+    "static/css/main.85768c17.css",
+    "static/js/main.b35559c1.js"
   ]
 }
