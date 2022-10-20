@@ -55,7 +55,7 @@ main:
             steps:
               - init:
                   assign:
-                    - instance_name: ${"test-runner-" + machine}
+                    - instance_name: ${"test-runner-" + job_id + "-" + machine}
               - insert_machine:
                   call: googleapis.compute.v1.instances.insert
                   args:
